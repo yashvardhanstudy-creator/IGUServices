@@ -1,0 +1,308 @@
+<head>
+    <link rel="shortcut icon" href="https://igu1.ucanapply.com/images/webicon.png" type="image/png">
+    <meta charset="UTF-8">
+    <title>Course Entry Form - IGU Meerpur</title>
+    <link rel="stylesheet" type="text/css" href="./stylesheets/index.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        textarea,
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 6px;
+        }
+
+        textarea {
+            resize: vertical;
+            overflow: hidden;
+            /* For auto-resize */
+        }
+
+        .dynamic-list {
+            margin-top: 10px;
+        }
+
+        .dynamic-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            width: 100%;
+            align-items: flex-start;
+        }
+
+        .dynamic-item input[type="text"],
+        .dynamic-item textarea {
+            flex-grow: 1;
+        }
+
+        .action-btn {
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-weight: bold;
+        }
+
+        .remove-btn {
+            background-color: #dc3545;
+            padding: 6px 12px;
+            margin-top: 2px;
+        }
+
+        .add-btn {
+            background-color: #28a745;
+            margin-bottom: 15px;
+        }
+
+        /* Print styling for official document look */
+        @media print {
+
+            .action-btn,
+            #back,
+            button {
+                display: none !important;
+            }
+
+            input,
+            textarea {
+                border: none !important;
+                background: transparent !important;
+                resize: none !important;
+                padding: 0 !important;
+                font-size: 14px;
+                font-family: serif;
+                outline: none;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+            }
+
+            h1,
+            h2,
+            h3,
+            p,
+            table,
+            th,
+            td {
+                font-family: serif;
+            }
+
+            /* Ensure proper printing of textareas */
+            textarea {
+                height: auto !important;
+                overflow: visible !important;
+            }
+        }
+    </style>
+    <script>
+        // Auto-resize textareas to fit content perfectly on print
+        function resizeTextarea(el) {
+            el.style.height = 'auto';
+            el.style.height = (el.scrollHeight) + 'px';
+        }
+
+        // Attach to existing textareas on load
+        window.onload = function () {
+            const tx = document.getElementsByTagName("textarea");
+            for (let i = 0; i < tx.length; i++) {
+                tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
+                tx[i].addEventListener("input", OnInput, false);
+            }
+        }
+        function OnInput() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        }
+
+        function calculateCredits() {
+            const l = parseFloat(document.getElementById('creditL').value) || 0;
+            const t = parseFloat(document.getElementById('creditT').value) || 0;
+            const p = parseFloat(document.getElementById('creditP').value) || 0;
+            document.getElementById('totalCredits').value = l + t + p;
+        }
+
+        function calculateMarks() {
+            const cm = parseFloat(document.getElementById('classMarks').value) || 0;
+            const em = parseFloat(document.getElementById('examMarks').value) || 0;
+            document.getElementById('totalMarks').value = cm + em;
+        }
+
+        function addDynamicField(containerId, inputName, placeholder) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = 'dynamic-item';
+            div.innerHTML = `
+                <input type="text" name="${inputName}[]" placeholder="${placeholder}" required>
+                <button type="button" class="action-btn remove-btn" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function addUnit() {
+            const container = document.getElementById('unitsContainer');
+            const unitCount = container.children.length + 1;
+            const div = document.createElement('div');
+            div.className = 'dynamic-item';
+            div.style.flexDirection = 'column';
+            div.innerHTML = `
+                <input type="text" name="unitTitles[]" placeholder="Unit: ${unitCount}" required style="font-weight: bold; font-size: 1.1em;">
+                <textarea name="unitContents[]" rows="3" placeholder="Enter syllabus content for this unit..." required oninput="resizeTextarea(this)"></textarea>
+                <button type="button" class="action-btn remove-btn" onclick="this.parentElement.remove()">Remove Unit</button>
+            `;
+            container.appendChild(div);
+        }
+    </script>
+</head>
+
+<body>
+
+    <center>
+        <h1>Indira Gandhi University, Meerpur</h1>
+        <img src="https://d2xe8shibzpjog.cloudfront.net/logo/igu_logo.png" style="max-height: 100px;">
+        <h3>(Course Design & Syllabus Proforma)</h3>
+    </center>
+
+    <hr>
+    <a href="./"><img id="back" src="./images/goBackArrow.png" type="png" alt="Go Back" style="width: 30px;"></a>
+
+    <form action="/submit-course" method="POST">
+
+        <h2><b><u>General Information</u></b></h2>
+        <table>
+            <tr>
+                <th>Course Code</th>
+                <th>Category</th>
+                <th>Course Title</th>
+            </tr>
+            <tr>
+                <td><input type="text" name="courseCode" value="PCC-CSE-201"></td>
+                <td><input type="text" name="category" value="Professional Core Course"></td>
+                <td><input type="text" name="courseTitle" value="Database Management System"></td>
+            </tr>
+        </table>
+
+        <h2><b><u>Scheme and Credits</u></b></h2>
+        <table>
+            <tr>
+                <th>L</th>
+                <th>T</th>
+                <th>P</th>
+                <th>Credits</th>
+                <th>Class Work</th>
+                <th>Exam</th>
+                <th>Total</th>
+                <th>Duration of Exam</th>
+            </tr>
+            <tr>
+                <td><input type="number" id="creditL" name="creditL" value="3" oninput="calculateCredits()"></td>
+                <td><input type="number" id="creditT" name="creditT" value="0" oninput="calculateCredits()"></td>
+                <td><input type="number" id="creditP" name="creditP" value="0" oninput="calculateCredits()"></td>
+                <td><input type="number" id="totalCredits" name="totalCredits" value="3" readonly
+                        style="background-color: #e9ecef;"></td>
+                <td><input type="number" id="classMarks" name="classMarks" value="25" oninput="calculateMarks()"></td>
+                <td><input type="number" id="examMarks" name="examMarks" value="75" oninput="calculateMarks()"></td>
+                <td><input type="number" id="totalMarks" name="totalMarks" value="100" readonly
+                        style="background-color: #e9ecef;"></td>
+                <td><input type="text" name="examDuration" value="03 Hours"></td>
+            </tr>
+        </table>
+
+        <h2><b><u>Objectives of the course</u></b></h2>
+        <textarea name="objectives" rows="6" placeholder="Enter course objectives here..."
+            oninput="resizeTextarea(this)">a. To understand the different issues involved in the design and implementation of a database system.
+b. To study the physical and logical database designs, database modeling, relational, hierarchical, and network models.
+c. To understand and use data manipulation language to query, update, and manage a database.</textarea>
+
+        <h2><b><u>Important Note</u></b></h2>
+        <p style="border: 1px solid black; padding: 8px">
+            <textarea name="importantNote" rows="4"
+                placeholder="Enter important note (e.g. Note: Examiner will set nine questions in total...)"
+                oninput="resizeTextarea(this)"></textarea>
+        </p>
+
+        <h2><b><u>Syllabus Units</u></b></h2>
+        <div id="unitsContainer">
+            <div class="dynamic-item" style="flex-direction: column;">
+                <input type="text" name="unitTitles[]" placeholder="Unit: 1" required
+                    style="font-weight: bold; font-size: 1.1em;">
+                <textarea name="unitContents[]" rows="3" placeholder="Enter syllabus content for this unit..." required
+                    oninput="resizeTextarea(this)"></textarea>
+                <button type="button" class="action-btn remove-btn" onclick="this.parentElement.remove()">Remove
+                    Unit</button>
+            </div>
+        </div>
+        <button type="button" class="action-btn add-btn" onclick="addUnit()">Add Unit</button>
+
+        <h2><b><u>Course Outcomes</u></b></h2>
+        <div id="outcomesContainer" class="dynamic-list">
+            <div class="dynamic-item">
+                <input type="text" name="courseOutcomes[]"
+                    placeholder="Enter Course Outcome (e.g., CO1 To introduce...)" required>
+                <button type="button" class="action-btn remove-btn"
+                    onclick="this.parentElement.remove()">Remove</button>
+            </div>
+        </div>
+        <button type="button" class="action-btn add-btn"
+            onclick="addDynamicField('outcomesContainer', 'courseOutcomes', 'Enter Course Outcome')">Add
+            Outcome</button>
+
+        <h2><b><u>Suggested Books</u></b></h2>
+        <div id="booksContainer" class="dynamic-list">
+            <div class="dynamic-item">
+                <input type="text" name="suggestedBooks[]" placeholder="Enter Book Details" required>
+                <button type="button" class="action-btn remove-btn"
+                    onclick="this.parentElement.remove()">Remove</button>
+            </div>
+        </div>
+        <button type="button" class="action-btn add-btn"
+            onclick="addDynamicField('booksContainer', 'suggestedBooks', 'Enter Book Details')">Add Book</button>
+
+        <h2><b><u>Suggested Reference Books</u></b></h2>
+        <div id="referenceBooksContainer" class="dynamic-list">
+            <div class="dynamic-item">
+                <input type="text" name="referenceBooks[]" placeholder="Enter Reference Book Details" required>
+                <button type="button" class="action-btn remove-btn"
+                    onclick="this.parentElement.remove()">Remove</button>
+            </div>
+        </div>
+        <button type="button" class="action-btn add-btn"
+            onclick="addDynamicField('referenceBooksContainer', 'referenceBooks', 'Enter Reference Book Details')">Add
+            Reference Book</button>
+
+        <center>
+            <button type="submit"
+                style="padding: 10px 20px; font-size: 16px; margin-top: 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Save
+                Course Data</button>
+        </center>
+    </form>
+
+    <center>
+        <button onclick="window.print()"
+            style="padding: 10px 20px; font-size: 16px; margin-top: 10px; background-color: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">Print
+            Document</button>
+    </center>
+
+</body>
+
+</html>

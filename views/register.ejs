@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        .info-text {
+            text-align: center;
+            color: #667eea;
+            font-size: 14px;
+            margin-bottom: 25px;
+            font-weight: 500;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        p {
+            color: #e74c3c;
+            font-size: 14px;
+            padding: 10px;
+            background: #ffe6e6;
+            border-radius: 6px;
+            margin: 0;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body>
+    <form action="./register" method="post" class="container">
+        <h2>Register</h2>
+        <div>The Password is same as Username</div>
+        <% if (locals && locals.message) { %>
+            <p style="color: red;">
+                <%= locals.message %>
+            </p>
+            <% } %>
+                <input type="text" name="username" id="usernameInput" placeholder="Enter the Username" required />
+                <input type="password" name="password" id="passwordInput" hidden />
+                <select name="role" id="roleSelect">
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                </select>
+                <button type="submit" id="submitBtn" disabled>Register</button>
+
+                <script>
+                    const userInput = document.getElementById('usernameInput');
+                    const passwordInput = document.getElementById('passwordInput');
+                    const submitBtn = document.getElementById('submitBtn');
+                    const roleSelect = document.getElementById('roleSelect');
+                    passwordInput.addEventListener('input', checkPasswords);
+                    userInput.addEventListener('input', checkPasswords);
+                    roleSelect.addEventListener('change', checkPasswords);
+                    function checkPasswords() {
+                        // Password == Username
+                        passwordInput.value = userInput.value;
+                        submitBtn.disabled = userInput.value === '' || passwordInput.value === '' || userInput.value !== passwordInput.value || roleSelect.value === '';
+                    }
+                </script>
+    </form>
+</body>
+
+</html>

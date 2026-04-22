@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev</title>
+</head>
+<body>
+    <form action="./dev" method="post">
+
+        <label for="">sql</label>
+        <input type="text" id="sqlInput" name="sql" placeholder="Enter SQL query here">
+        
+        <div id="output"><%= locals.message || " " %></div>
+        <button type="submit">Execute</button>
+    </form>
+</body>
+</html>

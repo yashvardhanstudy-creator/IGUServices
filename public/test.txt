@@ -1,0 +1,212 @@
+Database Management System 
+Course code 
+PCC-CSE-201
+Category 
+Professional Core Course
+Course title 
+Database Management System
+Scheme and Credits
+L 
+T 
+P 
+Credits
+
+
+3 
+0 
+
+
+3
+Class work 
+25 Marks
+Exam 
+75 Marks
+Total 
+100 Marks
+Duration of Exam 
+03 Hours
+
+
+
+Objectives of the course 
+a. To understand the different issues involved in the design and implementation of a database system. 
+b. To study the physical and logical database designs, database modeling, relational, hierarchical, and network models c. To understand and use data manipulation language to query, update, and manage a database 
+d. To develop an understanding of essential DBMS concepts such as: database security, integrity, concurrency, distributed database, and intelligent database, Client/Server (Database Server), Data Warehousing. 
+e. To design and build a simple database system and demonstrate competence with the fundamental tasks involved with modeling, designing, and implementing a DBMS. 
+Note: Examiner will set nine questions in total. Question one will be compulsory. Question one will have 6 parts of 2.5 marks each  from all units and remaining eight questions of 15 marks each to be set by taking two questions from each unit. The students have to  attempt five questions in total, first being compulsory and selecting one from each unit. 
+Unit: 1 
+ Database system architecture: Data Abstraction, Data Independence, Data Definition Language (DDL), Data Manipulation Language  (DML).Data models: Entity-relationship model, network model, relational and object oriented data models, integrity constraints,data  manipulation operations.
+Unit: 2 
+Relational query languages: Relational algebra, Tuple and domain relational calculus,SQL3, DDL andDML constructs, Open source and Commercial DBMS - MYSQL, ORACLE, DB2, SQL server. 
+Relational database design: Domain and data dependency, Armstrong's axioms, Normal forms, Dependency preservation, Lossless design. 
+Query processing and optimization: Evaluation of relational algebra expressions,Query equivalence, Join strategies, Query optimization algorithms. 
+Unit: 3 
+Storage strategies: Indices, B-trees, hashing, 
+Transaction processing: Concurrency control, ACID property, Serializability of scheduling, Locking and timestamp based schedulers, Multi-version and optimistic Concurrency Control schemes, Database recovery. 
+Unit: 4 
+Database Security: Authentication, Authorization and access control, DAC, MAC and RBACmodels, Intrusion detection,  SQL injection. 
+Advanced topics: Object oriented and object relational databases, Logical databases,Web databases, Distributed databases, Data warehousing and data mining. 
+Course Outcomes: 
+CO1 To introduce the concept of Data Abstraction & Data Independence. 
+CO2 To describe the factors various Data base Models. 
+CO3 To apply the concept of Relational query Languages. 
+CO4 To impart knowledge of Query Processing optimization with the help of Algorithms. 
+CO5 To know about the storage strategies including Hashing. 
+CO6 To instruct about the Transaction Processing. 
+CO7 To explain the mechanism of Database Security & Authentication. 
+CO8 Gained knowledge about Object oriented and object relational databases
+Mapping of Paper No. PCC-CSE-201 
+Course 
+Outcomes
+PO1
+PO2
+PO3
+PO4
+PO5
+PO6
+PO7
+PO8
+PO9
+PO10
+PO11
+PSO1
+PSO2
+PSO3
+PSO4
+CO1 
+S 
+M 
+S 
+S 
+S 
+S 
+S 
+S 
+S
+ M 
+S 
+S 
+S 
+S 
+S
+CO2 
+S 
+S 
+S 
+S 
+S 
+M 
+S 
+S 
+S 
+S 
+S 
+S 
+S 
+S 
+M
+CO3 
+M 
+S 
+S 
+S 
+M 
+S 
+S 
+S 
+S 
+S 
+S 
+S 
+S 
+S 
+S
+CO4 
+S 
+S 
+S 
+S 
+M 
+S 
+S 
+S 
+S 
+S 
+S 
+S 
+S 
+S 
+S
+CO5 
+S 
+S 
+S 
+S 
+S 
+M 
+S 
+S 
+M 
+S 
+S 
+S 
+S 
+S 
+S
+CO6 
+S 
+S 
+S 
+S 
+S 
+M 
+S 
+S 
+S 
+S 
+S 
+S 
+S 
+S 
+M
+CO7 
+S 
+S 
+S 
+M 
+S 
+S 
+M 
+S 
+S 
+S 
+S 
+S 
+S 
+S 
+S
+CO8 
+S 
+S 
+S 
+M 
+S 
+S 
+M 
+S 
+S 
+S 
+S 
+S 
+S 
+S 
+S
+
+
+
+S=Strong M=Medium W=Weak 
+Suggested books: 
+1. “Database System Concepts”, 6th Edition by Abraham Silberschatz, Henry F. Korth, S.Sudarshan, McGraw-Hill. 2. Introduction to Database Management System, Satinder Bal Gupta, AdityaMittal, University Science Press, New  Delhi. 
+Suggested reference books 
+1. “Principles of Database and Knowledge – Base Systems”, Vol 1 by J. D. Ullman,Computer Science Press. 2. “Fundamentals of Database Systems”, 5th Edition by R. Elmasri and S. Navathe,Pearson Education 
+3. “Foundations of Databases”, Reprint by Serge Abiteboul, Richard Hull, Victor Vianu,Addison-Wesley

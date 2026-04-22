@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="shortcut icon" href="https://igu1.ucanapply.com/images/webicon.png" type="image/png">
+    <meta charset="UTF-8">
+    <title>NIRF Proforma - IGU Meerpur</title>
+    <link rel="stylesheet" type="text/css" href="./stylesheets/index.css">
+
+</head>
+
+<body>
+
+    <h1>National Institutional Ranking Framework (NIRF)</h1>
+    <!-- <h2>Indira Gandhi University, Meerpur-Rewari</h2> -->
+    <img src="https://himachal365.s3.ap-south-1.amazonaws.com/15290/63fc5d43aa629_Logo-2.png" class="img-fluid">
+    <h3>(To be filled by Office of R & S Branch - UTDs)</h3>
+
+    <hr>
+    <a href="./"><img id="back" src="./images/goBackArrow.png" type="png" alt="Go Back"></a>
+    <form action="./submit" method="POST">
+        <h2>
+            <%= locals.data.year %>
+        </h2>
+        <input type="text" name="year" value=<%=locals.data.year %> hidden>
+        <h3>
+            <%= locals.data.department %>
+        </h3>
+        <input type="text" name="department" value=<%=locals.data.department %> hidden>
+        <p class="note">
+        <h2><b> <u>1. Student Strength</u></b></h2><br>
+        Total Actual Student strength (Program(s)offered by IGU Meerpur)<br>
+        <b>Important Notes</b><br>
+        <p style="border: 1px solid black; padding: 8px">
+            • Include all programs of all years in the academic year <%= locals.data.year %><br>
+            • Enter value(s) in all field(s):If not applicable enter zero[0]<br></p>
+        • Note: Students counted under socially challenged shall not be counted in economically backward and vice<br>
+        • Note: Students whose parental income is less than taxable slab be considered under economically backward.<br>
+        • Note: The students receiving full tuition fee reimburesement shall only be enetered, students receiving
+        partial tuition fee reimbursements and scholarships shall not be entered.<br>
+        • Note: sum of students receiving full tuition fee reimburesement from the state & central Government
+        Institution Fund, Privtae bodies and No. of students who are not receiving full tuition fee reimbursement should
+        b less than or equal to sum of Economically Backward and Socially challenged students.
+        </p>
+
+        <table>
+            <tr>
+                <th>(All program of all years)</th>
+                <th>No. of Males students </th>
+                <th>No. of Female students</th>
+                <th>Total students</th>
+                <th>Within State(including males & females)</th>
+                <th>Outside State(including males & females)</th>
+                <th>Outside Country(including males & females)</th>
+                <th>Economically Backward(including males & females)</th>
+                <th>Socially Challenged (SC/ST/OBC including males & females)</th>
+                <th>No. of students receiving full tuition fee reimbursement from the state and central government</th>
+                <th>No. of students receiving full tuition fee reimbursement from Institution funds</th>
+                <th>No. of students receiving full tuition fee reimbursement from privates bodies</th>
+                <th>No. of students who are not receiving full tuition fee reimburasement</th>
+            </tr>
+
+            <tr>
+                <td>UG (3 Years)</td>
+                <td><input name="UG3MS" type="number" value="0" ></td>
+                <td><input name="UG3FS" type="number" value="0"></td>
+                <td><input name="UG3TS" type="number" value="0"></td>
+                <td><input name="UG3WS" type="number" value="0"></td>
+                <td><input name="UG3OS" type="number" value="0"></td>
+                <td><input name="UG3OC" type="number" value="0"></td>
+                <td><input name="UG3EB" type="number" value="0"></td>
+                <td><input name="UG3_sociallychallenged" type="number" value="0"></td>
+                <td><input name="UG3_scholarship_government" type="number" value="0"></td>
+                <td><input name="UG3_scolarship_institution" type="number" value="0"></td>
+                <td><input name="UG3_scholarship_private" type="number" value="0"></td>
+                <td><input name="UG3_noscholarship" type="number" value="0"></td>
+            </tr>
+
+            <tr>
+                <td>UG (4 Years)</td>
+                <td><input name="UG4MS" type="number" value="0"></td>
+                <td><input name="UG4FS" type="number" value="0"></td>
+                <td><input name="UG4TS" type="number" value="0"></td>
+                <td><input name="UG4WS" type="number" value="0"></td>
+                <td><input name="UG4OS" type="number" value="0"></td>
+                <td><input name="UG4OC" type="number" value="0"></td>
+                <td><input name="UG4EB" type="number" value="0"></td>
+                <td><input name="UG4_sociallychallenged" type="number" value="0"></td>
+                <td><input name="UG4_scholarship_government" type="number" value="0"></td>
+                <td><input name="UG4_scolarship_institution" type="number" value="0"></td>
+                <td><input name="UG4_scholarship_private" type="number" value="0"></td>
+                <td><input name="UG4_noscholarship" type="number" value="0"></td>
+            </tr>
+
+            <tr>
+                <td>PG (2 Years)</td>
+                <td><input name="PG2MS" type="number" value="0"></td>
+                <td><input name="PG2FS" type="number" value="0"></td>
+                <td><input name="PG2TS" type="number" value="0"></td>
+                <td><input name="PG2WS" type="number" value="0"></td>
+                <td><input name="PG2OS" type="number" value="0"></td>
+                <td><input name="PG2OC" type="number" value="0"></td>
+                <td><input name="PG2EB" type="number" value="0"></td>
+                <td><input name="PG2_sociallychallenged" type="number" value="0"></td>
+                <td><input name="PG2_scholarship_government" type="number" value="0"></td>
+                <td><input name="PG2_scolarship_institution" type="number" value="0"></td>
+                <td><input name="PG2_scholarship_private" type="number" value="0"></td>
+                <td><input name="PG2_noscholarship" type="number" value="0"></td>
+            </tr>
+
+            <tr>
+                <td>PG (3 Years)</td>
+                <td><input name="PG3MS" type="number" value="0"></td>
+                <td><input name="PG3FS" type="number" value="0"></td>
+                <td><input name="PG3TS" type="number" value="0"></td>
+                <td><input name="PG3WS" type="number" value="0"></td>
+                <td><input name="PG3OS" type="number" value="0"></td>
+                <td><input name="PG3OC" type="number" value="0"></td>
+                <td><input name="PG3EB" type="number" value="0"></td>
+                <td><input name="PG3_sociallychallenged" type="number" value="0"></td>
+                <td><input name="PG3_scholarship_government" type="number" value="0"></td>
+                <td><input name="PG3_scolarship_institution" type="number" value="0"></td>
+                <td><input name="PG3_scholarship_private" type="number" value="0"></td>
+                <td><input name="PG3_noscholarship" type="number" value="0"></td>
+            </tr>
+
+            <tr>
+                <td>PG-Integrated (5 Years)</td>
+                <td><input name="PG_integrated_MS" type="number" value="0"></td>
+                <td><input name="PG_integrated_FS" type="number" value="0"></td>
+                <td><input name="PG_integrated_TS" type="number" value="0"></td>
+                <td><input name="PG_integrated_WS" type="number" value="0"></td>
+                <td><input name="PG_integrated_OS" type="number" value="0"></td>
+                <td><input name="PG_integrated_OC" type="number" value="0"></td>
+                <td><input name="PG_integrated_EB" type="number" value="0"></td>
+                <td><input name="PG_integrated_sociallychallenged" type="number" value="0"></td>
+                <td><input name="PG_integrated_scholarship_government" type="number" value="0"></td>
+                <td><input name="PG_integrated_scolarship_institution" type="number" value="0"></td>
+                <td><input name="PG_integrated_scholarship_private" type="number" value="0"></td>
+                <td><input name="PG_integrated_noscholarship" type="number" value="0"></td>
+            </tr>
+
+            <tr>
+                <td>Any Other</td>
+                <td><input name="AOMS" type="number" value="0"></td>
+                <td><input name="AOFS" type="number" value="0"></td>
+                <td><input name="AOTS" type="number" value="0"></td>
+                <td><input name="AOWS" type="number" value="0"></td>
+                <td><input name="AOOS" type="number" value="0"></td>
+                <td><input name="AOOC" type="number" value="0"></td>
+                <td><input name="AOEB" type="number" value="0"></td>
+                <td><input name="AO_sociallychallenged" type="number" value="0"></td>
+                <td><input name="AO_scholarship_government" type="number" value="0"></td>
+                <td><input name="AO_scolarship_institution" type="number" value="0"></td>
+                <td><input name="AO_scholarship_private" type="number" value="0"></td>
+                <td><input name="AO_noscholarship" type="number" value="0"></td>
+            </tr>
+        </table>
+
+        <hr>
+
+        <h2><U>Placement & Higher Studies</U></h2>
+        <b>Important Notes</b><br>
+        <p style="border: 1px solid black; padding: 8px">
+            • Enter value(s)in all the fields(s):If not applicable enter zero[0]
+        <h3><u>UG (3 Years)</u></h3>
+        <table>
+            <tr>
+                <th>Academic Year</th>
+                <th>NO. of first year students admitted in the year against sancioned intake</th>
+                <th>students admitted againts supernumerary seats</th>
+                <th>No. of students admitted through Lateral entry</th>
+                <th>No. of students selected for higher studies</th>
+            </tr>
+            <tr>
+                <td>
+                    <%= locals.createYear(currentYear-2)%>
+                </td>
+                <td><input name="UG3_24_25_firstYears_sanctionedIntake" type="number" value="0"></td>
+                <td><input name="UG3_24_25_supernumerarySeats" type="number" value="0"></td>
+                <td><input name="UG3_24_25_lateralEntry" type="number" value="0"></td>
+                <td><input name="UG3_24_25_selected_for_higherStudies" type="number" value="0"></td>
+            </tr>
+            <tr>
+                <td>
+                    <%= locals.createYear(currentYear-1)%>
+                </td>
+                <td><input name="UG3_25_26_firstYears_sanctionedIntake" type="number" value="0"></td>
+                <td><input name="UG3_25_26_supernumerarySeats" type="number" value="0"></td>
+                <td><input name="UG3_25_26_lateralEntry" type="number" value="0"></td>
+                <td><input name="UG3_25_26_selected_for_higherStudies" type="number" value="0"></td>
+            </tr>
+            <tr>
+                <td>
+                    <%= locals.createYear(currentYear)%>
+                </td>
+                <td><input name="UG3_26_27_firstYears_sanctionedIntake" type="number" value="0"></td>
+                <td><input name="UG3_26_27_supernumerarySeats" type="number" value="0"></td>
+                <td><input name="UG3_26_27_lateralEntry" type="number" value="0"></td>
+                <td><input name="UG3_26_27_selected_for_higherStudies" type="number" value="0"></td>
+            </tr>
+        </table>
+
+        <h3><u>UG [4 Years program(s)]</u></h3>
+        <table>
+            <tr>
+                <th>Academic Year</th>
+                <th>NO. of first year students admitted in the year against sancioned intake</th>
+                <th>students admitted againts supernumerary seats</th>
+                <th>No. of students admitted through Lateral entry</th>
+                <th>No. of students selected for higher studies</th>
+
+            </tr>
+            <tr>
+                <td>
+                    <%= locals.createYear(currentYear-2)%>
+                </td>
+                <td><input name="UG4_24_25_firstYears_sanctionedIntake" type="number" value="0"></td>
+                <td><input name="UG4_24_25_supernumerarySeats" type="number" value="0"></td>
+                <td><input name="UG4_24_25_lateralEntry" type="number" value="0"></td>
+                <td><input name="UG4_24_25_selected_for_higherStudies" type="number" value="0"></td>
+            </tr>
+            <tr>
+                <td>
+                    <%= locals.createYear(currentYear-1)%>
+                </td>
+                <td><input name="UG4_25_26_firstYears_sanctionedIntake" type="number" value="0"></td>
+                <td><input name="UG4_25_26_supernumerarySeats" type="number" value="0"></td>
+                <td><input name="UG4_25_26_lateralEntry" type="number" value="0"></td>
+                <td><input name="UG4_25_26_selected_for_higherStudies" type="number" value="0"></td>
+            </tr>
+            <tr>
+                <td>
+                    <%= locals.createYear(currentYear)%>
+                </td>
+                <td><input name="UG4_26_27_firstYears_sanctionedIntake" type="number" value="0"></td>
+                <td><input name="UG4_26_27_supernumerarySeats" type="number" value="0"></td>
+                <td><input name="UG4_26_27_lateralEntry" type="number" value="0"></td>
+                <td><input name="UG4_26_27_selected_for_higherStudies" type="number" value="0"></td>
+            </tr>
+        </table>
+
+        <h3><u>PG (2 Years)</u></h3>
+        <table>
+            <tr>
+                <th>Academic Year</th>
+                <th>First Year Admitted</th>
+                <th>Supernumerary Seats</th>
+                <th>Higher Studies</th>
+            </tr>
+            <tr>
+                <td>
+                    <%= locals.createYear(currentYear-1)%>
+                </td>
+                <td><input name="PG2_25_26_firstYear" type="number" value="0"></td>
+                <td><input name="PG2_25_26_supernumerarySeats" type="number" value="0"></td>
+                <td><input name="PG2_25_26_higherStudies" type="number" value="0"></td>
+            </tr>
+            <tr>
+                <td>
+                    <%= locals.createYear(currentYear)%>
+                </td>
+                <td><input name="PG2_26_27_firstYear" type="number" value="0"></td>
+                <td><input name="PG2_26_27_supernumerarySeats" type="number" value="0"></td>
+                <td><input name="PG2_26_27_higherStudies" type="number" value="0"></td>
+            </tr>
+        </table>
+
+        <h3><u>PG (3 Years)</u></h3>
+        <table>
+            <tr>
+                <th>Academic Year</th>
+                <th>First Year Admitted</th>
+                <th>Supernumerary Seats</th>
+                <th>Lateral Entry</th>
+                <th>Higher Studies</th>
+            </tr>
+            <tr>
+                <td>
+                    <%= locals.createYear(currentYear-2)%>
+                </td>
+                <td><input name="PG3_22_23_firstYear" type="number" value="0"></td>
+                <td><input name="PG3_22_23_supernumerarySeats" type="number" value="0"></td>
+                <td><input name="PG3_22_23_lateralEntry" type="number" value="0"></td>
+                <td><input name="PG3_22_23_higherStudies" type="number" value="0"></td>
+            </tr>
+            <tr>
+                <td>
+                    <%= locals.createYear(currentYear-1)%>
+                </td>
+                <td><input name="PG3_23_24_firstYear" type="number" value="0"></td>
+                <td><input name="PG3_23_24_supernumerarySeats" type="number" value="0"></td>
+                <td><input name="PG3_23_24_lateralEntry" type="number" value="0"></td>
+                <td><input name="PG3_23_24_higherStudies" type="number" value="0"></td>
+            </tr>
+            <tr>
+                <td>
+                    <%= locals.createYear(currentYear)%>
+                </td>
+                <td><input name="PG3_24_25_firstYear" type="number" value="0"></td>
+                <td><input name="PG3_24_25_supernumerarySeats" type="number" value="0"></td>
+                <td><input name="PG3_24_25_lateralEntry" type="number" value="0"></td>
+                <td><input name="PG3_24_25_higherStudies" type="number" value="0"></td>
+            </tr>
+        </table>
+
+        <h3>PG-Integrated (5 Years)</h3>
+        <table>
+            <tr>
+                <th>Academic Year</th>
+                <th>First Year Admitted</th>
+                <th>Supernumerary Seats</th>
+                <th>Higher Studies</th>
+            </tr>
+            <tr>
+                <td>
+                    <%= locals.createYear(currentYear-1)%>
+                </td>
+                <td><input name="PG5_25_26_firstYear" type="number" value="0"></td>
+                <td><input name="PG5_25_26_supernumerarySeats" type="number" value="0"></td>
+                <td><input name="PG5_25_26_higherStudies" type="number" value="0"></td>
+            </tr>
+            <tr>
+                <td>
+                    <%= locals.createYear(currentYear)%>
+                </td>
+                <td><input name="PG5_26_27_firstYear" type="number" value="0"></td>
+                <td><input name="PG5_26_27_supernumerarySeats" type="number" value="0"></td>
+                <td><input name="PG5_26_27_higherStudies" type="number" value="0"></td>
+            </tr>
+        </table>
+
+        <hr>
+
+        <h2>Ph.D. Students Details</h2>
+
+        <table>
+            <tr>
+                <th>Total Students</th>
+                <th>Full Time</th>
+                <th>Part Time</th>
+            </tr>
+            <tr>
+                <td><input name="PHD_totalStudents" type="number" value="0"></td>
+                <td><input name="PHD_fullTime" type="number" value="0"></td>
+                <td><input name="PHD_partTime" type="number" value="0"></td>
+            </tr>
+        </table>
+
+        <br>
+        </p>
+        <center>
+            <button type="submit">submit</button>
+        </center>
+    </form>
+    <center>
+        <button onclick="window.print()">Print</button>
+    </center>
+
+</body>
+
+</html>
