@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="shortcut icon" href="https://igu1.ucanapply.com/images/webicon.png" type="image/png">
+    <meta charset="UTF-8">
+    <title>Saved Courses List</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background-color: #f4f7f6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f8f9fa;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            font-size: 14px;
+            margin-right: 5px;
+        }
+
+        .view-btn {
+            background-color: #17a2b8;
+        }
+
+        .edit-btn {
+            background-color: #ffc107;
+            color: black;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 15px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="/syllabus" class="back-btn">← Go Back</a>
+        <h1>Saved Courses</h1>
+        <% if (courses.length===0) { %>
+            <p style="text-align: center; margin-top: 20px;">No courses have been saved yet.</p>
+            <% } else { %>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Course Code</th>
+                            <th>Course Title</th>
+                            <th>Category</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% courses.forEach(course=> { %>
+                            <tr>
+                                <td><strong>
+                                        <%= course.course_code %>
+                                    </strong></td>
+                                <td>
+                                    <%= course.course_title %>
+                                </td>
+                                <td>
+                                    <%= course.category %>
+                                </td>
+                                <td><a href="/view-course/<%= course.course_code %>"
+                                        class="action-btn view-btn">View</a><a
+                                        href="/edit-course/<%= course.course_code %>"
+                                        class="action-btn edit-btn">Edit</a></td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+                <% } %>
+    </div>
+</body>
+
+</html>

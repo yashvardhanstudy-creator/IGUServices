@@ -153,7 +153,11 @@
             modules: {
                 toolbar: [
                     ['bold', 'italic', 'underline'],
-                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    [{
+                        'list': 'ordered'
+                    }, {
+                        'list': 'bullet'
+                    }],
                     ['clean']
                 ]
             }
@@ -166,13 +170,24 @@
                 tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
                 tx[i].addEventListener("input", OnInput, false);
             }
-            addMappingRow(); // Add first mapping row by default
 
-            // Initialize static Quill Editors
-            new Quill('#editor_objectives', quillOptions);
+      <% if (!course || !course.co_po_mapping || course.co_po_mapping.length === 0) { %>
+                addMappingRow(); // Add first mapping row by default
+      <% } %>
+
+                // Initialize static Quill Editors
+                new Quill('#editor_objectives', quillOptions);
             new Quill('#editor_importantNote', quillOptions);
-            new Quill('#editor_unit_1', quillOptions);
-        }
+
+      <% if (course && course.syllabus_units && course.syllabus_units.length > 0) { %>
+      <% course.syllabus_units.forEach((unit, index) => { %>
+                new Quill('#editor_unit_<%= index + 1 %>', quillOptions);
+      <% }) %>
+      <% } else { %>
+                new Quill('#editor_unit_1', quillOptions);
+      <% } %>
+    }
+
         function OnInput() {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
@@ -259,14 +274,11 @@
 </head>
 
 <body>
-
-
-
-
     <hr>
-    <a href="./"><img id="back" src="./images/goBackArrow.png" type="png" alt="Go Back" style="width: 30px;"></a>
+    <a href="/courses-list"><img id="back" src="/images/goBackArrow.png" type="png" alt="Go Back"
+            style="width: 30px;"></a>
 
-    <form action="/submit-course" method="POST" onsubmit="return syncQuill()">
+    <form action="/courses" method="POST" onsubmit="return syncQuill()">
 
         <h2><b><u>
                     <%="General Information"%>
@@ -274,15 +286,18 @@
         <table>
             <tr>
                 <td style="width: 25%; font-weight: bold;">Course Code</td>
-                <td><input type="text" name="courseCode" value="PCC-CSE-201"></td>
+                <td><input type="text" name="courseCode" value="<%= course ? course.course_code : 'PCC-CSE-201' %>"
+                        <%=course ? 'readonly style="background-color: #e9ecef;"' : '' %>></td>
             </tr>
             <tr>
                 <td style="font-weight: bold;">Category</td>
-                <td><input type="text" name="category" value="Professional Core Course"></td>
+                <td><input type="text" name="category"
+                        value="<%= course ? course.category : 'Professional Core Course' %>"></td>
             </tr>
             <tr>
                 <td style="font-weight: bold;">Course Title</td>
-                <td><input type="text" name="courseTitle" value="Database Management System"></td>
+                <td><input type="text" name="courseTitle"
+                        value="<%= course ? course.course_title : 'Database Management System' %>"></td>
             </tr>
             <tr>
                 <td style="font-weight: bold;">Credits</td>
@@ -298,13 +313,14 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td><input type="number" id="creditL" name="creditL" value="3"
-                                        oninput="calculateCredits()"></td>
-                                <td><input type="number" id="creditT" name="creditT" value="0"
-                                        oninput="calculateCredits()"></td>
-                                <td><input type="number" id="creditP" name="creditP" value="0"
-                                        oninput="calculateCredits()"></td>
-                                <td><input type="number" id="totalCredits" name="totalCredits" value="3" readonly
+                                <td><input type="number" id="creditL" name="creditL"
+                                        value="<%= course ? course.credits_l : 3 %>" oninput="calculateCredits()"></td>
+                                <td><input type="number" id="creditT" name="creditT"
+                                        value="<%= course ? course.credits_t : 0 %>" oninput="calculateCredits()"></td>
+                                <td><input type="number" id="creditP" name="creditP"
+                                        value="<%= course ? course.credits_p : 0 %>" oninput="calculateCredits()"></td>
+                                <td><input type="number" id="totalCredits" name="totalCredits"
+                                        value="<%= course ? course.total_credits : 3 %>" readonly
                                         style="background-color: #e9ecef;"></td>
                             </tr>
                         </tbody>
@@ -313,58 +329,89 @@
             </tr>
             <tr>
                 <td style="font-weight: bold;">Class Work</td>
-                <td><input type="number" id="classMarks" name="classMarks" value="25" oninput="calculateMarks()"></td>
+                <td><input type="number" id="classMarks" name="classMarks"
+                        value="<%= course ? course.class_marks : 25 %>" oninput="calculateMarks()"></td>
             </tr>
             <tr>
                 <td style="font-weight: bold;">Exam</td>
-                <td><input type="number" id="examMarks" name="examMarks" value="75" oninput="calculateMarks()"></td>
+                <td><input type="number" id="examMarks" name="examMarks" value="<%= course ? course.exam_marks : 75 %>"
+                        oninput="calculateMarks()"></td>
             </tr>
             <tr>
                 <td style="font-weight: bold;">Total Marks</td>
-                <td><input type="number" id="totalMarks" name="totalMarks" value="100" readonly
-                        style="background-color: #e9ecef;"></td>
+                <td><input type="number" id="totalMarks" name="totalMarks"
+                        value="<%= course ? course.total_marks : 100 %>" readonly style="background-color: #e9ecef;">
+                </td>
             </tr>
             <tr>
                 <td style="font-weight: bold;">Duration of Exam</td>
-                <td><input type="text" name="examDuration" value="03 Hours"></td>
+                <td><input type="text" name="examDuration" value="<%= course ? course.exam_duration : '03 Hours' %>">
+                </td>
             </tr>
         </table>
 
         <h2><b><u>Objectives of the course</u></b></h2>
         <input type="hidden" name="objectives" id="hidden_objectives">
-        <div id="editor_objectives" style="height: 100px; font-family: serif; font-size: 14px;">a. To understand the
-            different issues involved in the design and implementation of a database system.<br>b. To study the physical
-            and logical database designs, database modeling, relational, hierarchical, and network models.<br>c. To
-            understand and use data manipulation language to query, update, and manage a database.</div>
+        <div id="editor_objectives" style="height: 100px; font-family: serif; font-size: 14px;"><%- course ?
+                course.objectives
+                : 'a. To understand the different issues involved in the design and implementation of a database system.<br>b. To study the physical and logical database designs, database modeling, relational, hierarchical, and network models.<br>c. To understand and use data manipulation language to query, update, and manage a database.'
+                %></div>
 
         <h2><b><u>Important Note</u></b></h2>
         <div style="border: 1px solid black; padding: 8px; margin-bottom: 15px;">
             <input type="hidden" name="importantNote" id="hidden_importantNote">
-            <div id="editor_importantNote" style="height: 100px; font-family: serif; font-size: 14px;"></div>
+            <div id="editor_importantNote" style="height: 100px; font-family: serif; font-size: 14px;"><%- course ?
+                    course.important_note : '' %></div>
         </div>
 
         <h2><b><u>Syllabus Units</u></b></h2>
         <div id="unitsContainer">
-            <div class="dynamic-item" style="flex-direction: column;">
-                <input type="text" name="unitTitles[]" placeholder="Unit: 1" required
-                    style="font-weight: bold; font-size: 1.1em;">
-                <input type="hidden" name="unitContents[]" class="hidden-unit-content">
-                <div id="editor_unit_1" class="quill-unit-editor"
-                    style="min-height: 60px; width: 100%; font-family: serif; font-size: 14px;"></div>
-                <button type="button" class="action-btn remove-btn" onclick="this.parentElement.remove()">Remove
-                    Unit</button>
-            </div>
+            <% if (course && course.syllabus_units && course.syllabus_units.length> 0) { %>
+                <% course.syllabus_units.forEach((unit, index)=> { %>
+                    <div class="dynamic-item" style="flex-direction: column;">
+                        <input type="text" name="unitTitles[]" value="<%= unit.title %>" required
+                            style="font-weight: bold; font-size: 1.1em;">
+                        <input type="hidden" name="unitContents[]" class="hidden-unit-content">
+                        <div id="editor_unit_<%= index + 1 %>" class="quill-unit-editor"
+                            style="min-height: 60px; width: 100%; font-family: serif; font-size: 14px;"><%- unit.content
+                                %></div>
+                        <button type="button" class="action-btn remove-btn" onclick="this.parentElement.remove()">Remove
+                            Unit</button>
+                    </div>
+                    <% }) %>
+                        <% } else { %>
+                            <div class="dynamic-item" style="flex-direction: column;">
+                                <input type="text" name="unitTitles[]" placeholder="Unit: 1" required
+                                    style="font-weight: bold; font-size: 1.1em;">
+                                <input type="hidden" name="unitContents[]" class="hidden-unit-content">
+                                <div id="editor_unit_1" class="quill-unit-editor"
+                                    style="min-height: 60px; width: 100%; font-family: serif; font-size: 14px;"></div>
+                                <button type="button" class="action-btn remove-btn"
+                                    onclick="this.parentElement.remove()">Remove
+                                    Unit</button>
+                            </div>
+                            <% } %>
         </div>
         <button type="button" class="action-btn add-btn" onclick="addUnit()">Add Unit</button>
 
         <h2><b><u>Course Outcomes</u></b></h2>
         <div id="outcomesContainer" class="dynamic-list">
-            <div class="dynamic-item">
-                <input type="text" name="courseOutcomes[]"
-                    placeholder="Enter Course Outcome (e.g., CO1 To introduce...)" required>
-                <button type="button" class="action-btn remove-btn"
-                    onclick="this.parentElement.remove()">Remove</button>
-            </div>
+            <% if (course && course.course_outcomes && course.course_outcomes.length> 0) { %>
+                <% course.course_outcomes.forEach(outcome=> { %>
+                    <div class="dynamic-item">
+                        <input type="text" name="courseOutcomes[]" value="<%= outcome %>" required>
+                        <button type="button" class="action-btn remove-btn"
+                            onclick="this.parentElement.remove()">Remove</button>
+                    </div>
+                    <% }) %>
+                        <% } else { %>
+                            <div class="dynamic-item">
+                                <input type="text" name="courseOutcomes[]"
+                                    placeholder="Enter Course Outcome (e.g., CO1 To introduce...)" required>
+                                <button type="button" class="action-btn remove-btn"
+                                    onclick="this.parentElement.remove()">Remove</button>
+                            </div>
+                            <% } %>
         </div>
         <button type="button" class="action-btn add-btn"
             onclick="addDynamicField('outcomesContainer', 'courseOutcomes', 'Enter Course Outcome')">Add
@@ -372,22 +419,43 @@
 
         <h2><b><u>Suggested Books</u></b></h2>
         <div id="booksContainer" class="dynamic-list">
-            <div class="dynamic-item">
-                <input type="text" name="suggestedBooks[]" placeholder="Enter Book Details" required>
-                <button type="button" class="action-btn remove-btn"
-                    onclick="this.parentElement.remove()">Remove</button>
-            </div>
+            <% if (course && course.suggested_books && course.suggested_books.length> 0) { %>
+                <% course.suggested_books.forEach(book=> { %>
+                    <div class="dynamic-item">
+                        <input type="text" name="suggestedBooks[]" value="<%= book %>" required>
+                        <button type="button" class="action-btn remove-btn"
+                            onclick="this.parentElement.remove()">Remove</button>
+                    </div>
+                    <% }) %>
+                        <% } else { %>
+                            <div class="dynamic-item">
+                                <input type="text" name="suggestedBooks[]" placeholder="Enter Book Details" required>
+                                <button type="button" class="action-btn remove-btn"
+                                    onclick="this.parentElement.remove()">Remove</button>
+                            </div>
+                            <% } %>
         </div>
         <button type="button" class="action-btn add-btn"
             onclick="addDynamicField('booksContainer', 'suggestedBooks', 'Enter Book Details')">Add Book</button>
 
         <h2><b><u>Suggested Reference Books</u></b></h2>
         <div id="referenceBooksContainer" class="dynamic-list">
-            <div class="dynamic-item">
-                <input type="text" name="referenceBooks[]" placeholder="Enter Reference Book Details" required>
-                <button type="button" class="action-btn remove-btn"
-                    onclick="this.parentElement.remove()">Remove</button>
-            </div>
+            <% if (course && course.reference_books && course.reference_books.length> 0) { %>
+                <% course.reference_books.forEach(book=> { %>
+                    <div class="dynamic-item">
+                        <input type="text" name="referenceBooks[]" value="<%= book %>" required>
+                        <button type="button" class="action-btn remove-btn"
+                            onclick="this.parentElement.remove()">Remove</button>
+                    </div>
+                    <% }) %>
+                        <% } else { %>
+                            <div class="dynamic-item">
+                                <input type="text" name="referenceBooks[]" placeholder="Enter Reference Book Details"
+                                    required>
+                                <button type="button" class="action-btn remove-btn"
+                                    onclick="this.parentElement.remove()">Remove</button>
+                            </div>
+                            <% } %>
         </div>
         <button type="button" class="action-btn add-btn"
             onclick="addDynamicField('referenceBooksContainer', 'referenceBooks', 'Enter Reference Book Details')">Add
@@ -418,7 +486,29 @@
                     </tr>
                 </thead>
                 <tbody id="mappingBody">
-                    <!-- Rows will be added dynamically -->
+                    <% if (course && course.co_po_mapping && course.co_po_mapping.length> 0) { %>
+                        <% course.co_po_mapping.forEach((map, idx)=> { %>
+                            <tr>
+                                <td><input type="text" name="mapCO[]" value="<%= map.co %>"
+                                        style="width: 60px; text-align: center; font-weight: bold;" required></td>
+                                <% for(let i=1; i<=11; i++) { %>
+                                    <td><input type="text" name="mapPO<%= i %>[]" value="<%= map['po'+i] %>"
+                                            maxlength="1"
+                                            style="width: 30px; text-align: center; text-transform: uppercase;"></td>
+                                    <% } %>
+                                        <% for(let i=1; i<=4; i++) { %>
+                                            <td><input type="text" name="mapPSO<%= i %>[]" value="<%= map['pso'+i] %>"
+                                                    maxlength="1"
+                                                    style="width: 30px; text-align: center; text-transform: uppercase;">
+                                            </td>
+                                            <% } %>
+                                                <td class="action-btn-col"><button type="button"
+                                                        class="action-btn remove-btn"
+                                                        onclick="this.parentElement.parentElement.remove()">X</button>
+                                                </td>
+                            </tr>
+                            <% }) %>
+                                <% } %>
                 </tbody>
             </table>
         </div>
@@ -432,12 +522,7 @@
         </center>
     </form>
 
-    <center>
-        <button onclick="window.print()"
-            style="padding: 10px 20px; font-size: 16px; margin-top: 10px; background-color: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">Print
-            Document</button>
-    </center>
-
+  
 </body>
 
 </html>

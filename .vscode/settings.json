@@ -24,5 +24,8 @@
       "username": "postgres",
       "password": "123456789"
     }
-  ]
+  ],
+  "emmet.includeLanguages": {
+    "ejs": "html"
+  }
 }

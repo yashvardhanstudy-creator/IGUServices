@@ -162,6 +162,64 @@ const createUserTable = `
 )
 `;
 
+const createCourseTableQuery = `
+  CREATE TABLE IF NOT EXISTS course_syllabus (
+      course_code TEXT PRIMARY KEY,
+      category TEXT,
+      course_title TEXT,
+      
+      credits_l INTEGER,
+      credits_t INTEGER,
+      credits_p INTEGER,
+      total_credits INTEGER,
+      class_marks INTEGER,
+      exam_marks INTEGER,
+      total_marks INTEGER,
+      exam_duration TEXT,
+      
+      objectives TEXT,
+      important_note TEXT,
+      
+      syllabus_units JSONB,
+      course_outcomes JSONB,
+      suggested_books JSONB,
+      reference_books JSONB,
+      co_po_mapping JSONB,
+      
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  );
+`;
+
+const insertCourseQuery = `
+  INSERT INTO course_syllabus (
+    course_code, category, course_title, 
+    credits_l, credits_t, credits_p, total_credits, 
+    class_marks, exam_marks, total_marks, exam_duration, 
+    objectives, important_note, 
+    syllabus_units, course_outcomes, suggested_books, reference_books, co_po_mapping
+  ) VALUES (
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18
+  )
+  ON CONFLICT (course_code) DO UPDATE SET
+    category = EXCLUDED.category,
+    course_title = EXCLUDED.course_title,
+    credits_l = EXCLUDED.credits_l,
+    credits_t = EXCLUDED.credits_t,
+    credits_p = EXCLUDED.credits_p,
+    total_credits = EXCLUDED.total_credits,
+    class_marks = EXCLUDED.class_marks,
+    exam_marks = EXCLUDED.exam_marks,
+    total_marks = EXCLUDED.total_marks,
+    exam_duration = EXCLUDED.exam_duration,
+    objectives = EXCLUDED.objectives,
+    important_note = EXCLUDED.important_note,
+    syllabus_units = EXCLUDED.syllabus_units,
+    course_outcomes = EXCLUDED.course_outcomes,
+    suggested_books = EXCLUDED.suggested_books,
+    reference_books = EXCLUDED.reference_books,
+    co_po_mapping = EXCLUDED.co_po_mapping;
+`;
+
 const dbConnectInfoDevLaptop = {
   user: "postgres",
   host: "localhost",
@@ -344,6 +402,8 @@ module.exports = {
   dbConnectInfoTest,
   dbConnectInfoDevLaptop,
   dbConnectInfoReal,
+  createCourseTableQuery,
+  insertCourseQuery,
   insertQuery,
   createUserTable,
   verifyPrivilageLogin,

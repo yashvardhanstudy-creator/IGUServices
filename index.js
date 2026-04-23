@@ -13,6 +13,8 @@ const {
   createYear,
   verifyLogin,
   verifyPrivilageLogin,
+  insertCourseQuery,
+  createCourseTableQuery,
   // dbConnectInfoReal,
 } = require("./constants");
 
@@ -72,6 +74,14 @@ pool.query(createUserTable, (err, res) => {
     console.error("Error creating user table:", err);
   } else {
     console.log("✅ Table 'auth' ensured to exist.");
+  }
+});
+
+pool.query(createCourseTableQuery, (err, res) => {
+  if (err) {
+    console.error("Error creating course table:", err);
+  } else {
+    console.log("✅ Table 'course_syllabus' ensured to exist.");
   }
 });
 
@@ -379,39 +389,144 @@ app.get("/download", async (req, res) => {
   }
 });
 
-app.get("/courses", (req, res) => {
-  res.render("courseForm.ejs");
+app.get("/courses", verifyLogin, async (req, res) => {
+  res.render("courseForm.ejs", { course: null });
 });
 
-app.get("/syllabus", (req, res) => {
+app.get("/edit-course/:courseCode", verifyLogin, async (req, res) => {
+  try {
+    const courseCode = req.params.courseCode;
+    const result = await pool.query(
+      "SELECT * FROM course_syllabus WHERE course_code = $1",
+      [courseCode],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).send("Course not found in the database.");
+    }
+
+    res.render("courseForm.ejs", { course: result.rows[0] });
+  } catch (error) {
+    console.error("❌ Error fetching course data for edit:", error);
+    res.status(500).send("Error fetching course data.");
+  }
+});
+
+app.get("/view-course/:courseCode", verifyLogin, async (req, res) => {
+  try {
+    const courseCode = req.params.courseCode;
+    const result = await pool.query(
+      "SELECT * FROM course_syllabus WHERE course_code = $1",
+      [courseCode],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).send("Course not found in the database.");
+    }
+
+    // PostgreSQL's node-pg driver automatically parses JSONB columns into JavaScript objects/arrays
+    res.render("courseView.ejs", { data: result.rows[0] });
+  } catch (error) {
+    console.error("❌ Error fetching course data:", error);
+    res.status(500).send("Error fetching course data.");
+  }
+});
+
+app.get("/syllabus", verifyLogin, async (req, res) => {
   res.render("syllabusIndex.ejs");
 });
 
-app.post("/submit-course", verifyLogin, async (req, res) => {
+app.get("/courses-list", verifyLogin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT course_code, course_title, category FROM course_syllabus ORDER BY created_at DESC",
+    );
+
+    res.render("coursesList.ejs", { courses: result.rows });
+  } catch (error) {
+    console.error("❌ Error fetching courses list:", error);
+    res.status(500).send("Error fetching courses list.");
+  }
+});
+
+app.post("/courses", verifyLogin, async (req, res) => {
   try {
     const courseData = req.body;
     console.log("📥 Received Raw Course Data:", courseData);
 
-    // 1. Sanitize string fields that might contain rich text
-    if (courseData.objectives) {
-      courseData.objectives = xss(courseData.objectives);
-    }
+    // Helper function to ensure we always have an array even if a single item is submitted
+    const normalizeArray = (val) => {
+      if (!val) return [];
+      if (Array.isArray(val)) return val;
+      return [val];
+    };
 
-    if (courseData.importantNote) {
-      courseData.importantNote = xss(courseData.importantNote);
-    }
+    // Process dynamic syllabus units
+    const unitTitles = normalizeArray(
+      courseData.unitTitles || courseData["unitTitles[]"],
+    );
+    const unitContents = normalizeArray(
+      courseData.unitContents || courseData["unitContents[]"],
+    );
+    const syllabusUnits = unitTitles.map((title, index) => ({
+      title: title,
+      content: xss(unitContents[index] || ""),
+    }));
 
-    // 2. Sanitize arrays containing dynamic rich text (like unit contents)
-    if (Array.isArray(courseData.unitContents)) {
-      courseData.unitContents = courseData.unitContents.map((content) =>
-        xss(content),
-      );
-    }
+    // Process dynamic CO-PO Mapping
+    const mapCO = normalizeArray(courseData.mapCO || courseData["mapCO[]"]);
+    const coPoMapping = mapCO.map((co, index) => {
+      const mapObj = { co: co };
+      for (let j = 1; j <= 11; j++) {
+        const poArr = normalizeArray(
+          courseData[`mapPO${j}`] || courseData[`mapPO${j}[]`],
+        );
+        mapObj[`po${j}`] = poArr[index] || "";
+      }
+      for (let j = 1; j <= 4; j++) {
+        const psoArr = normalizeArray(
+          courseData[`mapPSO${j}`] || courseData[`mapPSO${j}[]`],
+        );
+        mapObj[`pso${j}`] = psoArr[index] || "";
+      }
+      return mapObj;
+    });
 
-    console.log("🛡️ Sanitized Course Data Ready for DB:", courseData);
+    const values = [
+      courseData.courseCode,
+      courseData.category,
+      courseData.courseTitle,
+      parseInt(courseData.creditL) || 0,
+      parseInt(courseData.creditT) || 0,
+      parseInt(courseData.creditP) || 0,
+      parseInt(courseData.totalCredits) || 0,
+      parseInt(courseData.classMarks) || 0,
+      parseInt(courseData.examMarks) || 0,
+      parseInt(courseData.totalMarks) || 0,
+      courseData.examDuration,
+      xss(courseData.objectives || ""),
+      xss(courseData.importantNote || ""),
+      JSON.stringify(syllabusUnits),
+      JSON.stringify(
+        normalizeArray(
+          courseData.courseOutcomes || courseData["courseOutcomes[]"],
+        ),
+      ),
+      JSON.stringify(
+        normalizeArray(
+          courseData.suggestedBooks || courseData["suggestedBooks[]"],
+        ),
+      ),
+      JSON.stringify(
+        normalizeArray(
+          courseData.referenceBooks || courseData["referenceBooks[]"],
+        ),
+      ),
+      JSON.stringify(coPoMapping),
+    ];
 
-    // TODO: Build your PostgreSQL INSERT query here
-    // await pool.query('INSERT INTO courses ...', [...values]);
+    await pool.query(insertCourseQuery, values);
+    console.log("✅ Course Data successfully saved to DB.");
 
     res.redirect("/syllabus?message=Course data saved safely!");
   } catch (error) {
