@@ -193,13 +193,6 @@
             this.style.height = (this.scrollHeight) + 'px';
         }
 
-        function calculateCredits() {
-            const l = parseFloat(document.getElementById('creditL').value) || 0;
-            const t = parseFloat(document.getElementById('creditT').value) || 0;
-            const p = parseFloat(document.getElementById('creditP').value) || 0;
-            document.getElementById('totalCredits').value = l + t + p;
-        }
-
         function calculateMarks() {
             const cm = parseFloat(document.getElementById('classMarks').value) || 0;
             const em = parseFloat(document.getElementById('examMarks').value) || 0;
@@ -241,13 +234,28 @@
 
         // Sync Quill HTML content to hidden inputs right before form submission
         function syncQuill() {
-            document.getElementById('hidden_objectives').value = document.querySelector('#editor_objectives .ql-editor').innerHTML;
-            document.getElementById('hidden_importantNote').value = document.querySelector('#editor_importantNote .ql-editor').innerHTML;
+            // Helper function to safely parse and justify HTML blocks
+            function applyJustify(html) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                
+                // Apply text-align: justify to all paragraphs and list items, unless manually overridden
+                const blocks = tempDiv.querySelectorAll('p, li');
+                blocks.forEach(block => {
+                    if (!block.style.textAlign) {
+                        block.style.textAlign = 'justify';
+                    }
+                });
+                return tempDiv.innerHTML;
+            }
+
+            document.getElementById('hidden_objectives').value = applyJustify(document.querySelector('#editor_objectives .ql-editor').innerHTML);
+            document.getElementById('hidden_importantNote').value = applyJustify(document.querySelector('#editor_importantNote .ql-editor').innerHTML);
 
             const unitEditors = document.querySelectorAll('.quill-unit-editor');
             const hiddenUnits = document.querySelectorAll('.hidden-unit-content');
             unitEditors.forEach((editor, index) => {
-                hiddenUnits[index].value = editor.querySelector('.ql-editor').innerHTML;
+                hiddenUnits[index].value = applyJustify(editor.querySelector('.ql-editor').innerHTML);
             });
             return true;
         }
@@ -305,7 +313,7 @@
                         value="<%= course ? course.course_title : 'Database Management System' %>"></td>
             </tr>
             <tr>
-                <td style="font-weight: bold;">Credits</td>
+                <td style="font-weight: bold;">Hours & Credit</td>
                 <td style="padding: 0;">
                     <table style="width: 100%; margin-bottom: 0;">
                         <thead>
@@ -313,20 +321,33 @@
                                 <th style="text-align: center;">L</th>
                                 <th style="text-align: center;">T</th>
                                 <th style="text-align: center;">P</th>
-                                <th style="text-align: center;">Total</th>
+                                <th style="text-align: center;">Credit</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><input type="number" id="creditL" name="creditL"
-                                        value="<%= course ? course.credits_l : 3 %>" oninput="calculateCredits()" max="6"></td>
-                                <td><input type="number" id="creditT" name="creditT"
-                                        value="<%= course ? course.credits_t : 0 %>" oninput="calculateCredits()" max="6"></td>
-                                <td><input type="number" id="creditP" name="creditP"
-                                        value="<%= course ? course.credits_p : 0 %>" oninput="calculateCredits()" max="6"></td>
-                                <td><input type="number" id="totalCredits" name="totalCredits"
-                                        value="<%= course ? course.total_credits : 3 %>" readonly
-                                        style="background-color: #e9ecef;"></td>
+                                <td>
+                                    <select id="l" name="l" style="width: 100%; padding: 6px; text-align: center;">
+                                        <% for(let i=0; i<=4; i++) { %>
+                                            <option value="<%= i %>" <%= course && course.l == i ? 'selected' : (i==3 && !course ? 'selected' : '') %>><%= i %></option>
+                                        <% } %>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="t" name="t" style="width: 100%; padding: 6px; text-align: center;">
+                                        <% for(let i=0; i<=4; i++) { %>
+                                            <option value="<%= i %>" <%= course && course.t == i ? 'selected' : (i==0 && !course ? 'selected' : '') %>><%= i %></option>
+                                        <% } %>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="p" name="p" style="width: 100%; padding: 6px; text-align: center;">
+                                        <% for(let i=0; i<=4; i++) { %>
+                                            <option value="<%= i %>" <%= course && course.p == i ? 'selected' : (i==0 && !course ? 'selected' : '') %>><%= i %></option>
+                                        <% } %>
+                                    </select>
+                                </td>
+                                <td><input type="number" id="credit" name="credit" value="<%= course ? course.credit : 3 %>"></td>
                             </tr>
                         </tbody>
                     </table>

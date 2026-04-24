@@ -93,6 +93,26 @@ pool.query(createSemesterCoursesTableQuery, (err, res) => {
     console.error("Error creating semester_courses table:", err);
   } else {
     console.log("✅ Table 'semester_courses' ensured to exist.");
+    // Run migration to rename department, add academic_program, and update primary key
+    // pool.query(
+    //   `
+    //   DO $$
+    //   BEGIN
+    //     IF EXISTS(SELECT * FROM information_schema.columns WHERE table_name='semester_courses' AND column_name='department') THEN
+    //       ALTER TABLE semester_courses RENAME COLUMN department TO specialization;
+    //       ALTER TABLE semester_courses ADD COLUMN academic_program TEXT DEFAULT 'Bachelor of Technology';
+    //       ALTER TABLE semester_courses DROP CONSTRAINT semester_courses_pkey;
+    //       ALTER TABLE semester_courses ADD PRIMARY KEY (semester, academic_program, specialization, year_onward);
+    //     END IF;
+    //   END $$;
+    // `,
+    //   (err) => {
+    //     if (!err)
+    //       console.log(
+    //         "✅ semester_courses successfully migrated to include academic_program and specialization.",
+    //       );
+    //   },
+    // );
   }
 });
 
@@ -507,10 +527,10 @@ app.post("/courses", verifyLogin, async (req, res) => {
       courseData.courseCode,
       courseData.category,
       courseData.courseTitle,
-      parseInt(courseData.creditL) || 0,
-      parseInt(courseData.creditT) || 0,
-      parseInt(courseData.creditP) || 0,
-      parseInt(courseData.totalCredits) || 0,
+      parseInt(courseData.l) || 0,
+      parseInt(courseData.t) || 0,
+      parseInt(courseData.p) || 0,
+      parseInt(courseData.credit) || 0,
       parseInt(courseData.classMarks) || 0,
       parseInt(courseData.examMarks) || 0,
       parseInt(courseData.practicalMarks) || 0,
@@ -549,13 +569,14 @@ app.post("/courses", verifyLogin, async (req, res) => {
 
 app.get("/semester-courses-form", verifyLogin, async (req, res) => {
   try {
-    const { semester, department, year_onward } = req.query;
+    const { semester, academic_program, specialization, year_onward } =
+      req.query;
     let structure = null;
 
-    if (semester && department && year_onward) {
+    if (semester && academic_program && specialization && year_onward) {
       const result = await pool.query(
-        "SELECT * FROM semester_courses WHERE semester = $1 AND department = $2 AND year_onward = $3",
-        [semester, department, year_onward],
+        "SELECT * FROM semester_courses WHERE semester = $1 AND academic_program = $2 AND specialization = $3 AND year_onward = $4",
+        [semester, academic_program, specialization, year_onward],
       );
       if (result.rows.length > 0) {
         structure = result.rows[0];
@@ -570,8 +591,14 @@ app.get("/semester-courses-form", verifyLogin, async (req, res) => {
 
 app.post("/semester-courses", verifyLogin, async (req, res) => {
   try {
-    const { semester, department, year_onward, courses_code, important_note } =
-      req.body;
+    const {
+      semester,
+      academic_program,
+      specialization,
+      year_onward,
+      courses_code,
+      important_note,
+    } = req.body;
     console.log("📥 Received Semester Courses Data:", req.body);
 
     // Helper to ensure we store valid JSON strings for JSONB columns
@@ -592,7 +619,8 @@ app.post("/semester-courses", verifyLogin, async (req, res) => {
 
     await pool.query(insertSemesterCoursesQuery, [
       semester,
-      department,
+      academic_program,
+      specialization,
       year_onward,
       coursesCodeJson,
       importantNoteJson,
@@ -609,7 +637,7 @@ app.post("/semester-courses", verifyLogin, async (req, res) => {
 app.get("/semester-courses-list", verifyLogin, async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT semester, department, year_onward FROM semester_courses ORDER BY year_onward DESC, semester ASC",
+      "SELECT semester, academic_program, specialization, year_onward FROM semester_courses ORDER BY year_onward DESC, semester ASC",
     );
 
     res.render("semesterCoursesList.ejs", { structures: result.rows });
@@ -621,19 +649,20 @@ app.get("/semester-courses-list", verifyLogin, async (req, res) => {
 
 app.get("/view-semester-structure", verifyLogin, async (req, res) => {
   try {
-    const { semester, department, year_onward } = req.query;
+    const { semester, academic_program, specialization, year_onward } =
+      req.query;
 
-    if (!semester || !department || !year_onward) {
+    if (!semester || !academic_program || !specialization || !year_onward) {
       return res
         .status(400)
         .send(
-          "Missing required query parameters: semester, department, year_onward",
+          "Missing required query parameters: semester, academic_program, specialization, year_onward",
         );
     }
 
     const structureResult = await pool.query(
-      "SELECT * FROM semester_courses WHERE semester = $1 AND department = $2 AND year_onward = $3",
-      [semester, department, year_onward],
+      "SELECT * FROM semester_courses WHERE semester = $1 AND academic_program = $2 AND specialization = $3 AND year_onward = $4",
+      [semester, academic_program, specialization, year_onward],
     );
 
     if (structureResult.rows.length === 0) {
@@ -646,7 +675,7 @@ app.get("/view-semester-structure", verifyLogin, async (req, res) => {
     let orderedCourses = [];
     if (courseCodes.length > 0) {
       const coursesResult = await pool.query(
-        "SELECT course_code, course_title, credits_l, credits_t, credits_p, total_credits, class_marks, exam_marks, practical_marks, total_marks, exam_duration FROM course_syllabus WHERE course_code = ANY($1::text[])",
+        "SELECT course_code, course_title, l, t, p, credit, class_marks, exam_marks, practical_marks, total_marks, exam_duration FROM course_syllabus WHERE course_code = ANY($1::text[])",
         [courseCodes],
       );
       const coursesMap = new Map(
@@ -657,10 +686,10 @@ app.get("/view-semester-structure", verifyLogin, async (req, res) => {
           coursesMap.get(code) || {
             course_code: code,
             course_title: "⚠️ Syllabus Not Found",
-            credits_l: "-",
-            credits_t: "-",
-            credits_p: "-",
-            total_credits: "-",
+            l: "-",
+            t: "-",
+            p: "-",
+            credit: "-",
             class_marks: "-",
             exam_marks: "-",
             practical_marks: "-",
@@ -684,7 +713,7 @@ app.get("/view-semester-structure", verifyLogin, async (req, res) => {
 app.get("/generate-full-syllabus", verifyLogin, async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT DISTINCT department, year_onward FROM semester_courses ORDER BY department, year_onward DESC",
+      "SELECT DISTINCT academic_program, specialization, year_onward FROM semester_courses ORDER BY academic_program, specialization, year_onward DESC",
     );
     res.render("fullSyllabusForm.ejs", { options: result.rows });
   } catch (error) {
@@ -695,15 +724,17 @@ app.get("/generate-full-syllabus", verifyLogin, async (req, res) => {
 
 app.get("/view-full-syllabus", verifyLogin, async (req, res) => {
   try {
-    const { department, year_onward } = req.query;
-    if (!department || !year_onward) {
-      return res.status(400).send("Missing department or year_onward");
+    const { academic_program, specialization, year_onward } = req.query;
+    if (!academic_program || !specialization || !year_onward) {
+      return res
+        .status(400)
+        .send("Missing program, specialization, or year_onward");
     }
 
     // 1. Fetch all semester structures for this combo
     const semResult = await pool.query(
-      "SELECT * FROM semester_courses WHERE department = $1 AND year_onward = $2 ORDER BY semester ASC",
-      [department, year_onward],
+      "SELECT * FROM semester_courses WHERE academic_program = $1 AND specialization = $2 AND year_onward = $3 ORDER BY semester ASC",
+      [academic_program, specialization, year_onward],
     );
 
     if (semResult.rows.length === 0) {
@@ -740,10 +771,10 @@ app.get("/view-full-syllabus", verifyLogin, async (req, res) => {
       coursesMap.get(code) || {
         course_code: code,
         course_title: "⚠️ Syllabus Not Found",
-        credits_l: "-",
-        credits_t: "-",
-        credits_p: "-",
-        total_credits: "-",
+        l: "-",
+        t: "-",
+        p: "-",
+        credit: "-",
         class_marks: "-",
         exam_marks: "-",
         practical_marks: "-",
@@ -759,7 +790,8 @@ app.get("/view-full-syllabus", verifyLogin, async (req, res) => {
     }));
 
     res.render("fullSyllabusView.ejs", {
-      department,
+      academic_program,
+      specialization,
       year_onward,
       semesters: semestersWithCourses,
       allCourses: detailedCourses,
@@ -772,15 +804,17 @@ app.get("/view-full-syllabus", verifyLogin, async (req, res) => {
 
 app.get("/download-full-syllabus-pdf", verifyLogin, async (req, res) => {
   try {
-    const { department, year_onward } = req.query;
-    if (!department || !year_onward) {
-      return res.status(400).send("Missing department or year_onward");
+    const { academic_program, specialization, year_onward } = req.query;
+    if (!academic_program || !specialization || !year_onward) {
+      return res
+        .status(400)
+        .send("Missing program, specialization, or year_onward");
     }
 
     // 1. Fetch all semester structures for this combo
     const semResult = await pool.query(
-      "SELECT * FROM semester_courses WHERE department = $1 AND year_onward = $2 ORDER BY semester ASC",
-      [department, year_onward],
+      "SELECT * FROM semester_courses WHERE academic_program = $1 AND specialization = $2 AND year_onward = $3 ORDER BY semester ASC",
+      [academic_program, specialization, year_onward],
     );
 
     if (semResult.rows.length === 0) {
@@ -815,10 +849,10 @@ app.get("/download-full-syllabus-pdf", verifyLogin, async (req, res) => {
       coursesMap.get(code) || {
         course_code: code,
         course_title: "⚠️ Syllabus Not Found",
-        credits_l: "-",
-        credits_t: "-",
-        credits_p: "-",
-        total_credits: "-",
+        l: "-",
+        t: "-",
+        p: "-",
+        credit: "-",
         class_marks: "-",
         exam_marks: "-",
         practical_marks: "-",
@@ -836,7 +870,8 @@ app.get("/download-full-syllabus-pdf", verifyLogin, async (req, res) => {
     req.app.render(
       "fullSyllabusView.ejs",
       {
-        department,
+        academic_program,
+        specialization,
         year_onward,
         semesters: semestersWithCourses,
         allCourses: detailedCourses,
@@ -870,7 +905,7 @@ app.get("/download-full-syllabus-pdf", verifyLogin, async (req, res) => {
 
         res.set({
           "Content-Type": "application/pdf",
-          "Content-Disposition": `attachment; filename="Full-Syllabus-${department}-${year_onward}.pdf"`,
+          "Content-Disposition": `attachment; filename="Full-Syllabus-${specialization}-${year_onward}.pdf"`,
         });
         res.send(pdf);
       },

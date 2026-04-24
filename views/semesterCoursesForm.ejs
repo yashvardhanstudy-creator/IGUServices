@@ -97,8 +97,12 @@
                     <td><input type="text" name="semester" placeholder="e.g., 4" value="<%= locals.structure ? structure.semester : '' %>" <%= locals.structure ? 'readonly style="background-color: #e9ecef;"' : '' %> required></td>
                 </tr>
                 <tr>
-                    <td style="font-weight: bold;">Department</td>
-                    <td><input type="text" name="department" placeholder="e.g., Computer Science and Engineering" value="<%= locals.structure ? structure.department : '' %>" <%= locals.structure ? 'readonly style="background-color: #e9ecef;"' : '' %> required></td>
+                    <td style="font-weight: bold;">Academic Program</td>
+                    <td><input type="text" name="academic_program" placeholder="e.g., Bachelor of Technology" value="<%= locals.structure ? structure.academic_program : '' %>" <%= locals.structure ? 'readonly style="background-color: #e9ecef;"' : '' %> required></td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">Specialization</td>
+                    <td><input type="text" name="specialization" placeholder="e.g., Computer Science and Engineering" value="<%= locals.structure ? structure.specialization : '' %>" <%= locals.structure ? 'readonly style="background-color: #e9ecef;"' : '' %> required></td>
                 </tr>
                 <tr>
                     <td style="font-weight: bold;">Year Onward</td>

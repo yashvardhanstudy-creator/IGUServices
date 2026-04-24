@@ -168,10 +168,10 @@ const createCourseTableQuery = `
       category TEXT,
       course_title TEXT,
       
-      credits_l INTEGER,
-      credits_t INTEGER,
-      credits_p INTEGER,
-      total_credits INTEGER,
+      l INTEGER,
+      t INTEGER,
+      p INTEGER,
+      credit INTEGER,
       class_marks INTEGER,
       exam_marks INTEGER,
       practical_marks INTEGER,
@@ -194,7 +194,7 @@ const createCourseTableQuery = `
 const insertCourseQuery = `
   INSERT INTO course_syllabus (
     course_code, category, course_title, 
-    credits_l, credits_t, credits_p, total_credits, 
+    l, t, p, credit, 
     class_marks, exam_marks, practical_marks, total_marks, exam_duration, 
     objectives, important_note, 
     syllabus_units, course_outcomes, suggested_books, reference_books, co_po_mapping
@@ -204,10 +204,10 @@ const insertCourseQuery = `
   ON CONFLICT (course_code) DO UPDATE SET
     category = EXCLUDED.category,
     course_title = EXCLUDED.course_title,
-    credits_l = EXCLUDED.credits_l,
-    credits_t = EXCLUDED.credits_t,
-    credits_p = EXCLUDED.credits_p,
-    total_credits = EXCLUDED.total_credits,
+    l = EXCLUDED.l,
+    t = EXCLUDED.t,
+    p = EXCLUDED.p,
+    credit = EXCLUDED.credit,
     class_marks = EXCLUDED.class_marks,
     exam_marks = EXCLUDED.exam_marks,
     practical_marks = EXCLUDED.practical_marks,
@@ -225,18 +225,19 @@ const insertCourseQuery = `
 const createSemesterCoursesTableQuery = `
   CREATE TABLE IF NOT EXISTS semester_courses (
       semester TEXT,
-      department TEXT,
+      academic_program TEXT,
+      specialization TEXT,
       year_onward TEXT,
       courses_code JSONB,
       important_note JSONB,
-      PRIMARY KEY (semester, department, year_onward)
+      PRIMARY KEY (semester, academic_program, specialization, year_onward)
   );
 `;
 
 const insertSemesterCoursesQuery = `
-  INSERT INTO semester_courses (semester, department, year_onward, courses_code, important_note)
-  VALUES ($1, $2, $3, $4, $5)
-  ON CONFLICT (semester, department, year_onward) DO UPDATE SET
+  INSERT INTO semester_courses (semester, academic_program, specialization, year_onward, courses_code, important_note)
+  VALUES ($1, $2, $3, $4, $5, $6)
+  ON CONFLICT (semester, academic_program, specialization, year_onward) DO UPDATE SET
     courses_code = EXCLUDED.courses_code,
     important_note = EXCLUDED.important_note;
 `;

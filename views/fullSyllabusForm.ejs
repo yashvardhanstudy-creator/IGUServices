@@ -61,7 +61,8 @@
         <table>
             <thead>
                 <tr>
-                    <th>Department</th>
+                    <th>Academic Program</th>
+                    <th>Specialization</th>
                     <th>Year Onward</th>
                     <th>Actions</th>
                 </tr>
@@ -69,9 +70,10 @@
             <tbody>
                 <% options.forEach(opt => { %>
                     <tr>
-                        <td><strong><%= opt.department %></strong></td>
+                        <td><strong><%= opt.academic_program %></strong></td>
+                        <td><%= opt.specialization %></td>
                         <td><%= opt.year_onward %></td>
-                        <td><a href="/view-full-syllabus?department=<%= encodeURIComponent(opt.department) %>&year_onward=<%= encodeURIComponent(opt.year_onward) %>" target="_blank" class="action-btn view-btn">Generate Preview</a></td>
+                        <td><a href="/view-full-syllabus?academic_program=<%= encodeURIComponent(opt.academic_program) %>&specialization=<%= encodeURIComponent(opt.specialization) %>&year_onward=<%= encodeURIComponent(opt.year_onward) %>" target="_blank" class="action-btn view-btn">Generate Preview</a></td>
                     </tr>
                 <% }) %>
             </tbody>

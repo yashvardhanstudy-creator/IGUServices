@@ -89,7 +89,8 @@
                 <thead>
                     <tr>
                         <th>Semester</th>
-                        <th>Department</th>
+                        <th>Academic Program</th>
+                        <th>Specialization</th>
                         <th>Year Onward</th>
                         <th>Actions</th>
                     </tr>
@@ -98,11 +99,12 @@
                     <% structures.forEach(structure => { %>
                         <tr>
                             <td><strong><%= structure.semester %></strong></td>
-                            <td><%= structure.department %></td>
+                            <td><%= structure.academic_program %></td>
+                            <td><%= structure.specialization %></td>
                             <td><%= structure.year_onward %></td>
                             <td>
-                                <a href="/view-semester-structure?semester=<%= encodeURIComponent(structure.semester) %>&department=<%= encodeURIComponent(structure.department) %>&year_onward=<%= encodeURIComponent(structure.year_onward) %>" class="action-btn view-btn">View</a>
-                                <a href="/semester-courses-form?semester=<%= encodeURIComponent(structure.semester) %>&department=<%= encodeURIComponent(structure.department) %>&year_onward=<%= encodeURIComponent(structure.year_onward) %>" class="action-btn edit-btn">Edit</a>
+                                <a href="/view-semester-structure?semester=<%= encodeURIComponent(structure.semester) %>&academic_program=<%= encodeURIComponent(structure.academic_program) %>&specialization=<%= encodeURIComponent(structure.specialization) %>&year_onward=<%= encodeURIComponent(structure.year_onward) %>" class="action-btn view-btn">View</a>
+                                <a href="/semester-courses-form?semester=<%= encodeURIComponent(structure.semester) %>&academic_program=<%= encodeURIComponent(structure.academic_program) %>&specialization=<%= encodeURIComponent(structure.specialization) %>&year_onward=<%= encodeURIComponent(structure.year_onward) %>" class="action-btn edit-btn">Edit</a>
                             </td>
                         </tr>
                     <% }) %>
