@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="https://igu1.ucanapply.com/images/webicon.png" type="image/png">
+    <title>Complete Syllabus - <%= department %></title>
+    <style>
+        body {
+            font-family: serif;
+            line-height: 1.5;
+            color: black;
+            margin: 20px auto;
+            max-width: 900px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            background-color: #f2f2f2;
+            text-align: center;
+        }
+        .text-center { text-align: center; }
+        .section-title {
+            font-weight: bold;
+            text-decoration: underline;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        .print-btn {
+            display: inline-block;
+            width: 200px;
+            margin: 10px;
+            padding: 10px;
+            background-color: #6c757d;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            border: none;
+        }
+        .page-break {
+            page-break-before: always;
+            padding-top: 20px;
+        }
+        @media print {
+            body { max-width: 100%; margin: 0; padding: 0; }
+            .print-btn { display: none !important; }
+            .action-buttons { display: none !important; }
+            tr, .unit-block { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="action-buttons" style="text-align: center; margin-top: 20px;">
+        <button class="print-btn" onclick="window.print()">Print Complete Syllabus</button>
+        <button class="print-btn" onclick="window.location.href='/download-full-syllabus-pdf?department=<%= encodeURIComponent(department) %>&year_onward=<%= encodeURIComponent(year_onward) %>'">Download PDF</button>
+    </div>
+
+    <!-- 1. Print All Semester Scheme Tables -->
+    <% semesters.forEach((semStructure, index) => { %>
+        <div class="<%= index > 0 ? 'page-break' : '' %>">
+            <center>
+                <h1>Indira Gandhi University, Meerpur</h1>
+                <img src="https://d2xe8shibzpjog.cloudfront.net/logo/igu_logo.png" style="max-height: 100px;">
+                <h3>Scheme of Studies/Examination</h3>
+                <h4>B.Tech. (<%= department %>)</h4>
+                <h5>w.e.f. <%= year_onward %></h5>
+            </center>
+            <hr>
+            <h2 style="text-align: center;">Semester-<%= semStructure.semester %></h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th rowspan="2">Sr. No.</th>
+                        <th rowspan="2">Course Code</th>
+                        <th rowspan="2">Course Title</th>
+                        <th colspan="4">Hours per week</th>
+                        <th rowspan="2">Credit</th>
+                        <th colspan="4">Examination Schedule (Marks)</th>
+                        <th rowspan="2">Duration of Exam (Hours)</th>
+                    </tr>
+                    <tr>
+                        <th>L</th><th>T</th><th>P</th><th>Total</th>
+                        <th>Class Work</th><th>Theory</th><th>Practical</th><th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% semStructure.detailed_courses.forEach((course, i) => { %>
+                        <tr>
+                            <td class="text-center"><%= i + 1 %></td>
+                            <td><%= course.course_code %></td>
+                            <td <%- course.is_missing ? 'style="color: red; font-weight: bold;"' : '' %>><%= course.course_title %></td>
+                            <td class="text-center"><%= course.credits_l %></td>
+                            <td class="text-center"><%= course.credits_t %></td>
+                            <td class="text-center"><%= course.credits_p %></td>
+                            <td class="text-center"><%= course.is_missing ? '-' : (course.credits_l + course.credits_t + course.credits_p) %></td>
+                            <td class="text-center"><b><%= course.total_credits %></b></td>
+                            <td class="text-center"><%= course.class_marks %></td>
+                            <td class="text-center"><%= course.exam_marks %></td>
+                            <td class="text-center"><%= course.practical_marks %></td>
+                            <td class="text-center"><b><%= course.total_marks %></b></td>
+                            <td class="text-center"><%= course.exam_duration %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+            <% if (semStructure.important_note && semStructure.important_note.length > 0) { %>
+                <div class="section-title">NOTE:</div>
+                <ul>
+                    <% semStructure.important_note.forEach(note => { %><li><%= note %></li><% }) %>
+                </ul>
+            <% } %>
+        </div>
+    <% }) %>
+
+    <!-- 2. Print All Detailed Course Syllabi -->
+    <% allCourses.forEach(data => { %>
+        <% if (!data.is_missing) { %>
+        <div class="page-break">
+            <center>
+                <h1>Indira Gandhi University, Meerpur</h1>
+                <h3>(Course Design & Syllabus Proforma)</h3>
+            </center>
+            <hr>
+            <div class="section-title">General Information & Scheme</div>
+            <table>
+                <tr><td style="width: 25%; font-weight: bold;">Course Code</td><td><%= data.course_code %></td></tr>
+                <% if (data.category) { %><tr><td style="font-weight: bold;">Category</td><td><%= data.category %></td></tr><% } %>
+                <% if (data.course_title) { %><tr><td style="font-weight: bold;">Course Title</td><td><%= data.course_title %></td></tr><% } %>
+                <% if (data.total_credits > 0) { %>
+                    <tr>
+                        <td style="font-weight: bold;">Credits</td>
+                        <td style="padding: 0;">
+                            <table style="width: 100%; margin-bottom: 0; border: none;">
+                                <tr><th>L</th><th>T</th><th>P</th><th>Total</th></tr>
+                                <tr>
+                                    <td class="text-center"><%= data.credits_l %></td>
+                                    <td class="text-center"><%= data.credits_t %></td>
+                                    <td class="text-center"><%= data.credits_p %></td>
+                                    <td class="text-center"><b><%= data.total_credits %></b></td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                <% } %>
+                <% if (data.class_marks > 0) { %><tr><td style="font-weight: bold;">Class Work</td><td><%= data.class_marks %> Marks</td></tr><% } %>
+                <% if (data.exam_marks > 0) { %><tr><td style="font-weight: bold;">Exam</td><td><%= data.exam_marks %> Marks</td></tr><% } %>
+                <% if (data.practical_marks > 0) { %><tr><td style="font-weight: bold;">Practical</td><td><%= data.practical_marks %> Marks</td></tr><% } %>
+                <% if (data.total_marks > 0) { %><tr><td style="font-weight: bold;">Total Marks</td><td><%= data.total_marks %> Marks</td></tr><% } %>
+                <% if (data.exam_duration) { %><tr><td style="font-weight: bold;">Duration of Exam</td><td><%= data.exam_duration %></td></tr><% } %>
+            </table>
+
+            <% if (data.objectives && data.objectives.trim() !== '' && data.objectives.trim() !== '<p><br></p>') { %>
+                <div class="section-title">Objectives of the course</div>
+                <div><%- data.objectives %></div>
+            <% } %>
+
+            <% if (data.important_note && data.important_note.trim() !=='') { %>
+                <div class="section-title">Important Note</div>
+                <div style="border: 1px solid black; padding: 10px;"><%- data.important_note %></div>
+            <% } %>
+
+            <% if (data.syllabus_units && data.syllabus_units.length > 0) { %>
+                <div class="section-title">Syllabus Units</div>
+                <% data.syllabus_units.forEach(unit=> { %>
+                    <div class="unit-block"><b><%= unit.title %></b><div><%- unit.content %></div></div>
+                <% }) %>
+            <% } %>
+
+            <% if (data.course_outcomes && data.course_outcomes.length > 0) { %>
+                <div class="section-title">Course Outcomes</div>
+                <% data.course_outcomes.forEach(co=> { %><div><%= co %></div><% }) %>
+            <% } %>
+
+            <% if (data.co_po_mapping && data.co_po_mapping.length > 0) { %>
+                <div class="section-title">Mapping of Course Outcomes to Program Outcomes</div>
+                <table>
+                    <tr>
+                        <th>CO</th>
+                        <% for(let i=1; i<=11; i++) { %><th>PO<%= i %></th><% } %>
+                        <% for(let i=1; i<=4; i++) { %><th>PSO<%= i %></th><% } %>
+                    </tr>
+                    <% data.co_po_mapping.forEach(map=> { %>
+                        <tr>
+                            <td class="text-center" style="font-weight: bold;"><%= map.co %></td>
+                            <% for(let i=1; i<=11; i++) { %><td class="text-center"><%= map['po'+i] %></td><% } %>
+                            <% for(let i=1; i<=4; i++) { %><td class="text-center"><%= map['pso'+i] %></td><% } %>
+                        </tr>
+                    <% }) %>
+                </table>
+                <p style="font-weight: bold; text-align: center;">S=Strong, M=Medium, W=Weak</p>
+            <% } %>
+
+            <% if (data.suggested_books && data.suggested_books.length > 0) { %>
+                <div class="section-title">Suggested Books</div>
+                <% data.suggested_books.forEach((book, index)=> { %><div><%= index + 1 %>. <%= book %></div><% }) %>
+            <% } %>
+
+            <% if (data.reference_books && data.reference_books.length > 0) { %>
+                <div class="section-title">Suggested Reference Books</div>
+                <% data.reference_books.forEach((ref, index)=> { %><div><%= index + 1 %>. <%= ref %></div><% }) %>
+            <% } %>
+        </div>
+        <% } %>
+    <% }) %>
+</body>
+</html>

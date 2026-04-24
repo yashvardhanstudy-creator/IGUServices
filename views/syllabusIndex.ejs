@@ -1,105 +1,47 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <link rel="shortcut icon" href="https://igu1.ucanapply.com/images/webicon.png" type="image/png">
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FrontPage</title>
+    <meta charset="UTF-8">
+    <title>Syllabus Management - IGU Meerpur</title>
+    <link rel="stylesheet" href="/stylesheets/index.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
-            display: flex;
-            flex-direction: column;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            font-family: sans-serif;
             padding: 20px;
         }
-
         .container {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 24px;
-        }
-
-        p {
-            color: #555;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-
-        img {
-            display: block;
-            margin: 0 auto 20px;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        button:active {
-            transform: translateY(0);
+        .success-message {
+            color: green;
+            background-color: #e8f5e9;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-
-        <img src="https://d2xe8shibzpjog.cloudfront.net/logo/igu_logo.png" alt="IGU" srcset="">
-        <p>
-            <%= locals.message || "" %>
-        </p>
-        <p>
-            <%= locals.query.message || "" %>
-        </p>
-
-        <h1 class="page-title">Create Syllabus</h1>
-        <button onclick="window.location.href='./'">
-            Go Back
-        </button>
-        <button onclick="window.location.href='./courses'">
-            Create Course
-        </button>
-        <button onclick="window.location.href='./courses-list'">
-            View Saved Courses
-        </button>
-
-
-
+        <h1>Syllabus & Course Management</h1>
+        <% if (locals.query && locals.query.message) { %>
+            <div class="success-message"><%= locals.query.message %></div>
+        <% } %>
+        <ul class="hub-links">
+            <li><a href="/courses-list">View, Edit, or Download Existing Course Syllabi</a></li>
+            <li><a href="/courses">Create a New Course Syllabus</a></li>
+            <li><a href="/semester-courses-form">Create a Semester's Course Structure</a></li>
+            <li><a href="/semester-courses-list">View or Edit Saved Semester Structures</a></li>
+            <li><a href="/generate-full-syllabus">Generate Full Syllabus Print Document</a></li>
+        </ul>
     </div>
 </body>
 

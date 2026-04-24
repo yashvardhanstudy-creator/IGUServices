@@ -109,18 +109,23 @@
                 <%= data.course_code %>
             </td>
         </tr>
+        <% if (data.category) { %>
         <tr>
             <td style="font-weight: bold;">Category</td>
             <td>
                 <%= data.category %>
             </td>
         </tr>
+        <% } %>
+        <% if (data.course_title) { %>
         <tr>
             <td style="font-weight: bold;">Course Title</td>
             <td>
                 <%= data.course_title %>
             </td>
         </tr>
+        <% } %>
+        <% if (data.total_credits > 0) { %>
         <tr>
             <td style="font-weight: bold;">Credits</td>
             <td style="padding: 0;">
@@ -148,42 +153,62 @@
                 </table>
             </td>
         </tr>
+        <% } %>
+        <% if (data.class_marks > 0) { %>
         <tr>
             <td style="font-weight: bold;">Class Work</td>
             <td>
                 <%= data.class_marks %> Marks
             </td>
         </tr>
+        <% } %>
+        <% if (data.exam_marks > 0) { %>
         <tr>
             <td style="font-weight: bold;">Exam</td>
             <td>
                 <%= data.exam_marks %> Marks
             </td>
         </tr>
+        <% } %>
+        <% if (data.practical_marks > 0) { %>
+        <tr>
+            <td style="font-weight: bold;">Practical</td>
+            <td>
+                <%= data.practical_marks %> Marks
+            </td>
+        </tr>
+        <% } %>
+        <% if (data.total_marks > 0) { %>
         <tr>
             <td style="font-weight: bold;">Total Marks</td>
             <td>
                 <%= data.total_marks %> Marks
             </td>
         </tr>
+        <% } %>
+        <% if (data.exam_duration) { %>
         <tr>
             <td style="font-weight: bold;">Duration of Exam</td>
             <td>
                 <%= data.exam_duration %>
             </td>
         </tr>
+        <% } %>
     </table>
 
+    <% if (data.objectives && data.objectives.trim() !== '' && data.objectives.trim() !== '<p><br></p>') { %>
     <div class="section-title">Objectives of the course</div>
     <div><%- data.objectives %></div>
+    <% } %>
 
     <% if (data.important_note && data.important_note.trim() !=='' ) { %>
         <div class="section-title">Important Note</div>
         <div style="border: 1px solid black; padding: 10px;">
             <%- data.important_note %>
         </div>
-        <% } %>
+    <% } %>
 
+    <% if (data.syllabus_units && data.syllabus_units.length > 0) { %>
             <div class="section-title">Syllabus Units</div>
             <% data.syllabus_units.forEach(unit=> { %>
                 <div class="unit-block">
@@ -193,14 +218,18 @@
                     <div><%- unit.content %></div>
                 </div>
                 <% }) %>
+    <% } %>
 
+    <% if (data.course_outcomes && data.course_outcomes.length > 0) { %>
                     <div class="section-title">Course Outcomes</div>
                     <% data.course_outcomes.forEach(co=> { %>
                         <div>
                             <%= co %>
                         </div>
                         <% }) %>
+    <% } %>
 
+    <% if (data.co_po_mapping && data.co_po_mapping.length > 0) { %>
                             <div class="section-title">Mapping of Course Outcomes to Program Outcomes</div>
                             <table>
                                 <tr>
@@ -233,22 +262,27 @@
                                     <% }) %>
                             </table>
                             <p style="font-weight: bold; text-align: center;">S=Strong, M=Medium, W=Weak</p>
+    <% } %>
 
+    <% if (data.suggested_books && data.suggested_books.length > 0) { %>
                             <div class="section-title">Suggested Books</div>
                             <% data.suggested_books.forEach((book, index)=> { %>
                                 <div>
                                     <%= index + 1 %>. <%= book %>
                                 </div>
                                 <% }) %>
+    <% } %>
 
+    <% if (data.reference_books && data.reference_books.length > 0) { %>
                                     <div class="section-title">Suggested Reference Books</div>
                                     <% data.reference_books.forEach((ref, index)=> { %>
                                         <div>
                                             <%= index + 1 %>. <%= ref %>
                                         </div>
                                         <% }) %>
+    <% } %>
 
-                                            <button class="print-btn" onclick="window.print()">Print Document</button>
+    <button class="print-btn" onclick="window.location.href='/download-pdf/<%= data.course_code %>'">Download PDF</button>
 
 </body>
 

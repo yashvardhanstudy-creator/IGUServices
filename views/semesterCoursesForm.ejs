@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="shortcut icon" href="https://igu1.ucanapply.com/images/webicon.png" type="image/png">
+    <meta charset="UTF-8">
+    <title>Semester Course Structure - IGU Meerpur</title>
+    <link rel="stylesheet" href="/stylesheets/index.css">
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        td {
+            border: 1px solid black;
+            padding: 8px;
+        }
+        input[type="text"] {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 6px;
+        }
+        .dynamic-list {
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        .dynamic-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        .dynamic-item input[type="text"] {
+            flex-grow: 1;
+        }
+        .action-btn {
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .remove-btn {
+            background-color: #dc3545;
+        }
+        .add-btn {
+            background-color: #28a745;
+        }
+        .submit-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin-top: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function addDynamicField(containerId, inputName, placeholder) {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = 'dynamic-item';
+            div.innerHTML = `
+                <input type="text" name="${inputName}[]" placeholder="${placeholder}" required>
+                <button type="button" class="action-btn remove-btn" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+    </script>
+</head>
+
+<body>
+    <a href="/syllabus"><img id="back" src="/images/goBackArrow.png" alt="Go Back" style="width: 30px;"></a>
+    <div class="container">
+        <h1>Create/Edit Semester Course Structure</h1>
+        <p>Define the list of courses and important notes for a specific semester, department, and academic year.</p>
+
+        <form action="/semester-courses" method="POST">
+            <table>
+                <tr>
+                    <td style="width: 25%; font-weight: bold;">Semester</td>
+                    <td><input type="text" name="semester" placeholder="e.g., 4" value="<%= locals.structure ? structure.semester : '' %>" <%= locals.structure ? 'readonly style="background-color: #e9ecef;"' : '' %> required></td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">Department</td>
+                    <td><input type="text" name="department" placeholder="e.g., Computer Science and Engineering" value="<%= locals.structure ? structure.department : '' %>" <%= locals.structure ? 'readonly style="background-color: #e9ecef;"' : '' %> required></td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold;">Year Onward</td>
+                    <td><input type="text" name="year_onward" placeholder="e.g., 2019-20" value="<%= locals.structure ? structure.year_onward : '' %>" <%= locals.structure ? 'readonly style="background-color: #e9ecef;"' : '' %> required></td>
+                </tr>
+            </table>
+
+            <h2>Course Codes</h2>
+            <div id="coursesContainer" class="dynamic-list">
+                <% if (locals.structure && structure.courses_code && structure.courses_code.length > 0) { %>
+                    <% structure.courses_code.forEach(code => { %>
+                        <div class="dynamic-item">
+                            <input type="text" name="courses_code[]" value="<%= code %>" required>
+                            <button type="button" class="action-btn remove-btn" onclick="this.parentElement.remove()">Remove</button>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="dynamic-item">
+                        <input type="text" name="courses_code[]" placeholder="Enter Course Code (e.g., PCC-CSE-202)" required>
+                        <button type="button" class="action-btn remove-btn" onclick="this.parentElement.remove()">Remove</button>
+                    </div>
+                <% } %>
+            </div>
+            <button type="button" class="action-btn add-btn" onclick="addDynamicField('coursesContainer', 'courses_code', 'Enter Course Code')">Add Course Code</button>
+
+            <h2>Important Notes</h2>
+            <div id="notesContainer" class="dynamic-list">
+                 <% if (locals.structure && structure.important_note && structure.important_note.length > 0) { %>
+                    <% structure.important_note.forEach(note => { %>
+                        <div class="dynamic-item">
+                            <input type="text" name="important_note[]" value="<%= note %>" required>
+                            <button type="button" class="action-btn remove-btn" onclick="this.parentElement.remove()">Remove</button>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="dynamic-item">
+                        <input type="text" name="important_note[]" placeholder="Enter an important note for the semester" required>
+                        <button type="button" class="action-btn remove-btn" onclick="this.parentElement.remove()">Remove</button>
+                    </div>
+                <% } %>
+            </div>
+            <button type="button" class="action-btn add-btn" onclick="addDynamicField('notesContainer', 'important_note', 'Enter Important Note')">Add Note</button>
+
+            <center>
+                <button type="submit" class="submit-btn">Save Semester Structure</button>
+            </center>
+        </form>
+    </div>
+</body>
+
+</html>

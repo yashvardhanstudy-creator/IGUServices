@@ -203,7 +203,8 @@
         function calculateMarks() {
             const cm = parseFloat(document.getElementById('classMarks').value) || 0;
             const em = parseFloat(document.getElementById('examMarks').value) || 0;
-            document.getElementById('totalMarks').value = cm + em;
+            const pm = parseFloat(document.getElementById('practicalMarks').value) || 0;
+            document.getElementById('totalMarks').value = cm + em + pm;
         }
 
         function addDynamicField(containerId, inputName, placeholder) {
@@ -286,8 +287,12 @@
         <table>
             <tr>
                 <td style="width: 25%; font-weight: bold;">Course Code</td>
-                <td><input type="text" name="courseCode" value="<%= course ? course.course_code : 'PCC-CSE-201' %>"
-                        <%=course ? 'readonly style="background-color: #e9ecef;"' : '' %>></td>
+                <td>
+                    <input type="text" name="courseCode" value="<%= course ? course.course_code : 'PCC-CSE-201' %>" required>
+                    <% if (course) { %>
+                        <small style="color: #6c757d; margin-top: 5px; display: inline-block;"><em>* Note: Changing this code and saving will create a new duplicated course. The original will remain unchanged.</em></small>
+                    <% } %>
+                </td>
             </tr>
             <tr>
                 <td style="font-weight: bold;">Category</td>
@@ -314,11 +319,11 @@
                         <tbody>
                             <tr>
                                 <td><input type="number" id="creditL" name="creditL"
-                                        value="<%= course ? course.credits_l : 3 %>" oninput="calculateCredits()"></td>
+                                        value="<%= course ? course.credits_l : 3 %>" oninput="calculateCredits()" max="6"></td>
                                 <td><input type="number" id="creditT" name="creditT"
-                                        value="<%= course ? course.credits_t : 0 %>" oninput="calculateCredits()"></td>
+                                        value="<%= course ? course.credits_t : 0 %>" oninput="calculateCredits()" max="6"></td>
                                 <td><input type="number" id="creditP" name="creditP"
-                                        value="<%= course ? course.credits_p : 0 %>" oninput="calculateCredits()"></td>
+                                        value="<%= course ? course.credits_p : 0 %>" oninput="calculateCredits()" max="6"></td>
                                 <td><input type="number" id="totalCredits" name="totalCredits"
                                         value="<%= course ? course.total_credits : 3 %>" readonly
                                         style="background-color: #e9ecef;"></td>
@@ -336,6 +341,11 @@
                 <td style="font-weight: bold;">Exam</td>
                 <td><input type="number" id="examMarks" name="examMarks" value="<%= course ? course.exam_marks : 75 %>"
                         oninput="calculateMarks()"></td>
+            </tr>
+            <tr>
+                <td style="font-weight: bold;">Practical</td>
+                <td><input type="number" id="practicalMarks" name="practicalMarks"
+                        value="<%= course ? course.practical_marks : 0 %>" oninput="calculateMarks()"></td>
             </tr>
             <tr>
                 <td style="font-weight: bold;">Total Marks</td>

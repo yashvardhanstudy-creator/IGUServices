@@ -174,6 +174,7 @@ const createCourseTableQuery = `
       total_credits INTEGER,
       class_marks INTEGER,
       exam_marks INTEGER,
+      practical_marks INTEGER,
       total_marks INTEGER,
       exam_duration TEXT,
       
@@ -194,11 +195,11 @@ const insertCourseQuery = `
   INSERT INTO course_syllabus (
     course_code, category, course_title, 
     credits_l, credits_t, credits_p, total_credits, 
-    class_marks, exam_marks, total_marks, exam_duration, 
+    class_marks, exam_marks, practical_marks, total_marks, exam_duration, 
     objectives, important_note, 
     syllabus_units, course_outcomes, suggested_books, reference_books, co_po_mapping
   ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19
   )
   ON CONFLICT (course_code) DO UPDATE SET
     category = EXCLUDED.category,
@@ -209,6 +210,7 @@ const insertCourseQuery = `
     total_credits = EXCLUDED.total_credits,
     class_marks = EXCLUDED.class_marks,
     exam_marks = EXCLUDED.exam_marks,
+    practical_marks = EXCLUDED.practical_marks,
     total_marks = EXCLUDED.total_marks,
     exam_duration = EXCLUDED.exam_duration,
     objectives = EXCLUDED.objectives,
@@ -218,6 +220,25 @@ const insertCourseQuery = `
     suggested_books = EXCLUDED.suggested_books,
     reference_books = EXCLUDED.reference_books,
     co_po_mapping = EXCLUDED.co_po_mapping;
+`;
+
+const createSemesterCoursesTableQuery = `
+  CREATE TABLE IF NOT EXISTS semester_courses (
+      semester TEXT,
+      department TEXT,
+      year_onward TEXT,
+      courses_code JSONB,
+      important_note JSONB,
+      PRIMARY KEY (semester, department, year_onward)
+  );
+`;
+
+const insertSemesterCoursesQuery = `
+  INSERT INTO semester_courses (semester, department, year_onward, courses_code, important_note)
+  VALUES ($1, $2, $3, $4, $5)
+  ON CONFLICT (semester, department, year_onward) DO UPDATE SET
+    courses_code = EXCLUDED.courses_code,
+    important_note = EXCLUDED.important_note;
 `;
 
 const dbConnectInfoDevLaptop = {
@@ -409,4 +430,6 @@ module.exports = {
   verifyPrivilageLogin,
   verifyLogin,
   createYear,
+  createSemesterCoursesTableQuery,
+  insertSemesterCoursesQuery,
 };

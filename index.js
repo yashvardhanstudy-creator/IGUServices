@@ -4,6 +4,7 @@ const express = require("express");
 const { Pool } = require("pg");
 const path = require("path");
 const xss = require("xss");
+const puppeteer = require("puppeteer");
 const {
   insertQuery,
   createTableQuery,
@@ -15,6 +16,8 @@ const {
   verifyPrivilageLogin,
   insertCourseQuery,
   createCourseTableQuery,
+  createSemesterCoursesTableQuery,
+  insertSemesterCoursesQuery,
   // dbConnectInfoReal,
 } = require("./constants");
 
@@ -82,6 +85,14 @@ pool.query(createCourseTableQuery, (err, res) => {
     console.error("Error creating course table:", err);
   } else {
     console.log("✅ Table 'course_syllabus' ensured to exist.");
+  }
+});
+
+pool.query(createSemesterCoursesTableQuery, (err, res) => {
+  if (err) {
+    console.error("Error creating semester_courses table:", err);
+  } else {
+    console.log("✅ Table 'semester_courses' ensured to exist.");
   }
 });
 
@@ -502,6 +513,7 @@ app.post("/courses", verifyLogin, async (req, res) => {
       parseInt(courseData.totalCredits) || 0,
       parseInt(courseData.classMarks) || 0,
       parseInt(courseData.examMarks) || 0,
+      parseInt(courseData.practicalMarks) || 0,
       parseInt(courseData.totalMarks) || 0,
       courseData.examDuration,
       xss(courseData.objectives || ""),
@@ -532,6 +544,397 @@ app.post("/courses", verifyLogin, async (req, res) => {
   } catch (error) {
     console.error("❌ Error processing course form:", error);
     res.status(500).send("Error saving course data.");
+  }
+});
+
+app.get("/semester-courses-form", verifyLogin, async (req, res) => {
+  try {
+    const { semester, department, year_onward } = req.query;
+    let structure = null;
+
+    if (semester && department && year_onward) {
+      const result = await pool.query(
+        "SELECT * FROM semester_courses WHERE semester = $1 AND department = $2 AND year_onward = $3",
+        [semester, department, year_onward],
+      );
+      if (result.rows.length > 0) {
+        structure = result.rows[0];
+      }
+    }
+    res.render("semesterCoursesForm.ejs", { structure });
+  } catch (error) {
+    console.error("❌ Error loading semester courses form:", error);
+    res.status(500).send("Error loading form.");
+  }
+});
+
+app.post("/semester-courses", verifyLogin, async (req, res) => {
+  try {
+    const { semester, department, year_onward, courses_code, important_note } =
+      req.body;
+    console.log("📥 Received Semester Courses Data:", req.body);
+
+    // Helper to ensure we store valid JSON strings for JSONB columns
+    const normalizeJson = (val) => {
+      if (!val) return JSON.stringify([]);
+      if (typeof val === "string") {
+        try {
+          return JSON.stringify(JSON.parse(val));
+        } catch (e) {
+          return JSON.stringify([val]);
+        }
+      }
+      return JSON.stringify(val);
+    };
+
+    const coursesCodeJson = normalizeJson(courses_code);
+    const importantNoteJson = normalizeJson(important_note);
+
+    await pool.query(insertSemesterCoursesQuery, [
+      semester,
+      department,
+      year_onward,
+      coursesCodeJson,
+      importantNoteJson,
+    ]);
+    console.log("✅ Semester Courses successfully saved to DB.");
+
+    res.redirect("/syllabus?message=Semester courses saved successfully!");
+  } catch (error) {
+    console.error("❌ Error saving semester courses:", error);
+    res.status(500).send("Error saving semester courses data.");
+  }
+});
+
+app.get("/semester-courses-list", verifyLogin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT semester, department, year_onward FROM semester_courses ORDER BY year_onward DESC, semester ASC",
+    );
+
+    res.render("semesterCoursesList.ejs", { structures: result.rows });
+  } catch (error) {
+    console.error("❌ Error fetching semester structures list:", error);
+    res.status(500).send("Error fetching semester structures list.");
+  }
+});
+
+app.get("/view-semester-structure", verifyLogin, async (req, res) => {
+  try {
+    const { semester, department, year_onward } = req.query;
+
+    if (!semester || !department || !year_onward) {
+      return res
+        .status(400)
+        .send(
+          "Missing required query parameters: semester, department, year_onward",
+        );
+    }
+
+    const structureResult = await pool.query(
+      "SELECT * FROM semester_courses WHERE semester = $1 AND department = $2 AND year_onward = $3",
+      [semester, department, year_onward],
+    );
+
+    if (structureResult.rows.length === 0) {
+      return res.status(404).send("Semester structure not found.");
+    }
+
+    const structure = structureResult.rows[0];
+    const courseCodes = structure.courses_code || [];
+
+    let orderedCourses = [];
+    if (courseCodes.length > 0) {
+      const coursesResult = await pool.query(
+        "SELECT course_code, course_title, credits_l, credits_t, credits_p, total_credits, class_marks, exam_marks, practical_marks, total_marks, exam_duration FROM course_syllabus WHERE course_code = ANY($1::text[])",
+        [courseCodes],
+      );
+      const coursesMap = new Map(
+        coursesResult.rows.map((c) => [c.course_code, c]),
+      );
+      orderedCourses = courseCodes.map(
+        (code) =>
+          coursesMap.get(code) || {
+            course_code: code,
+            course_title: "⚠️ Syllabus Not Found",
+            credits_l: "-",
+            credits_t: "-",
+            credits_p: "-",
+            total_credits: "-",
+            class_marks: "-",
+            exam_marks: "-",
+            practical_marks: "-",
+            total_marks: "-",
+            exam_duration: "-",
+            is_missing: true,
+          },
+      );
+    }
+
+    res.render("semesterCoursesView.ejs", {
+      structure,
+      courses: orderedCourses,
+    });
+  } catch (error) {
+    console.error("❌ Error fetching semester structure for view:", error);
+    res.status(500).send("Error fetching semester structure data.");
+  }
+});
+
+app.get("/generate-full-syllabus", verifyLogin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT DISTINCT department, year_onward FROM semester_courses ORDER BY department, year_onward DESC",
+    );
+    res.render("fullSyllabusForm.ejs", { options: result.rows });
+  } catch (error) {
+    console.error("❌ Error fetching full syllabus options:", error);
+    res.status(500).send("Error loading page.");
+  }
+});
+
+app.get("/view-full-syllabus", verifyLogin, async (req, res) => {
+  try {
+    const { department, year_onward } = req.query;
+    if (!department || !year_onward) {
+      return res.status(400).send("Missing department or year_onward");
+    }
+
+    // 1. Fetch all semester structures for this combo
+    const semResult = await pool.query(
+      "SELECT * FROM semester_courses WHERE department = $1 AND year_onward = $2 ORDER BY semester ASC",
+      [department, year_onward],
+    );
+
+    if (semResult.rows.length === 0) {
+      return res
+        .status(404)
+        .send("No semester structures found for this selection.");
+    }
+
+    const semesters = semResult.rows;
+
+    // 2. Extract sequence of unique course codes
+    const orderedCourseCodes = [];
+    const codeSet = new Set();
+    semesters.forEach((sem) => {
+      (sem.courses_code || []).forEach((code) => {
+        if (!codeSet.has(code)) {
+          codeSet.add(code);
+          orderedCourseCodes.push(code);
+        }
+      });
+    });
+
+    // 3. Fetch detailed courses and assemble data
+    let coursesMap = new Map();
+    if (orderedCourseCodes.length > 0) {
+      const courseResult = await pool.query(
+        "SELECT * FROM course_syllabus WHERE course_code = ANY($1::text[])",
+        [orderedCourseCodes],
+      );
+      courseResult.rows.forEach((c) => coursesMap.set(c.course_code, c));
+    }
+
+    const getCourseOrDefault = (code) =>
+      coursesMap.get(code) || {
+        course_code: code,
+        course_title: "⚠️ Syllabus Not Found",
+        credits_l: "-",
+        credits_t: "-",
+        credits_p: "-",
+        total_credits: "-",
+        class_marks: "-",
+        exam_marks: "-",
+        practical_marks: "-",
+        total_marks: "-",
+        exam_duration: "-",
+        is_missing: true,
+      };
+
+    const detailedCourses = orderedCourseCodes.map(getCourseOrDefault);
+    const semestersWithCourses = semesters.map((sem) => ({
+      ...sem,
+      detailed_courses: (sem.courses_code || []).map(getCourseOrDefault),
+    }));
+
+    res.render("fullSyllabusView.ejs", {
+      department,
+      year_onward,
+      semesters: semestersWithCourses,
+      allCourses: detailedCourses,
+    });
+  } catch (error) {
+    console.error("❌ Error generating full syllabus:", error);
+    res.status(500).send("Error generating document.");
+  }
+});
+
+app.get("/download-full-syllabus-pdf", verifyLogin, async (req, res) => {
+  try {
+    const { department, year_onward } = req.query;
+    if (!department || !year_onward) {
+      return res.status(400).send("Missing department or year_onward");
+    }
+
+    // 1. Fetch all semester structures for this combo
+    const semResult = await pool.query(
+      "SELECT * FROM semester_courses WHERE department = $1 AND year_onward = $2 ORDER BY semester ASC",
+      [department, year_onward],
+    );
+
+    if (semResult.rows.length === 0) {
+      return res.status(404).send("No semester structures found.");
+    }
+
+    const semesters = semResult.rows;
+
+    // 2. Extract sequence of unique course codes
+    const orderedCourseCodes = [];
+    const codeSet = new Set();
+    semesters.forEach((sem) => {
+      (sem.courses_code || []).forEach((code) => {
+        if (!codeSet.has(code)) {
+          codeSet.add(code);
+          orderedCourseCodes.push(code);
+        }
+      });
+    });
+
+    // 3. Fetch detailed courses and assemble data
+    let coursesMap = new Map();
+    if (orderedCourseCodes.length > 0) {
+      const courseResult = await pool.query(
+        "SELECT * FROM course_syllabus WHERE course_code = ANY($1::text[])",
+        [orderedCourseCodes],
+      );
+      courseResult.rows.forEach((c) => coursesMap.set(c.course_code, c));
+    }
+
+    const getCourseOrDefault = (code) =>
+      coursesMap.get(code) || {
+        course_code: code,
+        course_title: "⚠️ Syllabus Not Found",
+        credits_l: "-",
+        credits_t: "-",
+        credits_p: "-",
+        total_credits: "-",
+        class_marks: "-",
+        exam_marks: "-",
+        practical_marks: "-",
+        total_marks: "-",
+        exam_duration: "-",
+        is_missing: true,
+      };
+
+    const detailedCourses = orderedCourseCodes.map(getCourseOrDefault);
+    const semestersWithCourses = semesters.map((sem) => ({
+      ...sem,
+      detailed_courses: (sem.courses_code || []).map(getCourseOrDefault),
+    }));
+
+    req.app.render(
+      "fullSyllabusView.ejs",
+      {
+        department,
+        year_onward,
+        semesters: semestersWithCourses,
+        allCourses: detailedCourses,
+      },
+      async (err, html) => {
+        if (err) {
+          console.error("Render error:", err);
+          return res.status(500).send("Error rendering HTML for PDF");
+        }
+
+        const browser = await puppeteer.launch({
+          headless: true,
+          args: [
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-accelerated-2d-canvas",
+            "--no-first-run",
+            "--no-zygote",
+            "--disable-gpu",
+          ],
+        });
+        const page = await browser.newPage();
+        await page.setContent(html, { waitUntil: "networkidle0" });
+        const pdf = await page.pdf({
+          format: "A4",
+          printBackground: true,
+          margin: { top: "20mm", right: "20mm", bottom: "20mm", left: "20mm" },
+        });
+        await browser.close();
+
+        res.set({
+          "Content-Type": "application/pdf",
+          "Content-Disposition": `attachment; filename="Full-Syllabus-${department}-${year_onward}.pdf"`,
+        });
+        res.send(pdf);
+      },
+    );
+  } catch (error) {
+    console.error("❌ Error generating full syllabus PDF:", error);
+    res.status(500).send("Error generating PDF.");
+  }
+});
+
+app.get("/download-pdf/:courseCode", verifyLogin, async (req, res) => {
+  try {
+    const courseCode = req.params.courseCode;
+    const result = await pool.query(
+      "SELECT * FROM course_syllabus WHERE course_code = $1",
+      [courseCode],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).send("Course not found.");
+    }
+
+    req.app.render(
+      "courseView.ejs",
+      { data: result.rows[0] },
+      async (err, html) => {
+        if (err) {
+          console.error("Render error:", err);
+          return res.status(500).send("Error rendering HTML for PDF");
+        }
+
+        const browser = await puppeteer.launch({
+          headless: true,
+          args: [
+            "--no-sandbox",
+            "--disable-setuid-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-accelerated-2d-canvas",
+            "--no-first-run",
+            "--no-zygote",
+            "--disable-gpu",
+          ],
+        });
+        const page = await browser.newPage();
+        await page.setContent(html, { waitUntil: "networkidle0" });
+
+        const pdf = await page.pdf({
+          format: "A4",
+          printBackground: true,
+          margin: { top: "20mm", right: "20mm", bottom: "20mm", left: "20mm" },
+        });
+
+        await browser.close();
+
+        res.set({
+          "Content-Type": "application/pdf",
+          "Content-Disposition": `attachment; filename="${courseCode}-Syllabus.pdf"`,
+        });
+        res.send(pdf);
+      },
+    );
+  } catch (error) {
+    console.error("❌ Error generating PDF:", error);
+    res.status(500).send("Error generating PDF.");
   }
 });
 
