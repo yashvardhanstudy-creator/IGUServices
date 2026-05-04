@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="shortcut icon" href="https://igu1.ucanapply.com/images/webicon.png" type="image/png">
+    <meta charset="UTF-8">
+    <title><%= locals.program ? "Edit" : "New" %> Program & Specialization</title>
+    <link rel="stylesheet" href="/stylesheets/index.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        input[readonly] {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        .back-btn {
+            background: #6c757d;
+            margin-top: 10px;
+        }
+        .back-btn:hover {
+            box-shadow: 0 5px 20px rgba(108, 117, 125, 0.4);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1><%= locals.program ? "Edit" : "New" %> Program & Specialization</h1>
+        <form action="/program-specialization" method="POST">
+            <label for="program_name">Program Name:</label>
+            <input type="text" id="program_name" name="program_name" required 
+                   value="<%= locals.program ? locals.program.program_name : '' %>" 
+                   <%= locals.program ? 'readonly' : '' %>
+                   placeholder="e.g. Master of Science">
+
+            <label for="specialization">Specialization:</label>
+            <input type="text" id="specialization" name="specialization" required 
+                   value="<%= locals.program ? locals.program.specialization : '' %>" 
+                   <%= locals.program ? 'readonly' : '' %>
+                   placeholder="e.g. Computer Science">
+
+            <label for="level">Level (UG / PG):</label>
+            <select id="level" name="level" required onchange="updateSchemes()">
+                <option value="">Select Level</option>
+                <option value="UG" <%= locals.program && locals.program.level === 'UG' ? 'selected' : '' %>>Undergraduate (UG)</option>
+                <option value="PG" <%= locals.program && locals.program.level === 'PG' ? 'selected' : '' %>>Postgraduate (PG)</option>
+            </select>
+
+            <label for="scheme">Scheme:</label>
+            <select id="scheme" name="scheme" required>
+                <option value="">Select Scheme</option>
+            </select>
+
+            <button type="submit">Save Program Data</button>
+        </form>
+        <button type="button" class="back-btn" onclick="window.location.href='/'">Back to Home</button>
+    </div>
+
+    <script>
+        const existingScheme = "<%= locals.program ? locals.program.scheme : '' %>";
+
+        function updateSchemes() {
+            const level = document.getElementById('level').value;
+            const schemeSelect = document.getElementById('scheme');
+            
+            schemeSelect.innerHTML = '<option value="">Select Scheme</option>';
+            
+            let options = [];
+            if (level === 'UG') {
+                options = ['A', 'B', 'C', 'D'];
+            } else if (level === 'PG') {
+                options = ['P', 'Q', 'R', 'S'];
+            }
+            
+            options.forEach(opt => {
+                const isSelected = existingScheme === opt ? 'selected' : '';
+                schemeSelect.innerHTML += `<option value="${opt}" ${isSelected}>Scheme ${opt}</option>`;
+            });
+        }
+        window.onload = updateSchemes;
+    </script>
+</body>
+</html>

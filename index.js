@@ -6,20 +6,20 @@ const path = require("path");
 const xss = require("xss");
 const puppeteer = require("puppeteer");
 const {
-  insertQuery,
-  createTableQuery,
   dbConnectInfoTest,
   // dbConnectInfoDevLaptop,
   createUserTable,
-  createYear,
   verifyLogin,
   verifyPrivilageLogin,
   insertCourseQuery,
   createCourseTableQuery,
   createSemesterCoursesTableQuery,
   insertSemesterCoursesQuery,
+  createProgramTableQuery,
+  insertProgramQuery,
   // dbConnectInfoReal,
 } = require("./constants");
+const { dummyCourseData } = require("./dummyData");
 
 const PORT = process.env.PORT_TEST || 3001;
 const app = express();
@@ -64,14 +64,6 @@ pool.connect((err, client, done) => {
   done();
 });
 
-// pool.query(createTableQuery, (err, res) => {
-//   if (err) {
-//     console.error("Error creating table:", err);
-//   } else {
-//     console.log("✅ Table 'nirf_form_data' ensured to exist.");
-//   }
-// });
-
 pool.query(createUserTable, (err, res) => {
   if (err) {
     console.error("Error creating user table:", err);
@@ -93,32 +85,20 @@ pool.query(createSemesterCoursesTableQuery, (err, res) => {
     console.error("Error creating semester_courses table:", err);
   } else {
     console.log("✅ Table 'semester_courses' ensured to exist.");
-    // Run migration to rename department, add academic_program, and update primary key
-    // pool.query(
-    //   `
-    //   DO $$
-    //   BEGIN
-    //     IF EXISTS(SELECT * FROM information_schema.columns WHERE table_name='semester_courses' AND column_name='department') THEN
-    //       ALTER TABLE semester_courses RENAME COLUMN department TO specialization;
-    //       ALTER TABLE semester_courses ADD COLUMN academic_program TEXT DEFAULT 'Bachelor of Technology';
-    //       ALTER TABLE semester_courses DROP CONSTRAINT semester_courses_pkey;
-    //       ALTER TABLE semester_courses ADD PRIMARY KEY (semester, academic_program, specialization, year_onward);
-    //     END IF;
-    //   END $$;
-    // `,
-    //   (err) => {
-    //     if (!err)
-    //       console.log(
-    //         "✅ semester_courses successfully migrated to include academic_program and specialization.",
-    //       );
-    //   },
-    // );
+  }
+});
+
+pool.query(createProgramTableQuery, (err, res) => {
+  if (err) {
+    console.error("Error creating programs table:", err);
+  } else {
+    console.log("✅ Table 'programs' ensured to exist.");
   }
 });
 
 app.get("/", (req, res) => {
   if (req.session && req.session.user) {
-    res.render("index.ejs", {
+    res.render("syllabusIndex.ejs", {
       message: `Welcome, ${req.session.user.name}!`,
       role: req.session.user.role == "admin",
     });
@@ -138,18 +118,6 @@ app.get("/register", (req, res) => {
 app.get("/login", (req, res) => {
   const message = req.query.message;
   res.render("login.ejs", { message });
-});
-
-app.get("/form", (req, res) => {
-  verifyLogin(req, res, () => {
-    res.render("preview.ejs", { forward: "./form" });
-  });
-});
-
-app.get("/view", (req, res) => {
-  verifyPrivilageLogin(req, res, () => {
-    res.render("preview.ejs", { forward: "./view" });
-  });
 });
 
 app.get("/logout", (req, res) => {
@@ -288,144 +256,15 @@ app.post("/register", (req, res) => {
   );
 });
 
-app.post("/form", (req, res) => {
-  const data = req.body;
-  console.log("📥 Received Preview Request:", data);
-  res.render("form.ejs", {
-    data: req.body,
-    createYear,
-    currentYear: Number(data.year.slice(0, 4)),
-  });
-});
-
-app.post("/view", (req, res) => {
-  const data = req.body;
-  console.log("📥 Received PreView Request:", data);
-
-  pool.query(
-    "SELECT * FROM public.nirf_form_data WHERE department = $1 AND year = $2",
-    [data.department, data.year],
-    (err, result) => {
-      if (err) {
-        console.error("Error fetching data:", err);
-        res.status(500).send("Error fetching data");
-      } else {
-        if (result.rows.length === 0) {
-          return res.render("index.ejs", {
-            message: `No data found for the ${data.year} year and ${data.department} department.`,
-            role: req.session.user.role == "admin",
-          });
-        }
-        console.log("✅ Data fetched for view:", result.rows[0]);
-        res.render("view.ejs", {
-          currentYear: Number(data.year.slice(0, 4)),
-          createYear,
-          data: Object.values(result.rows[0]),
-        });
-      }
-    },
-  );
-});
-
-app.post("/submit", async (req, res) => {
-  try {
-    const data = Object.values(req.body);
-    console.log("📥 Received Form Data:", data);
-
-    const year = data[0];
-    const department = data[1];
-
-    // updating records
-    const checkQuery =
-      "SELECT year FROM nirf_form_data WHERE year = $1 AND department = $2";
-    const checkResult = await pool.query(checkQuery, [year, department]);
-
-    let messageToUser;
-    if (checkResult.rows.length > 0) {
-      // Record exists, deleting existing record before inserting new data
-      pool.query(
-        "delete from nirf_form_data where year = $1 and department = $2",
-        [year, department],
-        (err, result) => {
-          if (err) {
-            console.error("Error deleting existing record:", err);
-            res.status(500).send("Error updating data");
-          } else {
-            console.log("✅ Existing record deleted successfully.");
-          }
-        },
-      );
-
-      messageToUser = "Existing data updated successfully.";
-    } else {
-      messageToUser = "Data inserted successfully.";
-    }
-
-    const result = await pool.query(insertQuery, data);
-    console.log(
-      "✅ Database operation successful. Rows affected:",
-      result.rowCount,
-    );
-
-    res.render("index.ejs", {
-      message: messageToUser,
-      role: req.session.user.role == "admin",
-    });
-  } catch (error) {
-    console.error("❌ Error processing form data:", error);
-
-    res.status(500).send("Error processing form data");
-  }
-});
-
-app.get("/download", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM nirf_form_data");
-    const rows = result.rows;
-
-    if (rows.length === 0) {
-      return res.status(200).send("No data to download.");
-    }
-
-    // Generate CSV header
-    const header = Object.keys(rows[0]).join(",");
-
-    // Generate CSV data rows
-    const csvRows = rows.map((row) =>
-      Object.values(row)
-        .map((value) => {
-          // Handle values that might contain commas or newlines by quoting them
-          if (
-            typeof value === "string" &&
-            (value.includes(",") || value.includes("\n") || value.includes('"'))
-          ) {
-            return `"${value.replace(/"/g, '""')}"`;
-          }
-          return value;
-        })
-        .join(","),
-    );
-
-    const csvString = [header, ...csvRows].join("\n");
-
-    res.header("Content-Type", "text/csv");
-    res.header(
-      "Content-Disposition",
-      'attachment; filename="nirf_form_data.csv"',
-    );
-    res.status(200).send(csvString);
-  } catch (error) {
-    console.error("Error generating CSV for download:", error);
-    res.status(500).send("Error generating CSV for download.");
-  }
-});
-
 app.get("/courses", verifyLogin, async (req, res) => {
-  res.render("courseForm.ejs", { course: null });
+  // Render the form. It's now a dynamic, client-side driven form for new courses.
+  res.render("courseForm.ejs");
 });
 
 app.get("/edit-course/:courseCode", verifyLogin, async (req, res) => {
   try {
+    // Creating a dummy object to prevent the view from crashing until actual mapping is implemented
+
     const courseCode = req.params.courseCode;
     const result = await pool.query(
       "SELECT * FROM course_syllabus WHERE course_code = $1",
@@ -436,7 +275,10 @@ app.get("/edit-course/:courseCode", verifyLogin, async (req, res) => {
       return res.status(404).send("Course not found in the database.");
     }
 
-    res.render("courseForm.ejs", { course: result.rows[0] });
+    res.render("courseForm.ejs", {
+      courseData: dummyCourseData,
+      course: result.rows[0],
+    });
   } catch (error) {
     console.error("❌ Error fetching course data for edit:", error);
     res.status(500).send("Error fetching course data.");
@@ -461,10 +303,6 @@ app.get("/view-course/:courseCode", verifyLogin, async (req, res) => {
     console.error("❌ Error fetching course data:", error);
     res.status(500).send("Error fetching course data.");
   }
-});
-
-app.get("/syllabus", verifyLogin, async (req, res) => {
-  res.render("syllabusIndex.ejs");
 });
 
 app.get("/courses-list", verifyLogin, async (req, res) => {
@@ -499,9 +337,14 @@ app.post("/courses", verifyLogin, async (req, res) => {
     const unitContents = normalizeArray(
       courseData.unitContents || courseData["unitContents[]"],
     );
+    const unitHours = normalizeArray(
+      courseData.unitHours || courseData["unitHours[]"],
+    );
+
     const syllabusUnits = unitTitles.map((title, index) => ({
       title: title,
       content: xss(unitContents[index] || ""),
+      hours: parseInt(unitHours[index] || 0),
     }));
 
     // Process dynamic CO-PO Mapping
@@ -514,7 +357,7 @@ app.post("/courses", verifyLogin, async (req, res) => {
         );
         mapObj[`po${j}`] = poArr[index] || "";
       }
-      for (let j = 1; j <= 4; j++) {
+      for (let j = 1; j <= 2; j++) {
         const psoArr = normalizeArray(
           courseData[`mapPSO${j}`] || courseData[`mapPSO${j}[]`],
         );
@@ -523,10 +366,36 @@ app.post("/courses", verifyLogin, async (req, res) => {
       return mapObj;
     });
 
+    // Process Evaluation Criteria
+    const evaluationCriteria = {
+      internal: {
+        class_participation: parseInt(courseData.eval_class_participation) || 0,
+        seminar: parseInt(courseData.eval_seminar) || 0,
+        mid_term: parseInt(courseData.eval_mid_term) || 0,
+      },
+      end_term: {
+        written_exam: parseInt(courseData.examMarks) || 0,
+      },
+    };
+
+    // Process NEP Mapping
+    const nepMapping = {
+      employability: courseData.nep_employability || "",
+      skill_enhancement: courseData.nep_skill_enhancement || "",
+      communication_development: courseData.nep_communication_development || "",
+      indian_knowledge_system: courseData.nep_indian_knowledge_system || "",
+      environmental_awareness: courseData.nep_environmental_awareness || "",
+      current_issues: courseData.nep_current_issues || "",
+      women_empowerment: courseData.nep_women_empowerment || "",
+      public_policies: courseData.nep_public_policies || "",
+      any_other: courseData.nep_any_other || "",
+    };
+
     const values = [
       courseData.courseCode,
       courseData.category,
       courseData.courseTitle,
+      courseData.prerequisite,
       parseInt(courseData.l) || 0,
       parseInt(courseData.t) || 0,
       parseInt(courseData.p) || 0,
@@ -536,8 +405,7 @@ app.post("/courses", verifyLogin, async (req, res) => {
       parseInt(courseData.practicalMarks) || 0,
       parseInt(courseData.totalMarks) || 0,
       courseData.examDuration,
-      xss(courseData.objectives || ""),
-      xss(courseData.importantNote || ""),
+      xss(courseData.paperSetterInstructions || ""),
       JSON.stringify(syllabusUnits),
       JSON.stringify(
         normalizeArray(
@@ -555,12 +423,14 @@ app.post("/courses", verifyLogin, async (req, res) => {
         ),
       ),
       JSON.stringify(coPoMapping),
+      JSON.stringify(evaluationCriteria),
+      JSON.stringify(nepMapping),
     ];
 
     await pool.query(insertCourseQuery, values);
     console.log("✅ Course Data successfully saved to DB.");
 
-    res.redirect("/syllabus?message=Course data saved safely!");
+    res.redirect("/?message=Course data saved safely!");
   } catch (error) {
     console.error("❌ Error processing course form:", error);
     res.status(500).send("Error saving course data.");
@@ -627,7 +497,7 @@ app.post("/semester-courses", verifyLogin, async (req, res) => {
     ]);
     console.log("✅ Semester Courses successfully saved to DB.");
 
-    res.redirect("/syllabus?message=Semester courses saved successfully!");
+    res.redirect("/?message=Semester courses saved successfully!");
   } catch (error) {
     console.error("❌ Error saving semester courses:", error);
     res.status(500).send("Error saving semester courses data.");
@@ -973,6 +843,59 @@ app.get("/download-pdf/:courseCode", verifyLogin, async (req, res) => {
   }
 });
 
+app.get("/program-specialization-form", verifyLogin, (req, res) => {
+  const { program_name, specialization } = req.query;
+
+  if (program_name && specialization) {
+    pool.query(
+      "SELECT * FROM programs WHERE program_name = $1 AND specialization = $2",
+      [program_name, specialization],
+      (err, result) => {
+        if (err) {
+          console.error("Error fetching program:", err);
+          return res.status(500).send("Error fetching program.");
+        }
+        res.render("programSpecializationForm.ejs", {
+          program: result.rows[0] || null,
+        });
+      },
+    );
+  } else {
+    res.render("programSpecializationForm.ejs", { program: null });
+  }
+});
+
+app.post("/program-specialization", verifyLogin, async (req, res) => {
+  try {
+    const { program_name, specialization, level, scheme } = req.body;
+    await pool.query(insertProgramQuery, [
+      program_name,
+      specialization,
+      level,
+      scheme,
+    ]);
+    res.redirect("/?message=Program and Specialization saved successfully!");
+  } catch (error) {
+    console.error("❌ Error saving program:", error);
+    res.status(500).send("Error saving program.");
+  }
+});
+
+app.get("/programs-list", verifyLogin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM programs ORDER BY program_name ASC, specialization ASC",
+    );
+    res.render("programsList.ejs", { programs: result.rows });
+  } catch (error) {
+    console.error("❌ Error fetching programs list:", error);
+    res.status(500).send("Error fetching programs list.");
+  }
+});
+
+app.use((req, res) => {
+  res.status(404).render("404.ejs");
+});
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });

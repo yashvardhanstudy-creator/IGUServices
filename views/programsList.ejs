@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="shortcut icon" href="https://igu1.ucanapply.com/images/webicon.png" type="image/png">
+    <meta charset="UTF-8">
+    <title>Programs List</title>
+    <link rel="stylesheet" href="/stylesheets/index.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 900px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #667eea;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .btn {
+            padding: 8px 12px;
+            background: #17a2b8;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .btn:hover {
+            background: #117a8b;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Existing Programs & Specializations</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Program Name</th>
+                    <th>Specialization</th>
+                    <th>Level</th>
+                    <th>Scheme</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% programs.forEach(p => { %>
+                    <tr>
+                        <td><%= p.program_name %></td>
+                        <td><%= p.specialization %></td>
+                        <td><%= p.level %></td>
+                        <td><%= p.scheme %></td>
+                        <td>
+                            <a class="btn" href="/program-specialization-form?program_name=<%= encodeURIComponent(p.program_name) %>&specialization=<%= encodeURIComponent(p.specialization) %>">Edit</a>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+        <a href="/" class="back-btn">Back to Home</a>
+    </div>
+</body>
+</html>

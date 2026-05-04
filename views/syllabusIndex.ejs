@@ -7,18 +7,39 @@
     <title>Syllabus Management - IGU Meerpur</title>
     <link rel="stylesheet" href="/stylesheets/index.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
+            background-color: #f4f7f6;
         }
+
         .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
         }
+
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
         .success-message {
             color: green;
             background-color: #e8f5e9;
@@ -26,22 +47,55 @@
             border-radius: 5px;
             margin-bottom: 15px;
         }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
     </style>
 </head>
 
 <body>
     <div class="container">
+        <img src="https://d2xe8shibzpjog.cloudfront.net/logo/igu_logo.png" alt="IGU" style="height: 80px; width: auto;margin-bottom: 20px;">
         <h1>Syllabus & Course Management</h1>
+        <p style="color: #555; margin-bottom: 20px; font-weight: bold;"><%= locals.message || "" %></p>
         <% if (locals.query && locals.query.message) { %>
             <div class="success-message"><%= locals.query.message %></div>
         <% } %>
-        <ul class="hub-links">
-            <li><a href="/courses-list">View, Edit, or Download Existing Course Syllabi</a></li>
-            <li><a href="/courses">Create a New Course Syllabus</a></li>
-            <li><a href="/semester-courses-form">Create a Semester's Course Structure</a></li>
-            <li><a href="/semester-courses-list">View or Edit Saved Semester Structures</a></li>
-            <li><a href="/generate-full-syllabus">Generate Full Syllabus Print Document</a></li>
-        </ul>
+        <button onclick="window.location.href='/courses-list'">View, Edit, or Download Existing Course Syllabi</button>
+        <button onclick="window.location.href='/courses'">Create a New Course Syllabus</button>
+        <button onclick="window.location.href='/semester-courses-form'">Create a Semester's Course Structure</button>
+        <button onclick="window.location.href='/semester-courses-list'">View or Edit Saved Semester Structures</button>
+        <button onclick="window.location.href='/generate-full-syllabus'">Generate Full Syllabus Print Document</button>
+        
+        <button onclick="window.location.href='/program-specialization-form'" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%);">New Program/Specialization</button>
+        <button onclick="window.location.href='/programs-list'" style="background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%);">Edit Program/Specialization</button>
+
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+        <% if (locals.role) { %>
+            <button onclick="window.location.href='/register'" style="background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%);">Register New Admin</button>
+        <% } %>
+        <button onclick="window.location.href='/editPass'" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: black;">Edit Password</button>
+        <button onclick="window.location.href='/logout'" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">Logout</button>
     </div>
 </body>
 
