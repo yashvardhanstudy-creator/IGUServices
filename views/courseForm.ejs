@@ -38,11 +38,18 @@
             border-radius: 5px;
             cursor: pointer;
         }
+        [contenteditable][placeholder]:empty:before {
+            content: attr(placeholder);
+            color: #999;
+            pointer-events: none;
+            display: block;
+        }
     </style>
 </head>
 <body>
 
 <div class="form-container">
+
 <form action="/courses" method="POST">
     <div class="form-section">
         <h3>Select Scheme</h3>
@@ -91,7 +98,7 @@
             </tr>
             <tr>
                 <td class="header-cell">Course Learning Outcomes (CLO)</td>
-                <td colspan="3"><textarea name="clos" rows="4" placeholder="Enter each CLO on a new line."></textarea></td>
+                <td colspan="3"><textarea id="clos" name="courseOutcomes" rows="4" placeholder="Enter each CLO on a new line." oninput="generateMappingTable()"></textarea></td>
             </tr>
         </table>
 
@@ -135,8 +142,16 @@
 
     <div class="form-section">
         <h2>Part B - Contents of the Course</h2>
-        <div id="important notes">
-            <textarea id="instructions" name="instructions" rows="5`"></textarea>
+        <div id="important-notes" style="display: flex; gap: 20px;">
+            <div id="theory_container" style="flex: 1; display: none;">
+                <label>Theory Instructions</label>
+                <div id="instructions_theory" style="border: 1px solid #ccc; padding: 10px; background-color: #e9ecef; border-radius: 4px; min-height: 100px;"></div>
+            </div>
+            <div id="practical_container" style="flex: 1; display: none;">
+                <label>Practical Instructions</label>
+                <div id="instructions_practical" style="border: 1px solid #ccc; padding: 10px; background-color: #e9ecef; border-radius: 4px; min-height: 100px;"></div>
+            </div>
+            <input type="hidden" name="paperSetterInstructions" id="paperSetterInstructions">
         </div>
 
         <h3>Syllabus Units</h3>
@@ -167,33 +182,33 @@
                 <td>Class Participation:</td>
                 <td><input type="text" id="eval_cp_th" name="eval_cp_th" readonly></td>
                 <td><input type="text" id="eval_cp_pr" name="eval_cp_pr" readonly></td>
-                <td>Lab record</td>
-                <td><input type="text" id="eval_lab_record_pr" name="eval_lab_record_pr" readonly></td>
-                <td><input type="text" id="eval_lab_record_pr_val" name="eval_lab_record_pr_val" readonly></td>
+                <td>Written Examination</td>
+                <td><input type="text" id="eval_written_exam_th" name="eval_written_exam_th" readonly></td>
+                <td>NA</td>
             </tr>
             <tr>
                 <td>Seminar/presentation/assignment/quiz/class test etc.:</td>
                 <td><input type="text" id="eval_seminar_th" name="eval_seminar_th" readonly></td>
                 <td><input type="text" id="eval_seminar_pr" name="eval_seminar_pr" readonly></td>
-                <td>Viva-Voce</td>
-                <td><input type="text" id="eval_viva_pr" name="eval_viva_pr" readonly></td>
-                <td><input type="text" id="eval_viva_pr_val" name="eval_viva_pr_val" readonly></td>
+                <td>Lab record</td>
+                <td>NA</td>
+                <td><input type="text" id="eval_lab_record_pr" name="eval_lab_record_pr" readonly></td>
             </tr>
             <tr>
                 <td>Seminar/Demonstration/Viva-voce/Lab records etc.:</td>
                 <td>NA</td>
                 <td><input type="text" id="eval_seminar_demo_pr" name="eval_seminar_demo_pr" readonly></td>
-                <td>Written Examination</td>
-                <td><input type="text" id="eval_written_exam_th" name="eval_written_exam_th" readonly></td>
+                <td>Viva-Voce</td>
                 <td>NA</td>
+                <td><input type="text" id="eval_viva_pr" name="eval_viva_pr" readonly></td>
             </tr>
             <tr>
                 <td>Mid-Term Exam:</td>
                 <td><input type="text" id="eval_midterm_th" name="eval_midterm_th" readonly></td>
                 <td>NA</td>
                 <td>Write-up and execution of the practical</td>
+                <td>NA</td>
                 <td><input type="text" id="eval_execution_pr" name="eval_execution_pr" readonly></td>
-                <td><input type="text" id="eval_execution_pr_val" name="eval_execution_pr_val" readonly></td>
             </tr>
         </table>
     </div>

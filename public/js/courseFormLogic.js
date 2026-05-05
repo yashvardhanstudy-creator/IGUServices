@@ -14,7 +14,7 @@ const schemes = {
     theoryUnits: 4,
     instructions: {
       theory:
-        "The paper setter shall prepare 9 questions selecting two questions from each unit with consideration given to the Course Learning Outcomes. Among these, question number 1 will be compulsory question, comprising 7 short answer type questions carrying two marks each (total 14 marks) and covering the entire syllabus. The remaining questions will be carrying 14 marks each. Examinees will be required to attempt five questions: the compulsory question no. 1 and 1 question from the each of the four units.",
+        "The paper setter shall prepare <b>9 questions</b> selecting <b>two questions</b> from each unit with consideration given to the Course Learning Outcomes. Among these, question number 1 will be <b>compulsory question</b>, comprising <b>7 short answer type questions</b> carrying two marks each (total 14 marks) and covering the entire syllabus. The remaining questions will be carrying 14 marks each. Examinees will be required to attempt <b>five questions</b>: the compulsory question no. 1 and 1 question from the each of the four units.",
       practical: "",
     },
     evaluation: {
@@ -51,7 +51,7 @@ const schemes = {
     instructions: {
       theory: "",
       practical:
-        "Evaluation will be based on continuous assessment, a final practical examination, and a viva-voce. The external examiner will assess the student's performance in the lab, the lab record, and conduct a viva-voce.",
+        "Evaluation will be based on <b>continuous assessment</b>, a <b>final practical examination</b>, and a <b>viva-voce</b>. The external examiner will assess the student's performance in the lab, the lab record, and conduct a viva-voce.",
     },
     evaluation: {
       internal_th_total: 0,
@@ -86,9 +86,9 @@ const schemes = {
     theoryUnits: 3,
     instructions: {
       theory:
-        "The paper setter shall prepare 7 questions selecting two questions from each unit with consideration given to the Course Learning Outcomes. Among these, question number 1 will be compulsory. Examinees will be required to attempt four questions: the compulsory question no. 1 and 1 question from each of the three units.",
+        "The paper setter shall prepare <b>7 questions</b> selecting <b>two questions</b> from each unit with consideration given to the Course Learning Outcomes. Among these, question number 1 will be <b>compulsory</b>. Examinees will be required to attempt <b>four questions</b>: the compulsory question no. 1 and 1 question from each of the three units.",
       practical:
-        "The external examiner will assess the student's performance in the lab, the lab record, and conduct a viva-voce.",
+        "The external examiner will assess the student's performance in the lab, the lab record, and conduct a <b>viva-voce</b>.",
     },
     evaluation: {
       internal_th_total: 20,
@@ -123,9 +123,9 @@ const schemes = {
     theoryUnits: 2,
     instructions: {
       theory:
-        "The paper setter shall prepare 5 questions selecting two questions from each unit with consideration given to the Course Learning Outcomes. Among these, question number 1 will be compulsory. Examinees will be required to attempt three questions: the compulsory question no. 1 and 1 question from each of the two units.",
+        "The paper setter shall prepare <b>5 questions</b> selecting <b>two questions</b> from each unit with consideration given to the Course Learning Outcomes. Among these, question number 1 will be <b>compulsory</b>. Examinees will be required to attempt <b>three questions</b>: the compulsory question no. 1 and 1 question from each of the two units.",
       practical:
-        "The external examiner will assess the student's performance in the lab, the lab record, and conduct a viva-voce.",
+        "The external examiner will assess the student's performance in the lab, the lab record, and conduct a <b>viva-voce</b>.",
     },
     evaluation: {
       internal_th_total: 15,
@@ -160,7 +160,7 @@ const schemes = {
     theoryUnits: 3,
     instructions: {
       theory:
-        "The paper setter shall prepare 7 questions selecting two questions from each unit with consideration given to the Course Learning Outcomes. Among these, question number 1 will be compulsory. Examinees will be required to attempt four questions: the compulsory question no. 1 and 1 question from each of the three units.",
+        "The paper setter shall prepare <b>7 questions</b> selecting <b>two questions</b> from each unit with consideration given to the Course Learning Outcomes. Among these, question number 1 will be <b>compulsory</b>. Examinees will be required to attempt <b>four questions</b>: the compulsory question no. 1 and 1 question from each of the three units.",
       practical: "",
     },
     evaluation: {
@@ -196,7 +196,7 @@ const schemes = {
     theoryUnits: 2,
     instructions: {
       theory:
-        "The paper setter shall prepare 5 questions selecting two questions from each unit with consideration given to the Course Learning Outcomes. Among these, question number 1 will be compulsory. Examinees will be required to attempt three questions: the compulsory question no. 1 and 1 question from each of the two units.",
+        "The paper setter shall prepare <b>5 questions</b> selecting <b>two questions</b> from each unit with consideration given to the Course Learning Outcomes. Among these, question number 1 will be <b>compulsory</b>. Examinees will be required to attempt <b>three questions</b>: the compulsory question no. 1 and 1 question from each of the two units.",
       practical: "",
     },
     evaluation: {
@@ -232,9 +232,9 @@ const schemes = {
     theoryUnits: 1,
     instructions: {
       theory:
-        "The paper setter shall prepare 4 questions from unit 01 with consideration given to the Course Learning Outcomes. Among these, question number 1 will be compulsory question comprising 6 short answer type questions carrying one mark each (total 06 marks). The remaining questions will be carrying 07 marks each. Examinees will be required to attempt three questions: the compulsory question no. 1 and 02 questions from other 03 questions.",
+        "The paper setter shall prepare <b>4 questions</b> from unit 01 with consideration given to the Course Learning Outcomes. Among these, question number 1 will be <b>compulsory question</b> comprising <b>6 short answer type questions</b> carrying one mark each (total 06 marks). The remaining questions will be carrying 07 marks each. Examinees will be required to attempt <b>three questions</b>: the compulsory question no. 1 and 02 questions from other 03 questions.",
       practical:
-        "Write-up and execution of the practical will be conducted as per the nature of the practical by the external examiner, with consideration given to the Course Learning Outcomes. The maximum marks for the write-up and execution of the practical will be 5.",
+        "<b>Write-up and execution</b> of the practical will be conducted as per the nature of the practical by the external examiner, with consideration given to the Course Learning Outcomes. The maximum marks for the write-up and execution of the practical will be <b>5</b>.",
     },
     evaluation: {
       internal_th_total: 10,
@@ -269,9 +269,9 @@ const schemes = {
     theoryUnits: 2,
     instructions: {
       theory:
-        "The paper setter shall prepare 5 questions selecting two questions from each unit with consideration given to the Course Learning Outcomes. Among these, question number 1 will be compulsory. Examinees will be required to attempt three questions: the compulsory question no. 1 and 1 question from each of the two units.",
+        "The paper setter shall prepare <b>5 questions</b> selecting <b>two questions</b> from each unit with consideration given to the Course Learning Outcomes. Among these, question number 1 will be <b>compulsory</b>. Examinees will be required to attempt <b>three questions</b>: the compulsory question no. 1 and 1 question from each of the two units.",
       practical:
-        "The external examiner will assess the student's performance in the lab, the lab record, and conduct a viva-voce.",
+        "The external examiner will assess the student's performance in the lab, the lab record, and conduct a <b>viva-voce</b>.",
     },
     evaluation: {
       internal_th_total: 15,
@@ -319,10 +319,38 @@ function autofillForm() {
   document.getElementById("exam_duration").value = scheme.examDuration;
 
   // Autofill Instructions
-  document.getElementById("instructions_theory").value =
-    scheme.instructions.theory;
-  document.getElementById("instructions_practical").value =
-    scheme.instructions.practical;
+  const theoryInstr = scheme.instructions.theory;
+  const pracInstr = scheme.instructions.practical;
+
+  const theoryContainer = document.getElementById("theory_container");
+  const pracContainer = document.getElementById("practical_container");
+  const theoryDiv = document.getElementById("instructions_theory");
+  const pracDiv = document.getElementById("instructions_practical");
+  const hiddenInstr = document.getElementById("paperSetterInstructions");
+
+  let combinedInstructions = "";
+
+  if (theoryInstr) {
+    theoryContainer.style.display = "block";
+    theoryDiv.innerHTML = theoryInstr;
+    combinedInstructions += "Theory: " + theoryInstr + " ";
+  } else {
+    theoryContainer.style.display = "none";
+    theoryDiv.innerHTML = "";
+  }
+
+  if (pracInstr) {
+    pracContainer.style.display = "block";
+    pracDiv.innerHTML = pracInstr;
+    combinedInstructions += "Practical: " + pracInstr;
+  } else {
+    pracContainer.style.display = "none";
+    pracDiv.innerHTML = "";
+  }
+
+  if (hiddenInstr) {
+    hiddenInstr.value = combinedInstructions.trim();
+  }
 
   // Generate Units
   generateUnits(scheme.theoryUnits);
@@ -366,16 +394,93 @@ function generateUnits(count) {
   container.innerHTML = ""; // Clear existing units
   if (count === 0) {
     container.innerHTML =
-      '<tr><td colspan="2">No theory units for this scheme.</td></tr>';
+      '<tr><td colspan="3" style="text-align: center;">No theory units for this scheme.</td></tr>';
     return;
   }
   for (let i = 1; i <= count; i++) {
     const row = document.createElement("tr");
     row.innerHTML = `
-            <td><input type="text" name="unit_title[]" value="Unit-${i}" style="font-weight: bold;"></td>
-            <td><textarea name="unit_topics[]" rows="3" placeholder="Enter topics for Unit ${i}"></textarea></td>
-            <td><input type="number" name="unit_hours[]" placeholder="Hours"></td>
+            <td><input type="text" name="unitTitles[]" value="Unit-${i}" style="font-weight: bold;"></td>
+            <td>
+                <div style="margin-bottom: 5px;">
+                    <button type="button" onmousedown="event.preventDefault(); document.execCommand('bold', false, null)" style="padding: 2px 6px; font-weight: bold; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 3px;" title="Bold">B</button>
+                </div>
+                <div contenteditable="true" style="border: 1px solid #ccc; padding: 6px; min-height: 60px; border-radius: 4px; background-color: #fff; outline: none;" oninput="document.getElementById('hidden_topic_${i}').value = this.innerHTML" placeholder="Enter topics for Unit ${i}"></div>
+                <input type="hidden" name="unitContents[]" id="hidden_topic_${i}">
+            </td>
+            <td><input type="number" name="unitHours[]" placeholder="Hours"></td>
         `;
     container.appendChild(row);
   }
 }
+
+function generateMappingTable() {
+  const closInput = document.getElementById("clos");
+  if (!closInput) return;
+
+  const closText = closInput.value;
+
+  // Use regex to safely split by newline, handling all OS line break types (\r\n, \n, or \r)
+  const closList = closText
+    .split(/\r?\n|\r/)
+    .map((c) => c.trim())
+    .filter((c) => c !== "");
+  const tbody = document.getElementById("mappingBody");
+  if (!tbody) return;
+
+  // Save existing input values to prevent data loss while typing
+  const existingData = [];
+  const existingRows = tbody.querySelectorAll("tr");
+  existingRows.forEach((row) => {
+    const inputs = row.querySelectorAll("input");
+    if (inputs.length > 0) {
+      // Only save rows that actually contain input fields
+      const rowData = {};
+      inputs.forEach((input) => {
+        rowData[input.name] = input.value;
+      });
+      existingData.push(rowData);
+    }
+  });
+
+  tbody.innerHTML = ""; // Clear existing rows
+
+  if (closList.length === 0) {
+    tbody.innerHTML =
+      '<tr><td colspan="14" style="text-align: center; padding: 10px; font-weight: bold; color: #666;">Enter CLOs in the box above to generate the mapping table.</td></tr>';
+    return;
+  }
+
+  closList.forEach((clo, index) => {
+    const row = document.createElement("tr");
+    let rowHtml = `<td><input type="text" name="mapCO[]" value="${clo}" readonly style="width: 100%; font-weight: bold; background-color: transparent; border: none; outline: none; cursor: default;"></td>`;
+
+    // Generate PO1 to PO11 columns
+    for (let i = 1; i <= 11; i++) {
+      const fieldName = `mapPO${i}[]`;
+      const prevValue =
+        existingData[index] && existingData[index][fieldName]
+          ? existingData[index][fieldName]
+          : "";
+      rowHtml += `<td><input type="text" name="${fieldName}" value="${prevValue}" style="text-align: center; width: 100%; border: 1px solid #ccc; box-sizing: border-box;"></td>`;
+    }
+
+    // Generate PSO1 to PSO2 columns
+    for (let i = 1; i <= 2; i++) {
+      const fieldName = `mapPSO${i}[]`;
+      const prevValue =
+        existingData[index] && existingData[index][fieldName]
+          ? existingData[index][fieldName]
+          : "";
+      rowHtml += `<td><input type="text" name="${fieldName}" value="${prevValue}" style="text-align: center; width: 100%; border: 1px solid #ccc; box-sizing: border-box;"></td>`;
+    }
+
+    row.innerHTML = rowHtml;
+    tbody.appendChild(row);
+  });
+}
+
+// Call on DOM load to ensure the empty state or pre-filled data renders the table correctly
+document.addEventListener("DOMContentLoaded", () => {
+  generateMappingTable();
+});
