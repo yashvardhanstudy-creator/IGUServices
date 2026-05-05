@@ -866,6 +866,206 @@ app.get("/program-specialization-form", verifyLogin, (req, res) => {
   }
 });
 
+const schemeB = [
+  {
+    number: 1,
+    color: "#d9e2f3",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-A1", credits: 4 },
+      { type: "CC-B1", credits: 4 },
+      { type: "CC-C1", credits: 4 },
+      { type: "CC-M1", credits: 2 },
+      { type: "MDC-1", credits: 3 },
+      { type: "AEC-1", credits: 2 },
+      { type: "SEC-1", credits: 3 },
+      { type: "VAC-1", credits: 2 },
+    ],
+  },
+  {
+    number: 2,
+    color: "#fbe5d6",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-A2", credits: 4 },
+      { type: "CC-B2", credits: 4 },
+      { type: "CC-C2", credits: 4 },
+      { type: "CC-M2", credits: 2 },
+      { type: "MDC-2", credits: 3 },
+      { type: "AEC-2", credits: 2 },
+      { type: "SEC-2", credits: 3 },
+      { type: "VAC-2", credits: 2 },
+    ],
+  },
+  {
+    number: 3,
+    color: "#d9e2f3",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-A3", credits: 4 },
+      { type: "CC-B3", credits: 4 },
+      { type: "CC-C3", credits: 4 },
+      { type: "CC-M3", credits: 4 },
+      { type: "MDC-3", credits: 3 },
+      { type: "AEC-3", credits: 2 },
+      { type: "SEC-3", credits: 3 },
+    ],
+  },
+  {
+    number: 4,
+    color: "#fbe5d6",
+    totalCredits: 20,
+    courses: [
+      { type: "CC-A4", credits: 4 },
+      { type: "CC-B4", credits: 4 },
+      { type: "CC-C4", credits: 4 },
+      { type: "CC-M4(V)", credits: 4 },
+      { type: "AEC-4", credits: 2 },
+      { type: "VAC-3", credits: 2 },
+    ],
+  },
+  {
+    number: 5,
+    color: "#d9e2f3",
+    totalCredits: 20,
+    courses: [
+      { type: "CC-A5", credits: 4 },
+      { type: "CC-B5", credits: 4 },
+      { type: "CC-C5", credits: 4 },
+      { type: "CC-M5(V)", credits: 4 },
+      { type: "Intership", credits: 4 },
+    ],
+  },
+  {
+    number: 6,
+    color: "#fbe5d6",
+    totalCredits: 20,
+    courses: [
+      { type: "CC-A6", credits: 4 },
+      { type: "CC-B6", credits: 4 },
+      { type: "CC-C6", credits: 4 },
+      { type: "CC-M6", credits: 4 },
+      { type: "CC-M7(V)", credits: 4 },
+    ],
+  },
+];
+
+const schemeA = [
+  {
+    number: 1,
+    color: "#d9e2f3",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-A1", credits: 4 },
+      { type: "CC-B1", credits: 4 },
+      { type: "CC-C1", credits: 4 },
+      { type: "CC-M1", credits: 2 },
+      { type: "MDC-1", credits: 3 },
+      { type: "AEC-1", credits: 2 },
+      { type: "SEC-1", credits: 3 },
+      { type: "VAC-1", credits: 2 },
+    ],
+  },
+  {
+    number: 2,
+    color: "#fbe5d6",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-A2", credits: 4 },
+      { type: "CC-B2", credits: 4 },
+      { type: "CC-C2", credits: 4 },
+      { type: "CC-M2", credits: 2 },
+      { type: "MDC-2", credits: 3 },
+      { type: "AEC-2", credits: 2 },
+      { type: "SEC-2", credits: 3 },
+      { type: "VAC-2", credits: 2 },
+    ],
+  },
+  {
+    number: 3,
+    color: "#d9e2f3",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-A3", credits: 4 },
+      { type: "CC-B3", credits: 4 },
+      { type: "CC-C3", credits: 4 },
+      { type: "CC-M3", credits: 4 },
+      { type: "MDC-3", credits: 3 },
+      { type: "AEC-3", credits: 2 },
+      { type: "SEC-3", credits: 3 },
+    ],
+  },
+  {
+    number: 4,
+    color: "#fbe5d6",
+    totalCredits: 20,
+    courses: [
+      { type: "CC-A4", credits: 4 },
+      { type: "CC-B4", credits: 4 },
+      { type: "CC-C4", credits: 4 },
+      { type: "CC-M4(V)", credits: 4 },
+      { type: "AEC-4", credits: 2 },
+      { type: "VAC-3", credits: 2 },
+    ],
+  },
+  {
+    number: 5,
+    color: "#d9e2f3",
+    totalCredits: 20,
+    courses: [
+      { type: "CC-A5", credits: 4 },
+      { type: "CC-B5", credits: 4 },
+      { type: "CC-C5", credits: 4 },
+      { type: "CC-M5(V)", credits: 4 },
+      { type: "Intership", credits: 4 },
+    ],
+  },
+  {
+    number: 6,
+    color: "#fbe5d6",
+    totalCredits: 20,
+    courses: [
+      { type: "CC-A6", credits: 4 },
+      { type: "CC-B6", credits: 4 },
+      { type: "CC-C6", credits: 4 },
+      { type: "CC-M6", credits: 4 },
+      { type: "CC-M7(V)", credits: 4 },
+    ],
+  },
+];
+
+const curriculumSchemes = {
+  "Scheme A": schemeA,
+  "Scheme B": [], // Placeholders for you to fill in later
+  "Scheme C": [],
+  "Scheme D": [],
+  "Scheme P": [],
+  "Scheme Q": [],
+  "Scheme R": [],
+  "Scheme S": [],
+};
+
+app.get("/curriculum", verifyLogin, (req, res) => {
+  let requestedScheme = req.query.scheme || "Scheme A";
+
+  // Normalize if the database only stored the single letter (e.g., "A" -> "Scheme A")
+  if (requestedScheme.trim().length === 1) {
+    requestedScheme = "Scheme " + requestedScheme.trim().toUpperCase();
+  }
+
+  // Check if the scheme exists in our mapping and has data; otherwise default to Scheme A
+  const isAvailable =
+    curriculumSchemes[requestedScheme] &&
+    curriculumSchemes[requestedScheme].length > 0;
+
+  const semesters = isAvailable ? curriculumSchemes[requestedScheme] : schemeA;
+  const schemeName = isAvailable
+    ? requestedScheme
+    : "Scheme A (Default Fallback)";
+
+  res.render("curriculum.ejs", { semesters, schemeName, query: req.query });
+});
+
 app.post("/program-specialization", verifyLogin, async (req, res) => {
   try {
     const { program_name, specialization, level, scheme } = req.body;

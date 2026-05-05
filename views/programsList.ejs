@@ -89,7 +89,7 @@
                         <td><%= p.level %></td>
                         <td><%= p.scheme %></td>
                         <td>
-                            <a class="btn" href="/program-specialization-form?program_name=<%= encodeURIComponent(p.program_name) %>&specialization=<%= encodeURIComponent(p.specialization) %>">Edit</a>
+                            <a class="btn" href="/curriculum?program_name=<%= encodeURIComponent(p.program_name) %>&specialization=<%= encodeURIComponent(p.specialization) %>&scheme=<%= encodeURIComponent(p.scheme) %>">Edit</a>
                         </td>
                     </tr>
                 <% }) %>
