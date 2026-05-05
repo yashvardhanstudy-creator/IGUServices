@@ -866,90 +866,6 @@ app.get("/program-specialization-form", verifyLogin, (req, res) => {
   }
 });
 
-const schemeB = [
-  {
-    number: 1,
-    color: "#d9e2f3",
-    totalCredits: 24,
-    courses: [
-      { type: "CC-A1", credits: 4 },
-      { type: "CC-B1", credits: 4 },
-      { type: "CC-C1", credits: 4 },
-      { type: "CC-M1", credits: 2 },
-      { type: "MDC-1", credits: 3 },
-      { type: "AEC-1", credits: 2 },
-      { type: "SEC-1", credits: 3 },
-      { type: "VAC-1", credits: 2 },
-    ],
-  },
-  {
-    number: 2,
-    color: "#fbe5d6",
-    totalCredits: 24,
-    courses: [
-      { type: "CC-A2", credits: 4 },
-      { type: "CC-B2", credits: 4 },
-      { type: "CC-C2", credits: 4 },
-      { type: "CC-M2", credits: 2 },
-      { type: "MDC-2", credits: 3 },
-      { type: "AEC-2", credits: 2 },
-      { type: "SEC-2", credits: 3 },
-      { type: "VAC-2", credits: 2 },
-    ],
-  },
-  {
-    number: 3,
-    color: "#d9e2f3",
-    totalCredits: 24,
-    courses: [
-      { type: "CC-A3", credits: 4 },
-      { type: "CC-B3", credits: 4 },
-      { type: "CC-C3", credits: 4 },
-      { type: "CC-M3", credits: 4 },
-      { type: "MDC-3", credits: 3 },
-      { type: "AEC-3", credits: 2 },
-      { type: "SEC-3", credits: 3 },
-    ],
-  },
-  {
-    number: 4,
-    color: "#fbe5d6",
-    totalCredits: 20,
-    courses: [
-      { type: "CC-A4", credits: 4 },
-      { type: "CC-B4", credits: 4 },
-      { type: "CC-C4", credits: 4 },
-      { type: "CC-M4(V)", credits: 4 },
-      { type: "AEC-4", credits: 2 },
-      { type: "VAC-3", credits: 2 },
-    ],
-  },
-  {
-    number: 5,
-    color: "#d9e2f3",
-    totalCredits: 20,
-    courses: [
-      { type: "CC-A5", credits: 4 },
-      { type: "CC-B5", credits: 4 },
-      { type: "CC-C5", credits: 4 },
-      { type: "CC-M5(V)", credits: 4 },
-      { type: "Intership", credits: 4 },
-    ],
-  },
-  {
-    number: 6,
-    color: "#fbe5d6",
-    totalCredits: 20,
-    courses: [
-      { type: "CC-A6", credits: 4 },
-      { type: "CC-B6", credits: 4 },
-      { type: "CC-C6", credits: 4 },
-      { type: "CC-M6", credits: 4 },
-      { type: "CC-M7(V)", credits: 4 },
-    ],
-  },
-];
-
 const schemeA = [
   {
     number: 1,
@@ -1033,12 +949,687 @@ const schemeA = [
     ],
   },
 ];
+// Complete Scheme B based on all screenshots (8 Semesters)
+const schemeB = [
+  // Semester 1
+  {
+    number: 1,
+    color: "#d9e2f3",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-A1", credits: 4 },
+      { type: "CC-B1", credits: 4 },
+      { type: "CC-C1", credits: 4 },
+      { type: "CC-M1", credits: 2 },
+      { type: "MDC-1", credits: 3 },
+      { type: "AEC-1", credits: 2 },
+      { type: "SEC-1", credits: 3 },
+      { type: "VAC-1", credits: 2 },
+    ],
+  },
+  // Semester 2
+  {
+    number: 2,
+    color: "#fbe5d6",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-A2", credits: 4 },
+      { type: "CC-B2", credits: 4 },
+      { type: "CC-C2", credits: 4 },
+      { type: "CC-M2", credits: 2 },
+      { type: "MDC-2", credits: 3 },
+      { type: "AEC-2", credits: 2 },
+      { type: "SEC-2", credits: 3 },
+      { type: "VAC-2", credits: 2 },
+    ],
+  },
+  // Semester 3
+  {
+    number: 3,
+    color: "#d9e2f3",
+    totalCredits: 24,
+    courses: [
+      { type: "MCC-A2", credits: 4 },
+      { type: "MCC-A4", credits: 4 },
+      { type: "MCC-A5", credits: 4 },
+      { type: "CC-M3(V)", credits: 4 },
+      { type: "MDC-3", credits: 3 },
+      { type: "AEC-3", credits: 2 },
+      { type: "SEC-3", credits: 3 },
+    ],
+  },
+  // Semester 4
+  {
+    number: 4,
+    color: "#fbe5d6",
+    totalCredits: 24,
+    courses: [
+      { type: "MCC-A6", credits: 4 },
+      { type: "MCC-A7", credits: 4 },
+      { type: "MCC-A8", credits: 4 },
+      { type: "DSE-A1", credits: 4 },
+      { type: "CC-M4(V)", credits: 4 },
+      { type: "AEC-4", credits: 2 },
+      { type: "VAC-3", credits: 2 },
+    ],
+  },
+  // Semester 5
+  {
+    number: 5,
+    color: "#d9e2f3",
+    totalCredits: 20,
+    courses: [
+      { type: "MCC-A9", credits: 4 },
+      { type: "MCC-A10", credits: 4 },
+      { type: "DSE-A2", credits: 4 },
+      { type: "DSE-A3", credits: 4 },
+      { type: "Internship", credits: 4 },
+    ],
+  },
+  // Semester 6
+  {
+    number: 6,
+    color: "#fbe5d6",
+    totalCredits: 20,
+    courses: [
+      { type: "MCC-A11", credits: 4 },
+      { type: "MCC-A12", credits: 4 },
+      { type: "DSE-A4", credits: 4 },
+      { type: "DSE-A5", credits: 4 },
+      { type: "CC-M5(V)", credits: 4 },
+    ],
+  },
+  // Semester 7
+  {
+    number: 7,
+    color: "#d9e2f3",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-H1", credits: 4 },
+      { type: "CC-H2", credits: 4 },
+      { type: "CC-H3", credits: 4 },
+      { type: "DSE-H1", credits: 4 },
+      { type: "PC-H1", credits: 4 },
+      { type: "CC-HM1", credits: 4 },
+    ],
+  },
+  // Semester 8 - Option A (Standard)
+  {
+    number: "8A",
+    color: "#fbe5d6",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-H4", credits: 4 },
+      { type: "CC-H5", credits: 4 },
+      { type: "CC-H6", credits: 4 },
+      { type: "DSE-H2", credits: 4 },
+      { type: "PC-H2", credits: 4 },
+      { type: "CC-HM2", credits: 4 },
+    ],
+  },
+  // OR Separator (visual only)
+  {
+    number: "OR",
+    color: "#fff3cd",
+    isOrRow: true,
+    courses: [
+      {
+        type: "═══════ OR ═════",
+      },
+    ],
+  },
+  // Semester 8 - Option B (Project/Dissertation)
+  {
+    number: "8B",
+    color: "#fbe5d6",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-H4", credits: 4 },
+      { type: "CC-H5", credits: 4 },
+      { type: "PROJECT/DISSERTATION", credits: 12 },
+      { type: "CC-HM2", credits: 4 },
+    ],
+  },
+];
+
+// Alternative Semester 8 with Project/Dissertation (as shown in fourth screenshot, bottom)
+// You can use this version if needed:
+const schemeB_Alternative_Semester8 = {
+  number: 8,
+  color: "#fbe5d6",
+  totalCredits: 24,
+  courses: [
+    { type: "CC-H4", credits: 4 },
+    { type: "CC-H5", credits: 4 },
+    { type: "PROJECT/DISSERTATION", credits: 12 },
+    { type: "CC-HM2", credits: 4 },
+  ],
+};
+// Complete Scheme C based on screenshots (8 Semesters)
+const schemeC = [
+  // Semester 1
+  {
+    number: 1,
+    color: "#d9e2f3",
+    totalCredits: 22,
+    courses: [
+      { type: "MCC-A1", credits: 4 },
+      { type: "MCC-A2", credits: 4 },
+      { type: "CC-M1", credits: 4 },
+      { type: "MDC-1", credits: 3 },
+      { type: "AEC-1", credits: 2 },
+      { type: "SEC-1", credits: 3 },
+      { type: "VAC-1", credits: 2 },
+    ],
+  },
+  // Semester 2
+  {
+    number: 2,
+    color: "#fbe5d6",
+    totalCredits: 22,
+    courses: [
+      { type: "MCC-A3", credits: 4 },
+      { type: "DSEC-A1", credits: 4 },
+      { type: "CC-M2", credits: 4 },
+      { type: "MDC-2", credits: 3 },
+      { type: "AEC-2", credits: 2 },
+      { type: "SEC-2", credits: 3 },
+      { type: "VAC-2", credits: 2 },
+    ],
+  },
+  // Semester 3
+  {
+    number: 3,
+    color: "#d9e2f3",
+    totalCredits: 22,
+    courses: [
+      { type: "MCC-A4", credits: 4 },
+      { type: "MCC-A5", credits: 4 },
+      { type: "CC-M3", credits: 4 },
+      { type: "MDC-3", credits: 3 },
+      { type: "AEC-3", credits: 2 },
+      { type: "SEC-3", credits: 3 },
+      { type: "VAC-3", credits: 2 },
+    ],
+  },
+  // Semester 4
+  {
+    number: 4,
+    color: "#fbe5d6",
+    totalCredits: 24,
+    courses: [
+      { type: "MCC-A6", credits: 4 },
+      { type: "MCC-A7", credits: 4 },
+      { type: "MCC-A8", credits: 4 },
+      { type: "DSE-A1", credits: 4 },
+      { type: "CC-M4(V)", credits: 4 },
+      { type: "AEC-4", credits: 2 },
+      { type: "VAC-4", credits: 2 },
+    ],
+  },
+  // Semester 5
+  {
+    number: 5,
+    color: "#d9e2f3",
+    totalCredits: 24,
+    courses: [
+      { type: "MCC-A9", credits: 4 },
+      { type: "MCC-A10", credits: 4 },
+      { type: "DSE-A2", credits: 4 },
+      { type: "DSE-A3", credits: 4 },
+      { type: "CC-M5(V)", credits: 4 },
+      { type: "Internship", credits: 4 },
+    ],
+  },
+  // Semester 6
+  {
+    number: 6,
+    color: "#fbe5d6",
+    totalCredits: 22,
+    courses: [
+      { type: "MCC-A11", credits: 4 },
+      { type: "MCC-A12", credits: 4 },
+      { type: "DSE-A4", credits: 4 },
+      { type: "DSE-A5", credits: 4 },
+      { type: "CC-M6(V)", credits: 4 },
+      { type: "SEC-4", credits: 2 },
+    ],
+  },
+  // Semester 7
+  {
+    number: 7,
+    color: "#d9e2f3",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-H1", credits: 4 },
+      { type: "CC-H2", credits: 4 },
+      { type: "CC-H3", credits: 4 },
+      { type: "DSE-H1", credits: 4 },
+      { type: "PC-H1", credits: 4 },
+      { type: "CC-HM1", credits: 4 },
+    ],
+  },
+  // Semester 8 - Option A (Standard)
+  {
+    number: 8,
+    color: "#fbe5d6",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-H4", credits: 4 },
+      { type: "CC-H5", credits: 4 },
+      { type: "DDSE-H2", credits: 4 },
+      { type: "PC-H2", credits: 4 },
+      { type: "CC-HM2", credits: 4 },
+    ],
+  },
+];
+
+// Scheme C with BOTH options for Semester 8 (if you want to show both)
+const schemeCWithAlternate = [
+  // Semesters 1-6 (same as above)
+  {
+    number: 1,
+    color: "#d9e2f3",
+    totalCredits: 22,
+    courses: [
+      { type: "MCC-A1", credits: 4 },
+      { type: "MCC-A2", credits: 4 },
+      { type: "CC-M1", credits: 4 },
+      { type: "MDC-1", credits: 3 },
+      { type: "AEC-1", credits: 2 },
+      { type: "SEC-1", credits: 3 },
+      { type: "VAC-1", credits: 2 },
+    ],
+  },
+  {
+    number: 2,
+    color: "#fbe5d6",
+    totalCredits: 22,
+    courses: [
+      { type: "MCC-A3", credits: 4 },
+      { type: "DSEC-A1", credits: 4 },
+      { type: "CC-M2", credits: 4 },
+      { type: "MDC-2", credits: 3 },
+      { type: "AEC-2", credits: 2 },
+      { type: "SEC-2", credits: 3 },
+      { type: "VAC-2", credits: 2 },
+    ],
+  },
+  {
+    number: 3,
+    color: "#d9e2f3",
+    totalCredits: 22,
+    courses: [
+      { type: "MCC-A4", credits: 4 },
+      { type: "MCC-A5", credits: 4 },
+      { type: "CC-M3", credits: 4 },
+      { type: "MDC-3", credits: 3 },
+      { type: "AEC-3", credits: 2 },
+      { type: "SEC-3", credits: 3 },
+      { type: "VAC-3", credits: 2 },
+    ],
+  },
+  {
+    number: 4,
+    color: "#fbe5d6",
+    totalCredits: 24,
+    courses: [
+      { type: "MCC-A6", credits: 4 },
+      { type: "MCC-A7", credits: 4 },
+      { type: "MCC-A8", credits: 4 },
+      { type: "DSE-A1", credits: 4 },
+      { type: "CC-M4(V)", credits: 4 },
+      { type: "AEC-4", credits: 2 },
+      { type: "VAC-4", credits: 2 },
+    ],
+  },
+  {
+    number: 5,
+    color: "#d9e2f3",
+    totalCredits: 24,
+    courses: [
+      { type: "MCC-A9", credits: 4 },
+      { type: "MCC-A10", credits: 4 },
+      { type: "DSE-A2", credits: 4 },
+      { type: "DSE-A3", credits: 4 },
+      { type: "CC-M5(V)", credits: 4 },
+      { type: "Internship", credits: 4 },
+    ],
+  },
+  {
+    number: 6,
+    color: "#fbe5d6",
+    totalCredits: 22,
+    courses: [
+      { type: "MCC-A11", credits: 4 },
+      { type: "MCC-A12", credits: 4 },
+      { type: "DSE-A4", credits: 4 },
+      { type: "DSE-A5", credits: 4 },
+      { type: "CC-M6(V)", credits: 4 },
+      { type: "SEC-4", credits: 2 },
+    ],
+  },
+  // Semester 7
+  {
+    number: 7,
+    color: "#d9e2f3",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-H1", credits: 4 },
+      { type: "CC-H2", credits: 4 },
+      { type: "CC-H3", credits: 4 },
+      { type: "DSE-H1", credits: 4 },
+      { type: "PC-H1", credits: 4 },
+      { type: "CC-HM1", credits: 4 },
+    ],
+  },
+  // Semester 8 - Option A (Standard)
+  {
+    number: "8A",
+    color: "#fbe5d6",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-H4", credits: 4 },
+      { type: "CC-H5", credits: 4 },
+      { type: "DDSE-H2", credits: 4 },
+      { type: "PC-H2", credits: 4 },
+      { type: "CC-HM2", credits: 4 },
+    ],
+  },
+  // OR Separator
+  {
+    number: "OR",
+    color: "#fff3cd",
+    totalCredits: 0,
+    isOrRow: true,
+    courses: [
+      {
+        type: "════════════════════════════════════════════════════════════ OR ════════════════════════════════════════════════════════════",
+        credits: 0,
+      },
+    ],
+  },
+  // Semester 8 - Option B (Project/Dissertation)
+  {
+    number: "8B",
+    color: "#fbe5d6",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-H4", credits: 4 },
+      { type: "CC-H5", credits: 4 },
+      { type: "PROJECT/DISSERTATION", credits: 12 },
+      { type: "CC-HM2", credits: 4 },
+    ],
+  },
+];
+// Complete Scheme D based on screenshots (8 Semesters)
+const schemeD = [
+  // Semester 1
+  {
+    number: 1,
+    color: "#d9e2f3",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-A1", credits: 4 },
+      { type: "CC-B1", credits: 4 },
+      { type: "CC-C1", credits: 4 },
+      { type: "CC-M1", credits: 2 },
+      { type: "MDC-1", credits: 3 },
+      { type: "AEC-1", credits: 2 },
+      { type: "SEC-1", credits: 3 },
+      { type: "VAC-1", credits: 2 },
+    ],
+  },
+  // Semester 2
+  {
+    number: 2,
+    color: "#fbe5d6",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-A2", credits: 4 },
+      { type: "CC-B2", credits: 4 },
+      { type: "CC-C2", credits: 4 },
+      { type: "CC-M2", credits: 2 },
+      { type: "MDC-2", credits: 3 },
+      { type: "AEC-2", credits: 2 },
+      { type: "SEC-2", credits: 3 },
+      { type: "VAC-2", credits: 2 },
+    ],
+  },
+  // Semester 3
+  {
+    number: 3,
+    color: "#d9e2f3",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-A3", credits: 4 },
+      { type: "CC-B3", credits: 4 },
+      { type: "CC-C3", credits: 4 },
+      { type: "CC-M3", credits: 4 },
+      { type: "MDC-3", credits: 3 },
+      { type: "AEC-3", credits: 2 },
+      { type: "SEC-3", credits: 3 },
+    ],
+  },
+  // Semester 4
+  {
+    number: 4,
+    color: "#fbe5d6",
+    totalCredits: 20,
+    courses: [
+      { type: "CC-A4", credits: 4 },
+      { type: "CC-B4", credits: 4 },
+      { type: "CC-C4", credits: 4 },
+      { type: "CC-M4(V)", credits: 4 },
+      { type: "AEC-4", credits: 2 },
+      { type: "VAC-3", credits: 2 },
+    ],
+  },
+  // Semester 5
+  {
+    number: 5,
+    color: "#d9e2f3",
+    totalCredits: 20,
+    courses: [
+      { type: "CC-A5", credits: 4 },
+      { type: "CC-B5", credits: 4 },
+      { type: "CC-C5", credits: 4 },
+      { type: "CC-M5(V)", credits: 4 },
+      { type: "Internship", credits: 4 },
+    ],
+  },
+  // Semester 6
+  {
+    number: 6,
+    color: "#fbe5d6",
+    totalCredits: 20,
+    courses: [
+      { type: "CC-A6", credits: 4 },
+      { type: "CC-B6", credits: 4 },
+      { type: "CC-C6", credits: 4 },
+      { type: "CC-M6(V)", credits: 4 },
+      { type: "CC-M7(V)", credits: 4 },
+    ],
+  },
+  // Semester 7
+  {
+    number: 7,
+    color: "#d9e2f3",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-H1", credits: 4 },
+      { type: "CC-H2", credits: 4 },
+      { type: "CC-H3", credits: 4 },
+      { type: "DSE-H1", credits: 4 },
+      { type: "PC-H1", credits: 4 },
+      { type: "CC-HM1", credits: 4 },
+    ],
+  },
+  // Semester 8 - Option A (Standard)
+  {
+    number: 8,
+    color: "#fbe5d6",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-H4", credits: 4 },
+      { type: "CC-H5", credits: 4 },
+      { type: "CC-H6", credits: 4 },
+      { type: "DSE-H2", credits: 4 },
+      { type: "PC-H2", credits: 4 },
+      { type: "CC-HM2", credits: 4 },
+    ],
+  },
+];
+
+// Scheme D with BOTH options for Semester 8
+const schemeDWithAlternate = [
+  // Semester 1
+  {
+    number: 1,
+    color: "#d9e2f3",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-A1", credits: 4 },
+      { type: "CC-B1", credits: 4 },
+      { type: "CC-C1", credits: 4 },
+      { type: "CC-M1", credits: 2 },
+      { type: "MDC-1", credits: 3 },
+      { type: "AEC-1", credits: 2 },
+      { type: "SEC-1", credits: 3 },
+      { type: "VAC-1", credits: 2 },
+    ],
+  },
+  // Semester 2
+  {
+    number: 2,
+    color: "#fbe5d6",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-A2", credits: 4 },
+      { type: "CC-B2", credits: 4 },
+      { type: "CC-C2", credits: 4 },
+      { type: "CC-M2", credits: 2 },
+      { type: "MDC-2", credits: 3 },
+      { type: "AEC-2", credits: 2 },
+      { type: "SEC-2", credits: 3 },
+      { type: "VAC-2", credits: 2 },
+    ],
+  },
+  // Semester 3
+  {
+    number: 3,
+    color: "#d9e2f3",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-A3", credits: 4 },
+      { type: "CC-B3", credits: 4 },
+      { type: "CC-C3", credits: 4 },
+      { type: "CC-M3", credits: 4 },
+      { type: "MDC-3", credits: 3 },
+      { type: "AEC-3", credits: 2 },
+      { type: "SEC-3", credits: 3 },
+    ],
+  },
+  // Semester 4
+  {
+    number: 4,
+    color: "#fbe5d6",
+    totalCredits: 20,
+    courses: [
+      { type: "CC-A4", credits: 4 },
+      { type: "CC-B4", credits: 4 },
+      { type: "CC-C4", credits: 4 },
+      { type: "CC-M4(V)", credits: 4 },
+      { type: "AEC-4", credits: 2 },
+      { type: "VAC-3", credits: 2 },
+    ],
+  },
+  // Semester 5
+  {
+    number: 5,
+    color: "#d9e2f3",
+    totalCredits: 20,
+    courses: [
+      { type: "CC-A5", credits: 4 },
+      { type: "CC-B5", credits: 4 },
+      { type: "CC-C5", credits: 4 },
+      { type: "CC-M5(V)", credits: 4 },
+      { type: "Internship", credits: 4 },
+    ],
+  },
+  // Semester 6
+  {
+    number: 6,
+    color: "#fbe5d6",
+    totalCredits: 20,
+    courses: [
+      { type: "CC-A6", credits: 4 },
+      { type: "CC-B6", credits: 4 },
+      { type: "CC-C6", credits: 4 },
+      { type: "CC-M6(V)", credits: 4 },
+      { type: "CC-M7(V)", credits: 4 },
+    ],
+  },
+  // Semester 7
+  {
+    number: 7,
+    color: "#d9e2f3",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-H1", credits: 4 },
+      { type: "CC-H2", credits: 4 },
+      { type: "CC-H3", credits: 4 },
+      { type: "DSE-H1", credits: 4 },
+      { type: "PC-H1", credits: 4 },
+      { type: "CC-HM1", credits: 4 },
+    ],
+  },
+  // Semester 8 - Option A (Standard)
+  {
+    number: "8A",
+    color: "#fbe5d6",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-H4", credits: 4 },
+      { type: "CC-H5", credits: 4 },
+      { type: "CC-H6", credits: 4 },
+      { type: "DSE-H2", credits: 4 },
+      { type: "PC-H2", credits: 4 },
+      { type: "CC-HM2", credits: 4 },
+    ],
+  },
+  // OR Separator
+  {
+    number: "OR",
+    color: "#fff3cd",
+    totalCredits: 0,
+    isOrRow: true,
+    courses: [
+      {
+        type: "════════════════════════════════════════════════════════════ OR ════════════════════════════════════════════════════════════",
+        credits: 0,
+      },
+    ],
+  },
+  // Semester 8 - Option B (Project/Dissertation)
+  {
+    number: "8B",
+    color: "#fbe5d6",
+    totalCredits: 24,
+    courses: [
+      { type: "CC-H4", credits: 4 },
+      { type: "CC-H5", credits: 4 },
+      { type: "PROJECT/DISSERTATION", credits: 12 },
+      { type: "CC-HM2", credits: 4 },
+    ],
+  },
+];
 
 const curriculumSchemes = {
   "Scheme A": schemeA,
-  "Scheme B": [], // Placeholders for you to fill in later
-  "Scheme C": [],
-  "Scheme D": [],
+  "Scheme B": schemeB, // Placeholders for you to fill in later
+  "Scheme C": schemeC,
+  "Scheme D": schemeD,
   "Scheme P": [],
   "Scheme Q": [],
   "Scheme R": [],
