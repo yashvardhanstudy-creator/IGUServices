@@ -13,8 +13,6 @@ const {
   verifyPrivilageLogin,
   insertCourseQuery,
   createCourseTableQuery,
-  createSemesterCoursesTableQuery,
-  insertSemesterCoursesQuery,
   createProgramTableQuery,
   insertProgramQuery,
   createCurriculumDraftsTableQuery,
@@ -272,6 +270,25 @@ app.get("/courses", verifyLogin, async (req, res) => {
   res.render("courseForm.ejs");
 });
 
+app.get("/api/course/:courseCode", verifyLogin, async (req, res) => {
+  try {
+    const courseCode = req.params.courseCode;
+    const result = await pool.query(
+      "SELECT * FROM course_syllabus WHERE course_code = $1",
+      [courseCode],
+    );
+
+    if (result.rows.length > 0) {
+      res.json({ exists: true, course: result.rows[0] });
+    } else {
+      res.json({ exists: false });
+    }
+  } catch (error) {
+    console.error("❌ Error fetching course via API:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 app.get("/edit-course/:courseCode", verifyLogin, async (req, res) => {
   try {
     // Creating a dummy object to prevent the view from crashing until actual mapping is implemented
@@ -286,8 +303,51 @@ app.get("/edit-course/:courseCode", verifyLogin, async (req, res) => {
       return res.status(404).send("Course not found in the database.");
     }
 
+    const course = result.rows[0];
+
+    // Dynamically find all programs and semesters where this course is used
+    const draftsResult = await pool.query(
+      "SELECT program_name, draft_data FROM curriculum_drafts",
+    );
+    let programs = new Set();
+    let semesters = new Set();
+
+    draftsResult.rows.forEach((row) => {
+      const draft = row.draft_data || {};
+      for (const [key, value] of Object.entries(draft)) {
+        if (value && value.code === courseCode) {
+          programs.add(row.program_name);
+          const semNum = key.split("_")[0]; // Extract semester number from grid key (e.g., '3_0')
+          semesters.add(semNum);
+        }
+      }
+    });
+
+    const getOrdinal = (n) => {
+      const ordinals = {
+        1: "1st",
+        2: "2nd",
+        3: "3rd",
+        4: "4th",
+        5: "5th",
+        6: "6th",
+        7: "7th",
+        8: "8th",
+      };
+      return ordinals[n] || n;
+    };
+
+    const formattedSemesters = Array.from(semesters).map((s) => {
+      if (!isNaN(s) && s.trim() !== "") return getOrdinal(s) + " Semester";
+      return s + " Semester";
+    });
+
+    // Attach formatted values to the course object so EJS maps them automatically
+    course.programme_name = Array.from(programs).join(", ") || "Unassigned";
+    course.semester = formattedSemesters.join(", ") || "Unassigned";
+
     res.render("courseForm.ejs", {
-      course: result.rows[0],
+      course: course,
     });
   } catch (error) {
     console.error("❌ Error fetching course data for edit:", error);
@@ -317,11 +377,38 @@ app.get("/view-course/:courseCode", verifyLogin, async (req, res) => {
 
 app.get("/courses-list", verifyLogin, async (req, res) => {
   try {
-    const result = await pool.query(
+    const coursesResult = await pool.query(
       "SELECT course_code, course_name AS course_title, course_type AS category FROM course_syllabus ORDER BY created_at DESC",
     );
 
-    res.render("coursesList.ejs", { courses: result.rows });
+    // Fetch all drafts to determine course-to-program linkages
+    const draftsResult = await pool.query(
+      "SELECT program_name, specialization, draft_data FROM curriculum_drafts",
+    );
+
+    const courseProgramsMap = {};
+    draftsResult.rows.forEach((row) => {
+      const draft = row.draft_data || {};
+      const programLabel = `${row.program_name} (${row.specialization})`;
+
+      Object.values(draft).forEach((item) => {
+        if (item && item.code) {
+          if (!courseProgramsMap[item.code]) {
+            courseProgramsMap[item.code] = new Set();
+          }
+          courseProgramsMap[item.code].add(programLabel);
+        }
+      });
+    });
+
+    const courses = coursesResult.rows.map((course) => {
+      const linked_programs = courseProgramsMap[course.course_code]
+        ? Array.from(courseProgramsMap[course.course_code])
+        : [];
+      return { ...course, linked_programs };
+    });
+
+    res.render("coursesList.ejs", { courses });
   } catch (error) {
     console.error("❌ Error fetching courses list:", error);
     res.status(500).send("Error fetching courses list.");
@@ -406,38 +493,36 @@ app.post("/courses", verifyLogin, async (req, res) => {
     const values = [
       courseData.courseCode || "", // $1
       courseData.creditScheme || "", // $2
-      courseData.programmeName || "", // $3
-      courseData.semester || "", // $4
-      courseData.natureOfCourse || "", // $5
-      courseData.courseName || "", // $6
-      courseData.courseType || "", // $7
-      courseData.prerequisite || "", // $8
+      courseData.natureOfCourse || "", // $3
+      courseData.courseName || "", // $4
+      courseData.courseType || "", // $5
+      courseData.prerequisite || "", // $6
 
-      parseInt(courseData.credits_theory) || 0, // $9
-      parseInt(courseData.credits_practical) || 0, // $10
-      parseInt(courseData.credits_total) || 0, // $11
+      parseInt(courseData.credits_theory) || 0, // $7
+      parseInt(courseData.credits_practical) || 0, // $8
+      parseInt(courseData.credits_total) || 0, // $9
 
-      parseInt(courseData.marks_internal_theory) || 0, // $12
-      parseInt(courseData.marks_internal_practical) || 0, // $13
-      parseInt(courseData.marks_internal_total) || 0, // $14
-      parseInt(courseData.marks_endterm_theory) || 0, // $15
-      parseInt(courseData.marks_endterm_practical) || 0, // $16
-      parseInt(courseData.marks_endterm_total) || 0, // $17
-      parseInt(courseData.marks_max) || 0, // $18
+      parseInt(courseData.marks_internal_theory) || 0, // $10
+      parseInt(courseData.marks_internal_practical) || 0, // $11
+      parseInt(courseData.marks_internal_total) || 0, // $12
+      parseInt(courseData.marks_endterm_theory) || 0, // $13
+      parseInt(courseData.marks_endterm_practical) || 0, // $14
+      parseInt(courseData.marks_endterm_total) || 0, // $15
+      parseInt(courseData.marks_max) || 0, // $16
 
-      courseData.exam_duration || "", // $19
-      xss(courseData.paperSetterInstructions || ""), // $20
+      courseData.exam_duration || "", // $17
+      xss(courseData.paperSetterInstructions || ""), // $18
 
       JSON.stringify(
         normalizeArray(
           courseData.courseOutcomes || courseData["courseOutcomes[]"],
         ),
-      ),
-      JSON.stringify(syllabusUnits),
-      JSON.stringify(evaluationCriteria),
-      xss(courseData.resources || ""),
-      JSON.stringify(coPoMapping),
-      JSON.stringify(nepMapping),
+      ), // $19
+      JSON.stringify(syllabusUnits), // $20
+      JSON.stringify(evaluationCriteria), // $21
+      xss(courseData.resources || ""), // $22
+      JSON.stringify(coPoMapping), // $23
+      JSON.stringify(nepMapping), // $24
     ];
 
     await pool.query(insertCourseQuery, values);
@@ -450,153 +535,10 @@ app.post("/courses", verifyLogin, async (req, res) => {
   }
 });
 
-app.get("/semester-courses-form", verifyLogin, async (req, res) => {
-  try {
-    const { semester, academic_program, specialization, year_onward } =
-      req.query;
-    let structure = null;
-
-    if (semester && academic_program && specialization && year_onward) {
-      const result = await pool.query(
-        "SELECT * FROM semester_courses WHERE semester = $1 AND academic_program = $2 AND specialization = $3 AND year_onward = $4",
-        [semester, academic_program, specialization, year_onward],
-      );
-      if (result.rows.length > 0) {
-        structure = result.rows[0];
-      }
-    }
-    res.render("semesterCoursesForm.ejs", { structure });
-  } catch (error) {
-    console.error("❌ Error loading semester courses form:", error);
-    res.status(500).send("Error loading form.");
-  }
-});
-
-app.post("/semester-courses", verifyLogin, async (req, res) => {
-  try {
-    const {
-      semester,
-      academic_program,
-      specialization,
-      year_onward,
-      courses_code,
-      important_note,
-    } = req.body;
-    console.log("📥 Received Semester Courses Data:", req.body);
-
-    // Helper to ensure we store valid JSON strings for JSONB columns
-    const normalizeJson = (val) => {
-      if (!val) return JSON.stringify([]);
-      if (typeof val === "string") {
-        try {
-          return JSON.stringify(JSON.parse(val));
-        } catch (e) {
-          return JSON.stringify([val]);
-        }
-      }
-      return JSON.stringify(val);
-    };
-
-    const coursesCodeJson = normalizeJson(courses_code);
-    const importantNoteJson = normalizeJson(important_note);
-
-    await pool.query(insertSemesterCoursesQuery, [
-      semester,
-      academic_program,
-      specialization,
-      year_onward,
-      coursesCodeJson,
-      importantNoteJson,
-    ]);
-    console.log("✅ Semester Courses successfully saved to DB.");
-
-    res.redirect("/?message=Semester courses saved successfully!");
-  } catch (error) {
-    console.error("❌ Error saving semester courses:", error);
-    res.status(500).send("Error saving semester courses data.");
-  }
-});
-
-app.get("/semester-courses-list", verifyLogin, async (req, res) => {
-  try {
-    const result = await pool.query(
-      "SELECT semester, academic_program, specialization, year_onward FROM semester_courses ORDER BY year_onward DESC, semester ASC",
-    );
-
-    res.render("semesterCoursesList.ejs", { structures: result.rows });
-  } catch (error) {
-    console.error("❌ Error fetching semester structures list:", error);
-    res.status(500).send("Error fetching semester structures list.");
-  }
-});
-
-app.get("/view-semester-structure", verifyLogin, async (req, res) => {
-  try {
-    const { semester, academic_program, specialization, year_onward } =
-      req.query;
-
-    if (!semester || !academic_program || !specialization || !year_onward) {
-      return res
-        .status(400)
-        .send(
-          "Missing required query parameters: semester, academic_program, specialization, year_onward",
-        );
-    }
-
-    const structureResult = await pool.query(
-      "SELECT * FROM semester_courses WHERE semester = $1 AND academic_program = $2 AND specialization = $3 AND year_onward = $4",
-      [semester, academic_program, specialization, year_onward],
-    );
-
-    if (structureResult.rows.length === 0) {
-      return res.status(404).send("Semester structure not found.");
-    }
-
-    const structure = structureResult.rows[0];
-    const courseCodes = structure.courses_code || [];
-
-    let orderedCourses = [];
-    if (courseCodes.length > 0) {
-      const coursesResult = await pool.query(
-        "SELECT course_code, course_name AS course_title, credits_theory AS l, 0 AS t, credits_practical AS p, credits_total AS credit, marks_internal_total AS class_marks, marks_endterm_total AS exam_marks, marks_internal_practical AS practical_marks, marks_max AS total_marks, exam_duration FROM course_syllabus WHERE course_code = ANY($1::text[])",
-        [courseCodes],
-      );
-      const coursesMap = new Map(
-        coursesResult.rows.map((c) => [c.course_code, c]),
-      );
-      orderedCourses = courseCodes.map(
-        (code) =>
-          coursesMap.get(code) || {
-            course_code: code,
-            course_title: "⚠️ Syllabus Not Found",
-            l: "-",
-            t: "-",
-            p: "-",
-            credit: "-",
-            class_marks: "-",
-            exam_marks: "-",
-            practical_marks: "-",
-            total_marks: "-",
-            exam_duration: "-",
-            is_missing: true,
-          },
-      );
-    }
-
-    res.render("semesterCoursesView.ejs", {
-      structure,
-      courses: orderedCourses,
-    });
-  } catch (error) {
-    console.error("❌ Error fetching semester structure for view:", error);
-    res.status(500).send("Error fetching semester structure data.");
-  }
-});
-
 app.get("/generate-full-syllabus", verifyLogin, async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT DISTINCT academic_program, specialization, year_onward FROM semester_courses ORDER BY academic_program, specialization, year_onward DESC",
+      "SELECT DISTINCT program_name AS academic_program, specialization, 'N/A' AS year_onward FROM curriculum_drafts ORDER BY program_name, specialization",
     );
     res.render("fullSyllabusForm.ejs", { options: result.rows });
   } catch (error) {
@@ -607,38 +549,61 @@ app.get("/generate-full-syllabus", verifyLogin, async (req, res) => {
 
 app.get("/view-full-syllabus", verifyLogin, async (req, res) => {
   try {
-    const { academic_program, specialization, year_onward } = req.query;
-    if (!academic_program || !specialization || !year_onward) {
-      return res
-        .status(400)
-        .send("Missing program, specialization, or year_onward");
+    const { academic_program, specialization } = req.query;
+    if (!academic_program || !specialization) {
+      return res.status(400).send("Missing program or specialization");
     }
 
-    // 1. Fetch all semester structures for this combo
-    const semResult = await pool.query(
-      "SELECT * FROM semester_courses WHERE academic_program = $1 AND specialization = $2 AND year_onward = $3 ORDER BY semester ASC",
-      [academic_program, specialization, year_onward],
+    // 1. Fetch draft data for this program combo
+    const draftResult = await pool.query(
+      "SELECT draft_data FROM curriculum_drafts WHERE program_name = $1 AND specialization = $2",
+      [academic_program, specialization],
     );
 
-    if (semResult.rows.length === 0) {
+    if (draftResult.rows.length === 0) {
       return res
         .status(404)
-        .send("No semester structures found for this selection.");
+        .send("No curriculum draft found for this program.");
     }
 
-    const semesters = semResult.rows;
+    const draftData = draftResult.rows[0].draft_data || {};
 
-    // 2. Extract sequence of unique course codes
+    // 2. Extract semesters and course codes
+    const semesterMap = new Map();
+    for (const [key, value] of Object.entries(draftData)) {
+      if (!value || !value.code) continue;
+      const parts = key.split("_");
+      const semNum = parts[0];
+      const index = parseInt(parts[1], 10) || 0;
+
+      if (!semesterMap.has(semNum)) {
+        semesterMap.set(semNum, { semester: semNum, courses: [] });
+      }
+      semesterMap.get(semNum).courses.push({ code: value.code, index });
+    }
+
     const orderedCourseCodes = [];
     const codeSet = new Set();
-    semesters.forEach((sem) => {
-      (sem.courses_code || []).forEach((code) => {
-        if (!codeSet.has(code)) {
-          codeSet.add(code);
-          orderedCourseCodes.push(code);
-        }
+
+    const semesters = Array.from(semesterMap.values())
+      .map((sem) => {
+        sem.courses.sort((a, b) => a.index - b.index);
+        sem.courses_code = sem.courses.map((c) => c.code);
+
+        sem.courses_code.forEach((code) => {
+          if (!codeSet.has(code)) {
+            codeSet.add(code);
+            orderedCourseCodes.push(code);
+          }
+        });
+        return sem;
+      })
+      .sort((a, b) => {
+        const numA = parseInt(a.semester);
+        const numB = parseInt(b.semester);
+        if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+        return String(a.semester).localeCompare(String(b.semester));
       });
-    });
 
     // 3. Fetch detailed courses and assemble data
     let coursesMap = new Map();
@@ -675,7 +640,7 @@ app.get("/view-full-syllabus", verifyLogin, async (req, res) => {
     res.render("fullSyllabusView.ejs", {
       academic_program,
       specialization,
-      year_onward,
+      year_onward: req.query.year_onward || "N/A",
       semesters: semestersWithCourses,
       allCourses: detailedCourses,
     });
@@ -687,36 +652,61 @@ app.get("/view-full-syllabus", verifyLogin, async (req, res) => {
 
 app.get("/download-full-syllabus-pdf", verifyLogin, async (req, res) => {
   try {
-    const { academic_program, specialization, year_onward } = req.query;
-    if (!academic_program || !specialization || !year_onward) {
-      return res
-        .status(400)
-        .send("Missing program, specialization, or year_onward");
+    const { academic_program, specialization } = req.query;
+    if (!academic_program || !specialization) {
+      return res.status(400).send("Missing program or specialization");
     }
 
-    // 1. Fetch all semester structures for this combo
-    const semResult = await pool.query(
-      "SELECT * FROM semester_courses WHERE academic_program = $1 AND specialization = $2 AND year_onward = $3 ORDER BY semester ASC",
-      [academic_program, specialization, year_onward],
+    // 1. Fetch draft data for this program combo
+    const draftResult = await pool.query(
+      "SELECT draft_data FROM curriculum_drafts WHERE program_name = $1 AND specialization = $2",
+      [academic_program, specialization],
     );
 
-    if (semResult.rows.length === 0) {
-      return res.status(404).send("No semester structures found.");
+    if (draftResult.rows.length === 0) {
+      return res
+        .status(404)
+        .send("No curriculum draft found for this program.");
     }
 
-    const semesters = semResult.rows;
+    const draftData = draftResult.rows[0].draft_data || {};
 
-    // 2. Extract sequence of unique course codes
+    // 2. Extract semesters and course codes
+    const semesterMap = new Map();
+    for (const [key, value] of Object.entries(draftData)) {
+      if (!value || !value.code) continue;
+      const parts = key.split("_");
+      const semNum = parts[0];
+      const index = parseInt(parts[1], 10) || 0;
+
+      if (!semesterMap.has(semNum)) {
+        semesterMap.set(semNum, { semester: semNum, courses: [] });
+      }
+      semesterMap.get(semNum).courses.push({ code: value.code, index });
+    }
+
     const orderedCourseCodes = [];
     const codeSet = new Set();
-    semesters.forEach((sem) => {
-      (sem.courses_code || []).forEach((code) => {
-        if (!codeSet.has(code)) {
-          codeSet.add(code);
-          orderedCourseCodes.push(code);
-        }
+
+    const semesters = Array.from(semesterMap.values())
+      .map((sem) => {
+        sem.courses.sort((a, b) => a.index - b.index);
+        sem.courses_code = sem.courses.map((c) => c.code);
+
+        sem.courses_code.forEach((code) => {
+          if (!codeSet.has(code)) {
+            codeSet.add(code);
+            orderedCourseCodes.push(code);
+          }
+        });
+        return sem;
+      })
+      .sort((a, b) => {
+        const numA = parseInt(a.semester);
+        const numB = parseInt(b.semester);
+        if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+        return String(a.semester).localeCompare(String(b.semester));
       });
-    });
 
     // 3. Fetch detailed courses and assemble data
     let coursesMap = new Map();
@@ -755,7 +745,7 @@ app.get("/download-full-syllabus-pdf", verifyLogin, async (req, res) => {
       {
         academic_program,
         specialization,
-        year_onward,
+        year_onward: req.query.year_onward || "N/A",
         semesters: semestersWithCourses,
         allCourses: detailedCourses,
       },
@@ -788,7 +778,7 @@ app.get("/download-full-syllabus-pdf", verifyLogin, async (req, res) => {
 
         res.set({
           "Content-Type": "application/pdf",
-          "Content-Disposition": `attachment; filename="Full-Syllabus-${specialization}-${year_onward}.pdf"`,
+          "Content-Disposition": `attachment; filename="Full-Syllabus-${specialization}.pdf"`,
         });
         res.send(pdf);
       },

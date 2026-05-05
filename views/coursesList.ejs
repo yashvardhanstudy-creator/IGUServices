@@ -91,6 +91,7 @@
                             <th>Course Code</th>
                             <th>Course Title</th>
                             <th>Category</th>
+                            <th>Linked Programs</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -105,6 +106,17 @@
                                 </td>
                                 <td>
                                     <%= course.category %>
+                                </td>
+                                <td>
+                                    <% if (course.linked_programs && course.linked_programs.length > 0) { %>
+                                        <ul style="margin: 0; padding-left: 20px; font-size: 14px;">
+                                            <% course.linked_programs.forEach(prog => { %>
+                                                <li><%= prog %></li>
+                                            <% }) %>
+                                        </ul>
+                                    <% } else { %>
+                                        <span style="color: #888; font-style: italic;">Unassigned</span>
+                                    <% } %>
                                 </td>
                                 <td><a href="/view-course/<%= course.course_code %>"
                                         class="action-btn view-btn">View</a><a

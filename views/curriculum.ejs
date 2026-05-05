@@ -80,17 +80,17 @@
                             </td>
                         <% } %>
                         <td>
-                            <a href="#" style="color: <%= isSaved ? '#155724' : '#0056b3' %>; text-decoration: underline; font-weight: bold;" onclick="openCourseForm(event, this, 'nom_<%= cellKey %>', 'code_<%= cellKey %>', <%= isSaved %>, '<%= sem.number %>')"><%= course.type %> <%= isSaved ? '✅' : '' %></a>
+                            <a href="#" style="color: <%= isSaved ? '#155724' : '#0056b3' %>; text-decoration: underline; font-weight: bold;" id="link_<%= cellKey %>" data-type="<%= course.type %>" onclick="openCourseForm(event, this, 'nom_<%= cellKey %>', 'code_<%= cellKey %>', <%= isSaved %>, '<%= sem.number %>')"><%= course.type %> <%= isSaved ? '✅' : '' %></a>
                         </td>
-                        <td><input type="text" id="code_<%= cellKey %>" placeholder="Code" value="<%= cellDraft.code || '' %>" style="width: 100%; border: none; background: transparent; text-align: center;" oninput="debounceSaveDraft()"></td> 
-                        <td><input type="text" id="nom_<%= cellKey %>" placeholder="Enter Nomenclature" value="<%= savedCourse ? savedCourse.course_name : (cellDraft.nom || '') %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box;" oninput="debounceSaveDraft()"></td> 
-                        <td class="center"><%= savedCourse ? ((savedCourse.credits_theory || 0) + 'T / ' + (savedCourse.credits_practical || 0) + 'P') : '' %></td>
-                        <td class="center"><%= savedCourse ? (savedCourse.credits_total || 0) : course.credits %></td>
-                        <td class="center"><%= savedCourse ? ((savedCourse.credits_theory || 0) + ((savedCourse.credits_practical || 0) * 2)) : '' %></td>
-                        <td class="center"><%= savedCourse ? (savedCourse.marks_internal_total || 0) : '' %></td>
-                        <td class="center"><%= savedCourse ? (savedCourse.marks_endterm_total || 0) : '' %></td>
-                        <td class="center"><%= savedCourse ? (savedCourse.marks_max || 0) : '' %></td>
-                        <td class="center"><%= savedCourse ? (savedCourse.exam_duration || '') : '' %></td>
+                        <td><input type="text" id="code_<%= cellKey %>" placeholder="Code" value="<%= cellDraft.code || '' %>" style="width: 100%; border: none; background: transparent; text-align: center;" oninput="debounceSaveDraft()" onchange="checkCourseCode(this, '<%= cellKey %>', '<%= course.credits %>', '<%= sem.number %>', '<%= sem.color %>')"></td> 
+                        <td><input type="text" id="nom_<%= cellKey %>" placeholder="Enter Nomenclature" value="<%= savedCourse ? savedCourse.course_name : (cellDraft.nom || '') %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: <%= isSaved ? '#e9ecef' : 'transparent' %>;" oninput="debounceSaveDraft()" <%= isSaved ? 'readonly' : '' %>></td> 
+                        <td class="center" id="td_tp_<%= cellKey %>"><%= savedCourse ? ((savedCourse.credits_theory || 0) + 'T / ' + (savedCourse.credits_practical || 0) + 'P') : '' %></td>
+                        <td class="center" id="td_cred_<%= cellKey %>"><%= savedCourse ? (savedCourse.credits_total || 0) : course.credits %></td>
+                        <td class="center" id="td_hrs_<%= cellKey %>"><%= savedCourse ? ((savedCourse.credits_theory || 0) + ((savedCourse.credits_practical || 0) * 2)) : '' %></td>
+                        <td class="center" id="td_int_<%= cellKey %>"><%= savedCourse ? (savedCourse.marks_internal_total || 0) : '' %></td>
+                        <td class="center" id="td_end_<%= cellKey %>"><%= savedCourse ? (savedCourse.marks_endterm_total || 0) : '' %></td>
+                        <td class="center" id="td_max_<%= cellKey %>"><%= savedCourse ? (savedCourse.marks_max || 0) : '' %></td>
+                        <td class="center" id="td_dur_<%= cellKey %>"><%= savedCourse ? (savedCourse.exam_duration || '') : '' %></td>
                     </tr>
                 <% }) %>
                 <tr style="background-color: <%= sem.color %>;" class="total-row">
@@ -109,6 +109,11 @@
             const nomenclature = document.getElementById(nomId).value.trim();
             const courseCode = document.getElementById(codeId).value.trim();
             
+            if (!courseCode) {
+                alert("Please fill the Course Code before opening the course form.");
+                return;
+            }
+
             if (!nomenclature) {
                 alert("Please fill the Nomenclature of the course before opening the course form.");
                 return;
@@ -129,6 +134,64 @@
                 if (semester) url += `&semester=${encodeURIComponent(semester)}`;
                 
                 window.open(url, '_blank');
+            }
+        }
+
+        async function checkCourseCode(input, cellKey, originalCredits, semester, originalColor) {
+            const code = input.value.trim();
+            const nomInput = document.getElementById('nom_' + cellKey);
+            const link = document.getElementById('link_' + cellKey);
+            const row = input.closest('tr');
+            const courseType = link.getAttribute('data-type');
+
+            if (!code) {
+                nomInput.readOnly = false;
+                nomInput.style.backgroundColor = 'transparent';
+                link.style.color = '#0056b3';
+                link.innerHTML = courseType;
+                link.setAttribute('onclick', `openCourseForm(event, this, 'nom_${cellKey}', 'code_${cellKey}', false, '${semester}')`);
+                
+                ['td_tp_', 'td_hrs_', 'td_int_', 'td_end_', 'td_max_', 'td_dur_'].forEach(prefix => document.getElementById(prefix + cellKey).innerText = '');
+                document.getElementById('td_cred_' + cellKey).innerText = originalCredits;
+                row.style.backgroundColor = originalColor; 
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/course/' + encodeURIComponent(code));
+                const data = await response.json();
+                
+                if (data.exists) {
+                    alert("Existing course found! Auto-populating row data.");
+                    const c = data.course;
+                    nomInput.value = c.course_name;
+                    nomInput.readOnly = true;
+                    nomInput.style.backgroundColor = '#e9ecef';
+                    
+                    document.getElementById('td_tp_' + cellKey).innerText = (c.credits_theory || 0) + 'T / ' + (c.credits_practical || 0) + 'P';
+                    document.getElementById('td_cred_' + cellKey).innerText = (c.credits_total || 0);
+                    document.getElementById('td_hrs_' + cellKey).innerText = (c.credits_theory || 0) + ((c.credits_practical || 0) * 2);
+                    document.getElementById('td_int_' + cellKey).innerText = (c.marks_internal_total || 0);
+                    document.getElementById('td_end_' + cellKey).innerText = (c.marks_endterm_total || 0);
+                    document.getElementById('td_max_' + cellKey).innerText = (c.marks_max || 0);
+                    document.getElementById('td_dur_' + cellKey).innerText = (c.exam_duration || '');
+                    
+                    link.style.color = '#155724';
+                    link.innerHTML = courseType + ' ✅';
+                    link.setAttribute('onclick', `openCourseForm(event, this, 'nom_${cellKey}', 'code_${cellKey}', true, '${semester}')`);
+                    row.style.backgroundColor = '#d4edda';
+                    
+                    debounceSaveDraft();
+                } else {
+                    nomInput.readOnly = false;
+                    nomInput.style.backgroundColor = 'transparent';
+                    link.style.color = '#0056b3';
+                    link.innerHTML = courseType;
+                    link.setAttribute('onclick', `openCourseForm(event, this, 'nom_${cellKey}', 'code_${cellKey}', false, '${semester}')`);
+                    row.style.backgroundColor = originalColor; 
+                }
+            } catch (err) {
+                console.error("Error checking course code:", err);
             }
         }
 
