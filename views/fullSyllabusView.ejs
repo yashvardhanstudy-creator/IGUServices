@@ -5,36 +5,22 @@
     <link rel="shortcut icon" href="https://igu1.ucanapply.com/images/webicon.png" type="image/png">
     <title>Complete Syllabus - <%= specialization %></title>
     <style>
-        body {
-            font-family: serif;
-            line-height: 1.5;
-            color: black;
-            margin: 20px auto;
-            max-width: 900px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-            vertical-align: top;
-        }
-        th {
-            background-color: #f2f2f2;
-            text-align: center;
-        }
-        .text-center { text-align: center; }
-        .section-title {
-            font-weight: bold;
-            text-decoration: underline;
-            margin-top: 25px;
-            margin-bottom: 10px;
-            font-size: 1.2em;
-        }
+        body { font-family: 'Times New Roman', serif; line-height: 1.4; color: #000; margin: 0; padding: 20px; }
+        .container { width: 90%; margin: auto; max-width: 1000px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; }
+        th, td { border: 1px solid black; padding: 5px; vertical-align: top; word-wrap: break-word; }
+        
+        .header-cell { font-weight: bold; width: 35%; }
+        .section-title { text-align: center; font-weight: bold; background-color: #f2f2f2; }
+        
+        .justified-text { text-align: justify; text-justify: inter-word; }
+        .center { text-align: center; }
+        .bold { font-weight: bold; }
+
+        .col-label { width: 40%; }
+        .col-val { width: 20%; text-align: center; }
+
         .print-btn {
             display: inline-block;
             width: 200px;
@@ -48,169 +34,196 @@
             font-size: 16px;
             border: none;
         }
-        .page-break {
-            page-break-before: always;
-            padding-top: 20px;
+
+        .cover-page {
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
         }
+
+        .page-break-before { page-break-before: always; padding-top: 20px; }
+        
         @media print {
             body { max-width: 100%; margin: 0; padding: 0; }
             .print-btn { display: none !important; }
             .action-buttons { display: none !important; }
+            .container { width: 100%; }
             tr, .unit-block { page-break-inside: avoid; }
+            a { text-decoration: none; color: black; }
         }
     </style>
 </head>
 <body>
-    <div class="action-buttons" style="text-align: center; margin-top: 20px;">
-        <button class="print-btn" onclick="window.print()">Print Complete Syllabus</button>
-        <button class="print-btn" onclick="window.location.href='/download-full-syllabus-pdf?academic_program=<%= encodeURIComponent(academic_program) %>&specialization=<%= encodeURIComponent(specialization) %>&year_onward=<%= encodeURIComponent(year_onward) %>'">Download PDF</button>
-    </div>
+    <div class="container">
+        <div class="action-buttons center" style="margin-top: 20px; margin-bottom: 20px;">
+            <button class="print-btn" onclick="window.print()">Print Syllabus</button>
+            <button class="print-btn" onclick="window.location.href='/download-full-syllabus-pdf?academic_program=<%= encodeURIComponent(academic_program) %>&specialization=<%= encodeURIComponent(specialization) %>' ">Download PDF</button>
+        </div>
 
-    <!-- 1. Print All Semester Scheme Tables -->
-    <% semesters.forEach((semStructure, index) => { %>
-        <div class="<%= index > 0 ? 'page-break' : '' %>">
-            <center>
-                <h1>Indira Gandhi University, Meerpur</h1>
-                <img src="https://d2xe8shibzpjog.cloudfront.net/logo/igu_logo.png" style="max-height: 100px;">
-                <h3>Scheme of Studies/Examination</h3>
-                <h4><%= academic_program %> (<%= specialization %>)</h4>
-                <h5>w.e.f. <%= year_onward %></h5>
-            </center>
-            <hr>
-            <h2 style="text-align: center;">Semester-<%= semStructure.semester %></h2>
+        <!-- Page 1: Cover Page -->
+        <div class="cover-page">
+            <img src="https://d2xe8shibzpjog.cloudfront.net/logo/igu_logo.png" alt="IGU Logo" style="max-height: 180px; margin-bottom: 30px;">
+            <h1 style="font-size: 2.5em; text-align: center; margin-bottom: 10px;">Indira Gandhi University, Meerpur</h1>
+            <h2 style="font-size: 1.8em; margin-top: 50px; text-align: center;">Syllabus for</h2>
+            <h1 style="font-size: 2.8em; margin: 10px 0; text-align: center; text-decoration: underline;"><%= academic_program %></h1>
+            <h2 style="font-size: 1.8em; text-align: center;">Specialization: <%= specialization %></h2>
+        </div>
+
+        <!-- Page 2: Master Curriculum Table -->
+        <div class="page-break-before">
+            <h2 class="center">Curriculum Framework</h2>
             <table>
                 <thead>
-                    <tr>
-                        <th rowspan="2">Sr. No.</th>
-                        <th rowspan="2">Course Code</th>
-                        <th rowspan="2">Course Title</th>
-                        <th colspan="4">Hours per week</th>
-                        <th rowspan="2">Credit</th>
-                        <th colspan="4">Examination Schedule (Marks)</th>
-                        <th rowspan="2">Duration of Exam (Hours)</th>
-                    </tr>
-                    <tr>
-                        <th>L</th><th>T</th><th>P</th><th>Total</th>
-                        <th>Class Work</th><th>Theory</th><th>Practical</th><th>Total</th>
+                    <tr class="section-title">
+                        <th>Semester</th>
+                        <th>Course Type</th>
+                        <th>Course Code</th>
+                        <th>Nomenclature of course</th>
+                        <th>Theory(T) / Practical(P)</th>
+                        <th>Credit</th>
+                        <th>Contact hours per week</th>
+                        <th>Internal Assessment Marks</th>
+                        <th>End Term Examination Marks</th>
+                        <th>Total Marks</th>
+                        <th>Exam Hours</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <% semStructure.detailed_courses.forEach((course, i) => { %>
-                        <tr>
-                            <td class="text-center"><%= i + 1 %></td>
-                            <td><%= course.course_code %></td>
-                            <td <%- course.is_missing ? 'style="color: red; font-weight: bold;"' : '' %>><%= course.course_title %></td>
-                            <td class="text-center"><%= course.l %></td>
-                            <td class="text-center"><%= course.t %></td>
-                            <td class="text-center"><%= course.p %></td>
-                            <td class="text-center"><%= course.is_missing ? '-' : (Number(course.l) + Number(course.t) + Number(course.p)) %></td>
-                            <td class="text-center"><b><%= course.credit %></b></td>
-                            <td class="text-center"><%= course.class_marks %></td>
-                            <td class="text-center"><%= course.exam_marks %></td>
-                            <td class="text-center"><%= course.practical_marks %></td>
-                            <td class="text-center"><b><%= course.total_marks %></b></td>
-                            <td class="text-center"><%= course.exam_duration %></td>
-                        </tr>
+                    <% semesters.forEach(sem => { %>
+                        <% sem.detailed_courses.forEach((course, index) => { %>
+                            <tr>
+                                <% if (index === 0) { %>
+                                    <td rowspan="<%= sem.detailed_courses.length %>" class="center bold" style="vertical-align: middle;">Semester <%= sem.semester %></td>
+                                <% } %>
+                                <td><a href="#course-<%= course.course_code %>" style="color: #0056b3; text-decoration: underline;"><%= course.course_type || course.category || sem.courses_code[index] %></a></td>
+                                <td><%= course.course_code %></td>
+                                <td <%- course.is_missing ? 'style="color: red; font-weight: bold;"' : '' %>><%= course.course_name || course.course_title %></td>
+                                <td class="center"><%= course.is_missing ? '-' : ((course.credits_theory || 0) + 'T / ' + (course.credits_practical || 0) + 'P') %></td>
+                                <td class="center"><%= course.is_missing ? '-' : (course.credits_total || 0) %></td>
+                                <td class="center"><%= course.is_missing ? '-' : ((course.credits_theory || 0) + ((course.credits_practical || 0) * 2)) %></td>
+                                <td class="center"><%= course.is_missing ? '-' : (course.marks_internal_total || 0) %></td>
+                                <td class="center"><%= course.is_missing ? '-' : (course.marks_endterm_total || ((course.marks_endterm_theory || 0) + (course.marks_endterm_practical || 0))) %></td>
+                                <td class="center"><%= course.is_missing ? '-' : (course.marks_max || 0) %></td>
+                                <td class="center"><%= course.is_missing ? '-' : (course.exam_duration || '-') %></td>
+                            </tr>
+                        <% }) %>
                     <% }) %>
                 </tbody>
             </table>
-            <% if (semStructure.important_note && semStructure.important_note.length > 0) { %>
-                <div class="section-title">NOTE:</div>
-                <ul>
-                    <% semStructure.important_note.forEach(note => { %><li><%= note %></li><% }) %>
-                </ul>
-            <% } %>
         </div>
-    <% }) %>
 
-    <!-- 2. Print All Detailed Course Syllabi -->
-    <% allCourses.forEach(data => { %>
-        <% if (!data.is_missing) { %>
-        <div class="page-break">
-            <center>
-                <h1><%= data.course_title %></h1>
-            </center>
-            <hr>
-            <div class="section-title">General Information & Scheme</div>
-            <table>
-                <tr><td style="width: 25%; font-weight: bold;">Course Code</td><td><%= data.course_code %></td></tr>
-                <% if (data.category) { %><tr><td style="font-weight: bold;">Category</td><td><%= data.category %></td></tr><% } %>
-                <% if (data.course_title) { %><tr><td style="font-weight: bold;">Course Title</td><td><%= data.course_title %></td></tr><% } %>
-                <% if (data.credit > 0) { %>
-                    <tr>
-                        <td style="font-weight: bold;">Hours & Credit</td>
-                        <td style="padding: 0;">
-                            <table style="width: 100%; margin-bottom: 0; border: none;">
-                                <tr><th>L</th><th>T</th><th>P</th><th>Credit</th></tr>
-                                <tr>
-                                    <td class="text-center"><%= data.l %></td>
-                                    <td class="text-center"><%= data.t %></td>
-                                    <td class="text-center"><%= data.p %></td>
-                                    <td class="text-center"><b><%= data.credit %></b></td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                <% } %>
-                <% if (data.class_marks > 0) { %><tr><td style="font-weight: bold;">Class Work</td><td><%= data.class_marks %> Marks</td></tr><% } %>
-                <% if (data.exam_marks > 0) { %><tr><td style="font-weight: bold;">Exam</td><td><%= data.exam_marks %> Marks</td></tr><% } %>
-                <% if (data.practical_marks > 0) { %><tr><td style="font-weight: bold;">Practical</td><td><%= data.practical_marks %> Marks</td></tr><% } %>
-                <% if (data.total_marks > 0) { %><tr><td style="font-weight: bold;">Total Marks</td><td><%= data.total_marks %> Marks</td></tr><% } %>
-                <% if (data.exam_duration) { %><tr><td style="font-weight: bold;">Duration of Exam</td><td><%= data.exam_duration %></td></tr><% } %>
-            </table>
-
-            <% if (data.objectives && data.objectives.trim() !== '' && data.objectives.trim() !== '<p><br></p>') { %>
-                <div class="section-title">Objectives of the course</div>
-                <div><%- data.objectives %></div>
-            <% } %>
-
-            <% if (data.important_note && data.important_note.trim() !=='') { %>
-                <div class="section-title">Important Note</div>
-                <div style="border: 1px solid black; padding: 10px;"><%- data.important_note %></div>
-            <% } %>
-
-            <% if (data.syllabus_units && data.syllabus_units.length > 0) { %>
-                <div class="section-title">Syllabus Units</div>
-                <% data.syllabus_units.forEach(unit=> { %>
-                    <div class="unit-block"><b><%= unit.title %></b><div><%- unit.content %></div></div>
-                <% }) %>
-            <% } %>
-
-            <% if (data.course_outcomes && data.course_outcomes.length > 0) { %>
-                <div class="section-title">Course Outcomes</div>
-                <% data.course_outcomes.forEach(co=> { %><div><%= co %></div><% }) %>
-            <% } %>
-
-            <% if (data.co_po_mapping && data.co_po_mapping.length > 0) { %>
-                <div class="section-title">Mapping of Course Outcomes to Program Outcomes</div>
-                <table>
-                    <tr>
-                        <th>CO</th>
-                        <% for(let i=1; i<=11; i++) { %><th>PO<%= i %></th><% } %>
-                        <% for(let i=1; i<=4; i++) { %><th>PSO<%= i %></th><% } %>
-                    </tr>
-                    <% data.co_po_mapping.forEach(map=> { %>
+        <!-- Page 3+: Detailed Course Syllabi -->
+        <% allCourses.forEach(data => { %>
+            <% if (!data.is_missing) { %>
+                <% 
+                    // Determine which semester this course is mapped to in this program
+                    let courseSem = [];
+                    semesters.forEach(s => {
+                        if(s.courses_code.includes(data.course_code)) courseSem.push(s.semester);
+                    });
+                    const clos = Array.isArray(data.course_outcomes) ? data.course_outcomes : [];
+                    const units = Array.isArray(data.syllabus_units) ? data.syllabus_units : [];
+                    const mappings = Array.isArray(data.co_po_mapping) ? data.co_po_mapping : [];
+                %>
+                
+                <div class="page-break-before" id="course-<%= data.course_code %>">
+                    
+                    <table>
+                        <tr><td colspan="4" class="section-title">Part A – Introduction</td></tr>
+                        <tr><td class="header-cell">Name of the Programme</td><td colspan="3"><%= academic_program %> (<%= specialization %>)</td></tr>
+                        <tr><td class="header-cell">Semester</td><td colspan="3">Semester <%= courseSem.join(', ') %></td></tr>
+                        <tr><td class="header-cell">Nature of Course/Course Composition</td><td colspan="3"><%= data.nature_of_course || '-' %></td></tr>
+                        <tr><td class="header-cell">Name of the Course</td><td colspan="3"><%= data.course_name || data.course_title %></td></tr>
+                        <tr><td class="header-cell">Course Code</td><td colspan="3"><%= data.course_code %></td></tr>
+                        <tr><td class="header-cell">Course Type</td><td colspan="3"><%= data.course_type || '-' %></td></tr>
+                        <tr><td class="header-cell">Pre-requisite for the course (if any)</td><td colspan="3"><%= data.prerequisite || 'Nil' %></td></tr>
                         <tr>
-                            <td class="text-center" style="font-weight: bold;"><%= map.co %></td>
-                            <% for(let i=1; i<=11; i++) { %><td class="text-center"><%= map['po'+i] %></td><% } %>
-                            <% for(let i=1; i<=4; i++) { %><td class="text-center"><%= map['pso'+i] %></td><% } %>
+                            <td class="header-cell">Course Learning Outcomes (CLOs)<br>After completing this course, the learner will be able to:</td>
+                            <td colspan="3">
+                                <% clos.forEach((clo, i) => { %>
+                                    CLO<sub><%= i+1 %></sub>: <%= clo %><br>
+                                <% }) %>
+                            </td>
                         </tr>
-                    <% }) %>
-                </table>
-                <p style="font-weight: bold; text-align: center;">S=Strong, M=Medium, W=Weak</p>
+                        <tr class="center bold">
+                            <td></td><td>Theory</td><td>Practical</td><td>Total</td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Credits</td>
+                            <td class="center"><%= data.credits_theory || 0 %></td><td class="center"><%= data.credits_practical || 0 %></td><td class="center"><%= data.credits_total || 0 %></td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Teaching hours per week</td>
+                            <td class="center"><%= data.credits_theory || 0 %></td><td class="center"><%= (data.credits_practical || 0) * 2 %></td><td class="center"><%= (data.credits_theory || 0) + ((data.credits_practical || 0) * 2) %></td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Internal Assessment Marks</td>
+                            <td class="center"><%= data.marks_internal_theory || 0 %></td><td class="center"><%= data.marks_internal_practical || 0 %></td><td class="center"><%= data.marks_internal_total || 0 %></td>
+                        </tr>
+                        <tr>
+                            <td class="bold">End Term Exam Marks</td>
+                            <td class="center"><%= data.marks_endterm_theory || 0 %></td><td class="center"><%= data.marks_endterm_practical || 0 %></td><td class="center"><%= data.marks_endterm_total || ((data.marks_endterm_theory || 0) + (data.marks_endterm_practical || 0)) %></td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Max. Marks</td>
+                            <td class="center"><%= (data.marks_internal_theory || 0) + (data.marks_endterm_theory || 0) %></td><td class="center"><%= (data.marks_internal_practical || 0) + (data.marks_endterm_practical || 0) %></td><td class="center"><%= data.marks_max || 0 %></td>
+                        </tr>
+                        <tr>
+                            <td class="bold">Examination Duration (in Hours)</td>
+                            <td class="center"><%= data.exam_duration || '-' %></td><td class="center"><%= data.credits_practical ? 'As per scheme' : 'NA' %></td><td class="center"><%= data.exam_duration || '-' %></td>
+                        </tr>
+                    </table>
+            
+                    <table>
+                        <tr><td colspan="3" class="section-title">Part B - Contents of the Course</td></tr>
+                        <tr>
+                            <td colspan="3" class="justified-text">
+                                <span class="bold">Instructions for Examiner:</span><br>
+                                <%- data.paper_setter_instructions || 'Nil' %>
+                            </td>
+                        </tr>
+                        <tr class="bold">
+                            <td style="width: 15%;">Unit</td><td style="width: 65%;">Topics</td><td style="width: 20%;" class="center">Contact Hours</td>
+                        </tr>
+                        <% units.forEach(unit => { %>
+                            <tr>
+                                <td><%= unit.title %></td>
+                                <td class="justified-text"><%- unit.content %></td>
+                                <td class="center"><%= unit.hours %></td>
+                            </tr>
+                        <% }) %>
+                    </table>
+            
+                    <table>
+                        <tr><td colspan="14" class="section-title">Mapping of Course Learning Outcomes (CLOs) to Program Outcomes & Program Specific Outcomes</td></tr>
+                        <tr class="center bold">
+                            <td>CLOs</td>
+                            <% for(let i=1; i<=11; i++) { %><td>PO<sub><%= i %></sub></td><% } %>
+                            <td>PSO<sub>1</sub></td><td>PSO<sub>2</sub></td>
+                        </tr>
+                        <% if (mappings.length > 0) { %>
+                            <% mappings.forEach((map, i) => { %>
+                                <tr class="center">
+                                    <td class="bold"><%= map.co || ('CLO' + (i+1)) %></td>
+                                    <% for(let j=1; j<=11; j++) { %><td><%= map['po'+j] || '' %></td><% } %>
+                                    <td><%= map.pso1 || '' %></td><td><%= map.pso2 || '' %></td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <% clos.forEach((clo, i) => { %>
+                                <tr class="center">
+                                    <td class="bold">CLO<sub><%= i+1 %></sub></td>
+                                    <% for(let j=1; j<=13; j++) { %><td></td><% } %>
+                                </tr>
+                            <% }) %>
+                        <% } %>
+                    </table>
+            
+                </div>
             <% } %>
-
-            <% if (data.suggested_books && data.suggested_books.length > 0) { %>
-                <div class="section-title">Suggested Books</div>
-                <% data.suggested_books.forEach((book, index)=> { %><div><%= index + 1 %>. <%= book %></div><% }) %>
-            <% } %>
-
-            <% if (data.reference_books && data.reference_books.length > 0) { %>
-                <div class="section-title">Suggested Reference Books</div>
-                <% data.reference_books.forEach((ref, index)=> { %><div><%= index + 1 %>. <%= ref %></div><% }) %>
-            <% } %>
-        </div>
-        <% } %>
-    <% }) %>
+        <% }) %>
+    </div>
 </body>
 </html>

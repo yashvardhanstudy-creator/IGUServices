@@ -11,8 +11,6 @@ const createCourseTableQuery = `
   CREATE TABLE IF NOT EXISTS course_syllabus (
       course_code TEXT PRIMARY KEY,
       credit_scheme TEXT,
-      programme_name TEXT,
-      semester TEXT,
       nature_of_course TEXT,
       course_name TEXT,
       course_type TEXT,
@@ -46,7 +44,7 @@ const createCourseTableQuery = `
 
 const insertCourseQuery = `
   INSERT INTO course_syllabus (
-    course_code, credit_scheme, programme_name, semester, nature_of_course,
+    course_code, credit_scheme, nature_of_course,
     course_name, course_type, prerequisite,
     credits_theory, credits_practical, credits_total,
     marks_internal_theory, marks_internal_practical, marks_internal_total,
@@ -54,12 +52,10 @@ const insertCourseQuery = `
     exam_duration, paper_setter_instructions,
     course_outcomes, syllabus_units, evaluation_criteria, learning_resources, co_po_mapping, nep_mapping
   ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24
   )
   ON CONFLICT (course_code) DO UPDATE SET
     credit_scheme = EXCLUDED.credit_scheme,
-    programme_name = EXCLUDED.programme_name,
-    semester = EXCLUDED.semester,
     nature_of_course = EXCLUDED.nature_of_course,
     course_name = EXCLUDED.course_name,
     course_type = EXCLUDED.course_type,
@@ -82,26 +78,6 @@ const insertCourseQuery = `
     learning_resources = EXCLUDED.learning_resources,
     co_po_mapping = EXCLUDED.co_po_mapping,
     nep_mapping = EXCLUDED.nep_mapping;
-`;
-
-const createSemesterCoursesTableQuery = `
-  CREATE TABLE IF NOT EXISTS semester_courses (
-      semester TEXT,
-      academic_program TEXT,
-      specialization TEXT,
-      year_onward TEXT,
-      courses_code JSONB,
-      important_note JSONB,
-      PRIMARY KEY (semester, academic_program, specialization, year_onward)
-  );
-`;
-
-const insertSemesterCoursesQuery = `
-  INSERT INTO semester_courses (semester, academic_program, specialization, year_onward, courses_code, important_note)
-  VALUES ($1, $2, $3, $4, $5, $6)
-  ON CONFLICT (semester, academic_program, specialization, year_onward) DO UPDATE SET
-    courses_code = EXCLUDED.courses_code,
-    important_note = EXCLUDED.important_note;
 `;
 
 const createProgramTableQuery = `
@@ -188,8 +164,6 @@ module.exports = {
   createUserTable,
   verifyPrivilageLogin,
   verifyLogin,
-  createSemesterCoursesTableQuery,
-  insertSemesterCoursesQuery,
   createProgramTableQuery,
   insertProgramQuery,
   createCurriculumDraftsTableQuery,
