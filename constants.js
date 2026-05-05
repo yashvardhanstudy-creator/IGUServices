@@ -10,28 +10,34 @@ const createUserTable = `
 const createCourseTableQuery = `
   CREATE TABLE IF NOT EXISTS course_syllabus (
       course_code TEXT PRIMARY KEY,
-      category TEXT,
-      course_title TEXT,
+      credit_scheme TEXT,
+      programme_name TEXT,
+      semester TEXT,
+      nature_of_course TEXT,
+      course_name TEXT,
+      course_type TEXT,
       prerequisite TEXT,
       
-      l INTEGER,
-      t INTEGER,
-      p INTEGER,
-      credit INTEGER,
-      class_marks INTEGER,
-      exam_marks INTEGER,
-      practical_marks INTEGER,
-      total_marks INTEGER,
+      credits_theory INTEGER,
+      credits_practical INTEGER,
+      credits_total INTEGER,
+      
+      marks_internal_theory INTEGER,
+      marks_internal_practical INTEGER,
+      marks_internal_total INTEGER,
+      marks_endterm_theory INTEGER,
+      marks_endterm_practical INTEGER,
+      marks_endterm_total INTEGER,
+      marks_max INTEGER,
+      
       exam_duration TEXT,
+      paper_setter_instructions TEXT,
       
-      important_note TEXT, -- For Paper-Setter Instructions
-      
-      syllabus_units JSONB,
       course_outcomes JSONB,
-      suggested_books JSONB,
-      reference_books JSONB,
-      co_po_mapping JSONB,
+      syllabus_units JSONB,
       evaluation_criteria JSONB,
+      learning_resources TEXT,
+      co_po_mapping JSONB,
       nep_mapping JSONB,
       
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -40,35 +46,41 @@ const createCourseTableQuery = `
 
 const insertCourseQuery = `
   INSERT INTO course_syllabus (
-    course_code, category, course_title, prerequisite,
-    l, t, p, credit, 
-    class_marks, exam_marks, practical_marks, total_marks, exam_duration, 
-    important_note, 
-    syllabus_units, course_outcomes, suggested_books, reference_books, co_po_mapping,
-    evaluation_criteria, nep_mapping
+    course_code, credit_scheme, programme_name, semester, nature_of_course,
+    course_name, course_type, prerequisite,
+    credits_theory, credits_practical, credits_total,
+    marks_internal_theory, marks_internal_practical, marks_internal_total,
+    marks_endterm_theory, marks_endterm_practical, marks_endterm_total, marks_max,
+    exam_duration, paper_setter_instructions,
+    course_outcomes, syllabus_units, evaluation_criteria, learning_resources, co_po_mapping, nep_mapping
   ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26
   )
   ON CONFLICT (course_code) DO UPDATE SET
-    category = EXCLUDED.category,
-    course_title = EXCLUDED.course_title,
-    l = EXCLUDED.l,
-    t = EXCLUDED.t,
-    p = EXCLUDED.p,
-    credit = EXCLUDED.credit,
-    class_marks = EXCLUDED.class_marks,
-    exam_marks = EXCLUDED.exam_marks,
-    practical_marks = EXCLUDED.practical_marks,
-    total_marks = EXCLUDED.total_marks,
-    exam_duration = EXCLUDED.exam_duration,
-    important_note = EXCLUDED.important_note,
-    syllabus_units = EXCLUDED.syllabus_units,
-    course_outcomes = EXCLUDED.course_outcomes,
-    suggested_books = EXCLUDED.suggested_books,
-    reference_books = EXCLUDED.reference_books,
-    co_po_mapping = EXCLUDED.co_po_mapping,
+    credit_scheme = EXCLUDED.credit_scheme,
+    programme_name = EXCLUDED.programme_name,
+    semester = EXCLUDED.semester,
+    nature_of_course = EXCLUDED.nature_of_course,
+    course_name = EXCLUDED.course_name,
+    course_type = EXCLUDED.course_type,
     prerequisite = EXCLUDED.prerequisite,
+    credits_theory = EXCLUDED.credits_theory,
+    credits_practical = EXCLUDED.credits_practical,
+    credits_total = EXCLUDED.credits_total,
+    marks_internal_theory = EXCLUDED.marks_internal_theory,
+    marks_internal_practical = EXCLUDED.marks_internal_practical,
+    marks_internal_total = EXCLUDED.marks_internal_total,
+    marks_endterm_theory = EXCLUDED.marks_endterm_theory,
+    marks_endterm_practical = EXCLUDED.marks_endterm_practical,
+    marks_endterm_total = EXCLUDED.marks_endterm_total,
+    marks_max = EXCLUDED.marks_max,
+    exam_duration = EXCLUDED.exam_duration,
+    paper_setter_instructions = EXCLUDED.paper_setter_instructions,
+    course_outcomes = EXCLUDED.course_outcomes,
+    syllabus_units = EXCLUDED.syllabus_units,
     evaluation_criteria = EXCLUDED.evaluation_criteria,
+    learning_resources = EXCLUDED.learning_resources,
+    co_po_mapping = EXCLUDED.co_po_mapping,
     nep_mapping = EXCLUDED.nep_mapping;
 `;
 
@@ -108,6 +120,23 @@ const insertProgramQuery = `
   ON CONFLICT (program_name, specialization) DO UPDATE SET
     level = EXCLUDED.level,
     scheme = EXCLUDED.scheme;
+`;
+
+const createCurriculumDraftsTableQuery = `
+  CREATE TABLE IF NOT EXISTS curriculum_drafts (
+      program_name TEXT,
+      specialization TEXT,
+      draft_data JSONB,
+      PRIMARY KEY (program_name, specialization),
+      FOREIGN KEY (program_name, specialization) REFERENCES programs(program_name, specialization) ON DELETE CASCADE
+  );
+`;
+
+const insertCurriculumDraftQuery = `
+  INSERT INTO curriculum_drafts (program_name, specialization, draft_data)
+  VALUES ($1, $2, $3)
+  ON CONFLICT (program_name, specialization) DO UPDATE SET
+    draft_data = EXCLUDED.draft_data;
 `;
 
 const dbConnectInfoDevLaptop = {
@@ -163,4 +192,6 @@ module.exports = {
   insertSemesterCoursesQuery,
   createProgramTableQuery,
   insertProgramQuery,
+  createCurriculumDraftsTableQuery,
+  insertCurriculumDraftQuery,
 };

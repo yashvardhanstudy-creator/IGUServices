@@ -72,11 +72,11 @@
         <table>
             <tr>
                 <td class="header-cell">Name of Programme</td>
-                <td colspan="3"><input type="text" name="programmeName" required></td>
+                <td colspan="3"><input type="text" name="programmeName" value="<%= query.programmeName || '' %>" required></td>
             </tr>
             <tr>
                 <td class="header-cell">Semester</td>
-                <td colspan="3"><input type="text" name="semester" required></td>
+                <td colspan="3"><input type="text" name="semester" value="<%= query.semester || '' %>" required></td>
             </tr>
             <tr>
                 <td class="header-cell">Nature of Course</td>
@@ -84,13 +84,13 @@
             </tr>
             <tr>
                 <td class="header-cell">Name of the Course</td>
-                <td colspan="3"><input type="text" name="courseName" required></td>
+                <td colspan="3"><input type="text" name="courseName" value="<%= query.courseName || '' %>" required></td>
             </tr>
             <tr>
                 <td class="header-cell">Course Code</td>
-                <td><input type="text" name="courseCode" required></td>
+                <td><input type="text" name="courseCode" value="<%= query.courseCode || '' %>" required></td>
                 <td class="header-cell">Course Type</td>
-                <td><input type="text" name="courseType" required></td>
+                <td><input type="text" name="courseType" value="<%= query.courseType || '' %>" required></td>
             </tr>
             <tr>
                 <td class="header-cell">Pre-requisite for the course (if any)</td>
@@ -290,5 +290,128 @@
 </div>
 
 <script src="/js/courseFormLogic.js"></script>
+
+<% if (locals.course) { %>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const course = <%- JSON.stringify(course) %>;
+    
+    const schemeSelect = document.getElementById("creditScheme");
+    if(schemeSelect) {
+        schemeSelect.value = course.credit_scheme || "";
+        autofillForm(); // This generates the units and fills default scheme marks
+    }
+
+    // Text inputs
+    const setVal = (name, val) => {
+        const el = document.querySelector(`input[name="${name}"]`);
+        if (el) el.value = val || "";
+    };
+
+    // Make crucial identifiers read-only to prevent accidental modification during edit
+    const makeReadonly = (name) => {
+        const el = document.querySelector(`input[name="${name}"]`);
+        if (el) el.setAttribute("readonly", true);
+    };
+
+    setVal("programmeName", course.programme_name);
+    makeReadonly("programmeName");
+    setVal("semester", course.semester);
+    makeReadonly("semester");
+    setVal("natureOfCourse", course.nature_of_course);
+    setVal("courseName", course.course_name);
+    setVal("courseCode", course.course_code);
+    makeReadonly("courseCode");
+    setVal("courseType", course.course_type);
+    makeReadonly("courseType");
+    setVal("prerequisite", course.prerequisite);
+
+    // Overwrite readonly marks with DB values just in case
+    setVal("credits_theory", course.credits_theory);
+    setVal("credits_practical", course.credits_practical);
+    setVal("credits_total", course.credits_total);
+    setVal("marks_internal_theory", course.marks_internal_theory);
+    setVal("marks_internal_practical", course.marks_internal_practical);
+    setVal("marks_internal_total", course.marks_internal_total);
+    setVal("marks_endterm_theory", course.marks_endterm_theory);
+    setVal("marks_endterm_practical", course.marks_endterm_practical);
+    setVal("marks_endterm_total", course.marks_endterm_total);
+    setVal("marks_max", course.marks_max);
+    setVal("exam_duration", course.exam_duration);
+
+    // Textareas
+    const setTa = (name, val) => {
+        const el = document.querySelector(`textarea[name="${name}"]`);
+        if (el) el.value = val || "";
+    };
+
+    setTa("courseOutcomes", (course.course_outcomes || []).join('\n'));
+    setTa("resources", course.learning_resources);
+
+    if (course.evaluation_criteria) {
+        setVal("eval_cp_th", course.evaluation_criteria.eval_cp_th);
+        setVal("eval_cp_pr", course.evaluation_criteria.eval_cp_pr);
+        setVal("eval_written_exam_th", course.evaluation_criteria.eval_written_exam_th);
+        setVal("eval_seminar_th", course.evaluation_criteria.eval_seminar_th);
+        setVal("eval_seminar_pr", course.evaluation_criteria.eval_seminar_pr);
+        setVal("eval_lab_record_pr", course.evaluation_criteria.eval_lab_record_pr);
+        setVal("eval_seminar_demo_pr", course.evaluation_criteria.eval_seminar_demo_pr);
+        setVal("eval_viva_pr", course.evaluation_criteria.eval_viva_pr);
+        setVal("eval_midterm_th", course.evaluation_criteria.eval_midterm_th);
+        setVal("eval_execution_pr", course.evaluation_criteria.eval_execution_pr);
+    }
+
+    if (course.nep_mapping) {
+        setTa("nep_employability", course.nep_mapping.employability);
+        setTa("nep_skill_enhancement", course.nep_mapping.skill_enhancement);
+        setTa("nep_communication_development", course.nep_mapping.communication_development);
+        setTa("nep_indian_knowledge_system", course.nep_mapping.indian_knowledge_system);
+        setTa("nep_environmental_awareness", course.nep_mapping.environmental_awareness);
+        setTa("nep_current_issues", course.nep_mapping.current_issues);
+        setTa("nep_women_empowerment", course.nep_mapping.women_empowerment);
+        setTa("nep_public_policies", course.nep_mapping.public_policies);
+        setTa("nep_any_other", course.nep_mapping.any_other);
+    }
+
+    // Units
+    if (course.syllabus_units && course.syllabus_units.length > 0) {
+        const titleInputs = document.querySelectorAll('input[name="unitTitles[]"]');
+        const contentInputs = document.querySelectorAll('input[name="unitContents[]"]');
+        const hourInputs = document.querySelectorAll('input[name="unitHours[]"]');
+        
+        course.syllabus_units.forEach((unit, index) => {
+            if (titleInputs[index]) titleInputs[index].value = unit.title || "";
+            if (contentInputs[index]) {
+                contentInputs[index].value = unit.content || "";
+                const div = contentInputs[index].previousElementSibling;
+                if(div && div.getAttribute('contenteditable')) {
+                    div.innerHTML = unit.content || "";
+                }
+            }
+            if (hourInputs[index]) hourInputs[index].value = unit.hours || "";
+        });
+    }
+
+    // Mapping table
+    generateMappingTable();
+    if (course.co_po_mapping && course.co_po_mapping.length > 0) {
+        const tbody = document.getElementById("mappingBody");
+        const rows = tbody.querySelectorAll("tr");
+        course.co_po_mapping.forEach((mapping, index) => {
+            if (rows[index]) {
+                for (let i = 1; i <= 11; i++) {
+                    const input = rows[index].querySelector(`input[name="mapPO${i}[]"]`);
+                    if (input) input.value = mapping[`po${i}`] || "";
+                }
+                for (let i = 1; i <= 2; i++) {
+                    const input = rows[index].querySelector(`input[name="mapPSO${i}[]"]`);
+                    if (input) input.value = mapping[`pso${i}`] || "";
+                }
+            }
+        });
+    }
+});
+</script>
+<% } %>
 </body>
 </html>

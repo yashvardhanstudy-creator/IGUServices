@@ -45,7 +45,10 @@
 
     <a href="/programs-list" class="back-btn">Back to Programs</a>
 
-    <h2>Curriculum Framework: <%= schemeName %> <%= query.program_name ? '- ' + query.program_name : '' %></h2>
+    <h2>
+        Curriculum Framework: <%= schemeName %> <%= query.program_name ? '- ' + query.program_name : '' %>
+        <span id="save-status" style="font-size: 14px; font-weight: normal; color: #28a745; margin-left: 20px; opacity: 0; transition: opacity 0.5s;">Saved!</span>
+    </h2>
 
     <table>
         <thead>
@@ -66,16 +69,28 @@
         <tbody>
             <% semesters.forEach(sem => { %>
                 <% sem.courses.forEach((course, index) => { %>
-                    <tr style="background-color: <%= sem.color %>;">
+                    <% const cellKey = sem.number + '_' + index; %>
+                    <% const cellDraft = draftData[cellKey] || {}; %>
+                    <% const savedCourse = cellDraft.code ? savedCoursesMap[cellDraft.code] : null; %>
+                    <% const isSaved = !!savedCourse; %>
+                    <tr style="background-color: <%= isSaved ? '#d4edda' : sem.color %>;">
                         <% if (index === 0) { %>
-                            <td rowspan="<%= sem.courses.length + 1 %>" class="center">
+                            <td rowspan="<%= sem.courses.length + 1 %>" class="center" style="background-color: <%= sem.color %>;">
                                 <strong><%= sem.number %></strong>
                             </td>
                         <% } %>
-                        <td><%= course.type %></td>
-                        <td></td> <td></td> <td></td>
-                        <td class="center"><%= course.credits %></td>
-                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                        <td>
+                            <a href="#" style="color: <%= isSaved ? '#155724' : '#0056b3' %>; text-decoration: underline; font-weight: bold;" onclick="openCourseForm(event, this, 'nom_<%= cellKey %>', 'code_<%= cellKey %>', <%= isSaved %>, '<%= sem.number %>')"><%= course.type %> <%= isSaved ? '✅' : '' %></a>
+                        </td>
+                        <td><input type="text" id="code_<%= cellKey %>" placeholder="Code" value="<%= cellDraft.code || '' %>" style="width: 100%; border: none; background: transparent; text-align: center;" oninput="debounceSaveDraft()"></td> 
+                        <td><input type="text" id="nom_<%= cellKey %>" placeholder="Enter Nomenclature" value="<%= savedCourse ? savedCourse.course_name : (cellDraft.nom || '') %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box;" oninput="debounceSaveDraft()"></td> 
+                        <td class="center"><%= savedCourse ? ((savedCourse.credits_theory || 0) + 'T / ' + (savedCourse.credits_practical || 0) + 'P') : '' %></td>
+                        <td class="center"><%= savedCourse ? (savedCourse.credits_total || 0) : course.credits %></td>
+                        <td class="center"><%= savedCourse ? ((savedCourse.credits_theory || 0) + ((savedCourse.credits_practical || 0) * 2)) : '' %></td>
+                        <td class="center"><%= savedCourse ? (savedCourse.marks_internal_total || 0) : '' %></td>
+                        <td class="center"><%= savedCourse ? (savedCourse.marks_endterm_total || 0) : '' %></td>
+                        <td class="center"><%= savedCourse ? (savedCourse.marks_max || 0) : '' %></td>
+                        <td class="center"><%= savedCourse ? (savedCourse.exam_duration || '') : '' %></td>
                     </tr>
                 <% }) %>
                 <tr style="background-color: <%= sem.color %>;" class="total-row">
@@ -87,5 +102,80 @@
             <% }) %>
         </tbody>
     </table>
+
+    <script>
+        function openCourseForm(event, linkElement, nomId, codeId, isSaved, semester) {
+            event.preventDefault();
+            const nomenclature = document.getElementById(nomId).value.trim();
+            const courseCode = document.getElementById(codeId).value.trim();
+            
+            if (!nomenclature) {
+                alert("Please fill the Nomenclature of the course before opening the course form.");
+                return;
+            }
+            
+            const courseType = linkElement.innerText.replace('✅', '').trim();
+            
+            // Extract program name from current URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const programName = urlParams.get('program_name') || '';
+            
+            if (isSaved && courseCode) {
+                window.open(`/edit-course/${encodeURIComponent(courseCode)}`, '_blank');
+            } else {
+                let url = `/courses?courseName=${encodeURIComponent(nomenclature)}&courseType=${encodeURIComponent(courseType)}`;
+                if (courseCode) url += `&courseCode=${encodeURIComponent(courseCode)}`;
+                if (programName) url += `&programmeName=${encodeURIComponent(programName)}`;
+                if (semester) url += `&semester=${encodeURIComponent(semester)}`;
+                
+                window.open(url, '_blank');
+            }
+        }
+
+        let saveTimeout;
+        function debounceSaveDraft() {
+            clearTimeout(saveTimeout);
+            // Wait 1 second after typing stops to save
+            saveTimeout = setTimeout(saveDraft, 1000);
+        }
+
+        async function saveDraft() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const program_name = urlParams.get('program_name');
+            const specialization = urlParams.get('specialization');
+            if (!program_name || !specialization) return;
+
+            const draft_data = {};
+            const rows = document.querySelectorAll('tbody tr:not(.total-row)');
+            
+            rows.forEach(row => {
+                const codeInput = row.querySelector('input[id^="code_"]');
+                const nomInput = row.querySelector('input[id^="nom_"]');
+                if(codeInput && nomInput) {
+                    const key = codeInput.id.replace('code_', '');
+                    const code = codeInput.value.trim();
+                    const nom = nomInput.value.trim();
+                    if (code || nom) draft_data[key] = { code, nom };
+                }
+            });
+
+            try {
+                const response = await fetch('/save-curriculum-draft', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ program_name, specialization, draft_data })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    const statusLabel = document.getElementById('save-status');
+                    statusLabel.style.opacity = '1';
+                    setTimeout(() => statusLabel.style.opacity = '0', 2000);
+                }
+            } catch (err) {
+                console.error("Draft Auto-save failed:", err);
+            }
+        }
+    </script>
 </body>
 </html>

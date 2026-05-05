@@ -17,6 +17,8 @@ const {
   insertSemesterCoursesQuery,
   createProgramTableQuery,
   insertProgramQuery,
+  createCurriculumDraftsTableQuery,
+  insertCurriculumDraftQuery,
   // dbConnectInfoReal,
 } = require("./constants");
 const { dummyCourseData } = require("./dummyData");
@@ -81,19 +83,27 @@ pool.query(createCourseTableQuery, (err, res) => {
   }
 });
 
-pool.query(createSemesterCoursesTableQuery, (err, res) => {
-  if (err) {
-    console.error("Error creating semester_courses table:", err);
-  } else {
-    console.log("✅ Table 'semester_courses' ensured to exist.");
-  }
-});
+// pool.query(createSemesterCoursesTableQuery, (err, res) => {
+//   if (err) {
+//     console.error("Error creating semester_courses table:", err);
+//   } else {
+//     console.log("✅ Table 'semester_courses' ensured to exist.");
+//   }
+// });
 
 pool.query(createProgramTableQuery, (err, res) => {
   if (err) {
     console.error("Error creating programs table:", err);
   } else {
     console.log("✅ Table 'programs' ensured to exist.");
+  }
+});
+
+pool.query(createCurriculumDraftsTableQuery, (err, res) => {
+  if (err) {
+    console.error("Error creating curriculum_drafts table:", err);
+  } else {
+    console.log("✅ Table 'curriculum_drafts' ensured to exist.");
   }
 });
 
@@ -277,7 +287,6 @@ app.get("/edit-course/:courseCode", verifyLogin, async (req, res) => {
     }
 
     res.render("courseForm.ejs", {
-      courseData: dummyCourseData,
       course: result.rows[0],
     });
   } catch (error) {
@@ -309,7 +318,7 @@ app.get("/view-course/:courseCode", verifyLogin, async (req, res) => {
 app.get("/courses-list", verifyLogin, async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT course_code, course_title, category FROM course_syllabus ORDER BY created_at DESC",
+      "SELECT course_code, course_name AS course_title, course_type AS category FROM course_syllabus ORDER BY created_at DESC",
     );
 
     res.render("coursesList.ejs", { courses: result.rows });
@@ -369,14 +378,16 @@ app.post("/courses", verifyLogin, async (req, res) => {
 
     // Process Evaluation Criteria
     const evaluationCriteria = {
-      internal: {
-        class_participation: parseInt(courseData.eval_class_participation) || 0,
-        seminar: parseInt(courseData.eval_seminar) || 0,
-        mid_term: parseInt(courseData.eval_mid_term) || 0,
-      },
-      end_term: {
-        written_exam: parseInt(courseData.examMarks) || 0,
-      },
+      eval_cp_th: courseData.eval_cp_th || "0",
+      eval_cp_pr: courseData.eval_cp_pr || "NA",
+      eval_written_exam_th: courseData.eval_written_exam_th || "0",
+      eval_seminar_th: courseData.eval_seminar_th || "0",
+      eval_seminar_pr: courseData.eval_seminar_pr || "NA",
+      eval_lab_record_pr: courseData.eval_lab_record_pr || "NA",
+      eval_seminar_demo_pr: courseData.eval_seminar_demo_pr || "NA",
+      eval_viva_pr: courseData.eval_viva_pr || "NA",
+      eval_midterm_th: courseData.eval_midterm_th || "0",
+      eval_execution_pr: courseData.eval_execution_pr || "NA",
     };
 
     // Process NEP Mapping
@@ -393,38 +404,39 @@ app.post("/courses", verifyLogin, async (req, res) => {
     };
 
     const values = [
-      courseData.courseCode,
-      courseData.category,
-      courseData.courseTitle,
-      courseData.prerequisite,
-      parseInt(courseData.l) || 0,
-      parseInt(courseData.t) || 0,
-      parseInt(courseData.p) || 0,
-      parseInt(courseData.credit) || 0,
-      parseInt(courseData.classMarks) || 0,
-      parseInt(courseData.examMarks) || 0,
-      parseInt(courseData.practicalMarks) || 0,
-      parseInt(courseData.totalMarks) || 0,
-      courseData.examDuration,
-      xss(courseData.paperSetterInstructions || ""),
-      JSON.stringify(syllabusUnits),
+      courseData.courseCode || "", // $1
+      courseData.creditScheme || "", // $2
+      courseData.programmeName || "", // $3
+      courseData.semester || "", // $4
+      courseData.natureOfCourse || "", // $5
+      courseData.courseName || "", // $6
+      courseData.courseType || "", // $7
+      courseData.prerequisite || "", // $8
+
+      parseInt(courseData.credits_theory) || 0, // $9
+      parseInt(courseData.credits_practical) || 0, // $10
+      parseInt(courseData.credits_total) || 0, // $11
+
+      parseInt(courseData.marks_internal_theory) || 0, // $12
+      parseInt(courseData.marks_internal_practical) || 0, // $13
+      parseInt(courseData.marks_internal_total) || 0, // $14
+      parseInt(courseData.marks_endterm_theory) || 0, // $15
+      parseInt(courseData.marks_endterm_practical) || 0, // $16
+      parseInt(courseData.marks_endterm_total) || 0, // $17
+      parseInt(courseData.marks_max) || 0, // $18
+
+      courseData.exam_duration || "", // $19
+      xss(courseData.paperSetterInstructions || ""), // $20
+
       JSON.stringify(
         normalizeArray(
           courseData.courseOutcomes || courseData["courseOutcomes[]"],
         ),
       ),
-      JSON.stringify(
-        normalizeArray(
-          courseData.suggestedBooks || courseData["suggestedBooks[]"],
-        ),
-      ),
-      JSON.stringify(
-        normalizeArray(
-          courseData.referenceBooks || courseData["referenceBooks[]"],
-        ),
-      ),
-      JSON.stringify(coPoMapping),
+      JSON.stringify(syllabusUnits),
       JSON.stringify(evaluationCriteria),
+      xss(courseData.resources || ""),
+      JSON.stringify(coPoMapping),
       JSON.stringify(nepMapping),
     ];
 
@@ -546,7 +558,7 @@ app.get("/view-semester-structure", verifyLogin, async (req, res) => {
     let orderedCourses = [];
     if (courseCodes.length > 0) {
       const coursesResult = await pool.query(
-        "SELECT course_code, course_title, l, t, p, credit, class_marks, exam_marks, practical_marks, total_marks, exam_duration FROM course_syllabus WHERE course_code = ANY($1::text[])",
+        "SELECT course_code, course_name AS course_title, credits_theory AS l, 0 AS t, credits_practical AS p, credits_total AS credit, marks_internal_total AS class_marks, marks_endterm_total AS exam_marks, marks_internal_practical AS practical_marks, marks_max AS total_marks, exam_duration FROM course_syllabus WHERE course_code = ANY($1::text[])",
         [courseCodes],
       );
       const coursesMap = new Map(
@@ -1045,7 +1057,7 @@ const curriculumSchemes = {
   "Scheme S": [],
 };
 
-app.get("/curriculum", verifyLogin, (req, res) => {
+app.get("/curriculum", verifyLogin, async (req, res) => {
   let requestedScheme = req.query.scheme || "Scheme A";
 
   // Normalize if the database only stored the single letter (e.g., "A" -> "Scheme A")
@@ -1063,7 +1075,62 @@ app.get("/curriculum", verifyLogin, (req, res) => {
     ? requestedScheme
     : "Scheme A (Default Fallback)";
 
-  res.render("curriculum.ejs", { semesters, schemeName, query: req.query });
+  // Fetch saved draft if available
+  let draftData = {};
+  let savedCoursesMap = {};
+  if (req.query.program_name && req.query.specialization) {
+    try {
+      const draftResult = await pool.query(
+        "SELECT draft_data FROM curriculum_drafts WHERE program_name = $1 AND specialization = $2",
+        [req.query.program_name, req.query.specialization],
+      );
+      if (draftResult.rows.length > 0) {
+        draftData = draftResult.rows[0].draft_data || {};
+
+        // Collect course codes to check against the main course_syllabus table
+        const courseCodesToCheck = Object.values(draftData)
+          .map((item) => item.code)
+          .filter((code) => code && code.trim() !== "");
+
+        if (courseCodesToCheck.length > 0) {
+          const existingResult = await pool.query(
+            "SELECT * FROM course_syllabus WHERE course_code = ANY($1::text[])",
+            [courseCodesToCheck],
+          );
+          existingResult.rows.forEach((row) => {
+            savedCoursesMap[row.course_code] = row;
+          });
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching curriculum draft:", err);
+    }
+  }
+
+  res.render("curriculum.ejs", {
+    semesters,
+    schemeName,
+    query: req.query,
+    draftData,
+    savedCoursesMap,
+  });
+});
+
+app.post("/save-curriculum-draft", verifyLogin, async (req, res) => {
+  try {
+    const { program_name, specialization, draft_data } = req.body;
+    if (program_name && specialization) {
+      await pool.query(insertCurriculumDraftQuery, [
+        program_name,
+        specialization,
+        JSON.stringify(draft_data),
+      ]);
+    }
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error saving draft:", err);
+    res.status(500).json({ success: false, error: "Internal Server Error" });
+  }
 });
 
 app.post("/program-specialization", verifyLogin, async (req, res) => {
