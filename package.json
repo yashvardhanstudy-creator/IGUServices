@@ -1,7 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "Internal server for NIRF form",
+  "description": "NEP 2020 Compliant Syllabus Generator",
   "license": "ISC",
   "author": "Yash Vardhan Singh",
   "type": "commonjs",
@@ -16,6 +16,7 @@
     "ejs": "^4.0.1",
     "express": "^5.2.1",
     "express-session": "^1.19.0",
+    "ngrok": "^5.0.0-beta.2",
     "node-windows": "^1.0.0-beta.8",
     "pg": "^8.18.0",
     "puppeteer": "^24.42.0",

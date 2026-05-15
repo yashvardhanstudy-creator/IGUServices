@@ -39,6 +39,19 @@
         .back-btn:hover {
             background: #5a6268;
         }
+        .guide-box {
+            background: #fff8e1;
+            border: 1px solid #ffeeba;
+            border-radius: 6px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            color: #856404;
+        }
+        .guide-box h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            color: #856404;
+        }
     </style>
 </head>
 <body>
@@ -46,9 +59,19 @@
     <a href="/programs-list" class="back-btn">Back to Programs</a>
 
     <h2>
-        Curriculum Framework: <%= schemeName %> <%= query.program_name ? '- ' + query.program_name : '' %>
+        Curriculum Framework: <%= schemeName %> <%= query.program_code ? '- ' + query.program_code : '' %>
         <span id="save-status" style="font-size: 14px; font-weight: normal; color: #28a745; margin-left: 20px; opacity: 0; transition: opacity 0.5s;">Saved!</span>
     </h2>
+
+    <div class="guide-box">
+        <h3>⚙️ Curriculum Builder Guide</h3>
+        <ul style="margin: 0; padding-left: 20px; line-height: 1.6; font-size: 14px;">
+            <li><strong>Auto-Save:</strong> The framework automatically saves your changes 1 second after you stop typing. Look for the green "Saved!" indicator above.</li>
+            <li><strong>Course Generation:</strong> Entering a Course Code, Nomenclature, and selecting a Scheme will instantly generate an empty "shell" course for your teachers to fill out!</li>
+            <li><strong>Scheme Overrides:</strong> ⚠️ Changing the scheme of an already saved course will permanently delete it and recreate an empty shell. Only do this if you intend to wipe the teacher's data!</li>
+            <li><strong>Custom Rows:</strong> Internship and Project Work slots are strictly manual inputs. Type your values directly into the grid—they will print exactly as entered without needing a separate course form.</li>
+        </ul>
+    </div>
 
     <table>
         <thead>
@@ -59,101 +82,277 @@
                 <th>Nomenclature of course</th>
                 <th>Theory(T)/ Practical(P)</th>
                 <th>Credit</th>
-                <th>Contact hours per week</th>
+                <th>Contact hours per week <br>L(Lecture)+T(Tutorial)+P(Practical)=T(Total)</th>
                 <th>Internal Assessment Marks</th>
                 <th>End Term Examination Marks</th>
                 <th>Total Marks</th>
-                <th>Exam Hours</th>
+                <th>Exam Hours Theory, Practical</th>
             </tr>
         </thead>
         <tbody>
             <% semesters.forEach(sem => { %>
-                <% sem.courses.forEach((course, index) => { %>
-                    <% const cellKey = sem.number + '_' + index; %>
-                    <% const cellDraft = draftData[cellKey] || {}; %>
-                    <% const savedCourse = cellDraft.code ? savedCoursesMap[cellDraft.code] : null; %>
-                    <% const isSaved = !!savedCourse; %>
-                    <tr style="background-color: <%= isSaved ? '#d4edda' : sem.color %>;">
-                        <% if (index === 0) { %>
-                            <td rowspan="<%= sem.courses.length + 1 %>" class="center" style="background-color: <%= sem.color %>;">
-                                <strong><%= sem.number %></strong>
-                            </td>
-                        <% } %>
-                        <td>
-                            <a href="#" style="color: <%= isSaved ? '#155724' : '#0056b3' %>; text-decoration: underline; font-weight: bold;" id="link_<%= cellKey %>" data-type="<%= course.type %>" onclick="openCourseForm(event, this, 'nom_<%= cellKey %>', 'code_<%= cellKey %>', <%= isSaved %>, '<%= sem.number %>')"><%= course.type %> <%= isSaved ? '✅' : '' %></a>
+                <% if (sem.isDivider) { %>
+                    <tr class="divider-row" style="background-color: <%= sem.color || '#fff3cd' %>; text-align: center; font-weight: bold;">
+                        <td colspan="11" style="padding: 10px; font-size: 16px; letter-spacing: 2px;">
+                            <%= sem.title %>
                         </td>
-                        <td><input type="text" id="code_<%= cellKey %>" placeholder="Code" value="<%= cellDraft.code || '' %>" style="width: 100%; border: none; background: transparent; text-align: center;" oninput="debounceSaveDraft()" onchange="checkCourseCode(this, '<%= cellKey %>', '<%= course.credits %>', '<%= sem.number %>', '<%= sem.color %>')"></td> 
-                        <td><input type="text" id="nom_<%= cellKey %>" placeholder="Enter Nomenclature" value="<%= savedCourse ? savedCourse.course_name : (cellDraft.nom || '') %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: <%= isSaved ? '#e9ecef' : 'transparent' %>;" oninput="debounceSaveDraft()" <%= isSaved ? 'readonly' : '' %>></td> 
-                        <td class="center" id="td_tp_<%= cellKey %>"><%= savedCourse ? ((savedCourse.credits_theory || 0) + 'T / ' + (savedCourse.credits_practical || 0) + 'P') : '' %></td>
-                        <td class="center" id="td_cred_<%= cellKey %>"><%= savedCourse ? (savedCourse.credits_total || 0) : course.credits %></td>
-                        <td class="center" id="td_hrs_<%= cellKey %>"><%= savedCourse ? ((savedCourse.credits_theory || 0) + ((savedCourse.credits_practical || 0) * 2)) : '' %></td>
-                        <td class="center" id="td_int_<%= cellKey %>"><%= savedCourse ? (savedCourse.marks_internal_total || 0) : '' %></td>
-                        <td class="center" id="td_end_<%= cellKey %>"><%= savedCourse ? (savedCourse.marks_endterm_total || 0) : '' %></td>
-                        <td class="center" id="td_max_<%= cellKey %>"><%= savedCourse ? (savedCourse.marks_max || 0) : '' %></td>
-                        <td class="center" id="td_dur_<%= cellKey %>"><%= savedCourse ? (savedCourse.exam_duration || '') : '' %></td>
                     </tr>
-                <% }) %>
-                <tr style="background-color: <%= sem.color %>;" class="total-row">
-                    <td>Total</td>
-                    <td></td> <td></td> <td></td>
-                    <td class="center"><%= sem.totalCredits %></td>
-                    <td></td> <td></td> <td></td> <td></td> <td></td>
-                </tr>
+                <% } else if (sem.isYearlyDivider) { %>
+                    <tr class="divider-row" style="background-color: <%= sem.color || '#d1ecf1' %>; text-align: center; font-weight: bold;">
+                        <td colspan="11" style="padding: 10px;">
+                            <input type="text" id="yearly_divider_<%= sem.year %>" value="<%= draftData['yearly_divider_' + sem.year] || '' %>" placeholder="Enter details/exit option for end of Year <%= sem.year %> (Optional)" style="width: 80%; padding: 8px; text-align: center; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;" oninput="debounceSaveDraft()">
+                        </td>
+                    </tr>
+                <% } else { %>
+                    <% sem.courses.forEach((course, index) => { %>
+                        <% const cellKey = sem.number + '_' + index; %>
+                        <% const cellDraft = draftData[cellKey] || {}; %>
+                        <% const savedCourse = cellDraft.code ? savedCoursesMap[cellDraft.code] : null; %>
+                        <% const isSaved = !!savedCourse; %>
+                        <% const isPoolType = /^(MDC|AEC|SEC|VAC)/.test(course.type); %>
+                        <% const isCustomRow = /^(Internship|Intership|PROJECT(?:\s*WORK)?\/DISSERTATION)$/i.test(course.type); %>
+                        <tr style="background-color: <%= isSaved && !isPoolType && !isCustomRow ? '#d4edda' : sem.color %>;">
+                            <% if (index === 0) { %>
+                                <td rowspan="<%= sem.courses.length + 1 %>" class="center" style="background-color: <%= sem.color %>;">
+                                    <strong><%= sem.number %></strong>
+                                </td>
+                            <% } %>
+                            
+                            <% if (isPoolType) { %>
+                                <td>
+                                    <span style="color: #0056b3; font-weight: bold;"><%= course.type %></span>
+                                </td>
+                                <td colspan="2" class="center" style="font-style: italic; color: #555;">From the University Pool</td>
+                                <td></td>
+                                <td class="center"><%= course.credits %></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            <% } else if (isCustomRow) { %>
+                                <td>
+                                    <span style="color: #6f42c1; font-weight: bold;" id="type_<%= cellKey %>" data-type="<%= course.type %>"><%= course.type %></span>
+                                </td>
+                                <td><input type="text" id="code_<%= cellKey %>" placeholder="Code (Opt)" value="<%= cellDraft.code || '' %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; text-align: center; background-color: transparent;" oninput="debounceSaveDraft()"></td> 
+                                <td><input type="text" id="nom_<%= cellKey %>" placeholder="Nomenclature" value="<%= cellDraft.nom || '' %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: transparent;" oninput="debounceSaveDraft()"></td> 
+                                <td class="center"><input type="text" id="tp_<%= cellKey %>" placeholder="T/P" value="<%= cellDraft.tp || '' %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; text-align: center; background-color: transparent;" oninput="debounceSaveDraft()"></td>
+                                <td class="center"><input type="text" id="cred_<%= cellKey %>" placeholder="Credit" value="<%= cellDraft.credits || course.credits %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; text-align: center; background-color: transparent;" oninput="debounceSaveDraft()"></td>
+                                <td class="center"><input type="text" id="hrs_<%= cellKey %>" placeholder="Hours" value="<%= cellDraft.hrs || '' %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; text-align: center; background-color: transparent;" oninput="debounceSaveDraft()"></td>
+                                <td class="center"><input type="text" id="int_<%= cellKey %>" placeholder="Internal" value="<%= cellDraft.int || '' %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; text-align: center; background-color: transparent;" oninput="debounceSaveDraft()"></td>
+                                <td class="center"><input type="text" id="end_<%= cellKey %>" placeholder="End Term" value="<%= cellDraft.end || '' %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; text-align: center; background-color: transparent;" oninput="debounceSaveDraft()"></td>
+                                <td class="center"><input type="text" id="max_<%= cellKey %>" placeholder="Max" value="<%= cellDraft.max || '' %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; text-align: center; background-color: transparent;" oninput="debounceSaveDraft()"></td>
+                                <td class="center"><input type="text" id="dur_<%= cellKey %>" placeholder="Duration" value="<%= cellDraft.dur || '' %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; text-align: center; background-color: transparent;" oninput="debounceSaveDraft()"></td>
+                            <% } else { %>
+                                <td>
+                                    <span style="color: <%= isSaved ? '#155724' : '#0056b3' %>; font-weight: bold;" id="type_<%= cellKey %>" data-type="<%= course.type %>"><%= course.type %> <%= isSaved ? '✅' : '' %></span>
+                                </td>
+                                <td><input type="text" id="code_<%= cellKey %>" data-type="<%= course.type %>" data-credits="<%= course.credits %>" placeholder="Code" value="<%= cellDraft.code || '' %>" style="width: 100%; border: none; background: transparent; text-align: center; outline: 1px solid #ccc;" onchange="checkCourseCode(this, '<%= cellKey %>', '<%= course.credits %>', '<%= sem.number %>', '<%= sem.color %>')"></td> 
+                                <td><input type="text" id="nom_<%= cellKey %>" placeholder="Enter Nomenclature" value="<%= savedCourse ? savedCourse.course_name : (cellDraft.nom || '') %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: <%= isSaved ? '#e9ecef' : 'transparent' %>;" oninput="debounceSaveDraft()" <%= isSaved ? 'readonly' : '' %>></td> 
+                                <td class="center" id="td_tp_<%= cellKey %>">
+                                    <% const currentScheme = (savedCourse && savedCourse.credit_scheme) || cellDraft.credit_scheme || ''; %>
+                                    <select id="scheme_<%= cellKey %>" data-dbscheme="<%= savedCourse ? savedCourse.credit_scheme || '' : '' %>" onchange="handleSchemeChange(this, '<%= cellKey %>')" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: <%= isSaved ? '#e9ecef' : 'transparent' %>;">
+                                        <option value="">Scheme</option>
+                                        <% if (course.credits == 4) { %>
+                                            <option value="4+0" <%= currentScheme === '4+0' ? 'selected' : '' %>>4+0</option>
+                                            <option value="0+4" <%= currentScheme === '0+4' ? 'selected' : '' %>>0+4</option>
+                                            <option value="3+1" <%= currentScheme === '3+1' ? 'selected' : '' %>>3+1</option>
+                                            <option value="2+2" <%= currentScheme === '2+2' ? 'selected' : '' %>>2+2</option>
+                                        <% } else if (course.credits == 3) { %>
+                                            <option value="3+0" <%= currentScheme === '3+0' ? 'selected' : '' %>>3+0</option>
+                                            <option value="2+1" <%= currentScheme === '2+1' ? 'selected' : '' %>>2+1</option>
+                                        <% } else if (course.credits == 2) { %>
+                                            <option value="2+0" <%= currentScheme === '2+0' ? 'selected' : '' %>>2+0</option>
+                                            <option value="1+1" <%= currentScheme === '1+1' ? 'selected' : '' %>>1+1</option>
+                                        <% } %>
+                                    </select>
+                                </td>
+                                <td class="center" id="td_cred_<%= cellKey %>"><%= savedCourse ? (savedCourse.credits_total || 0) : course.credits %></td>
+                                <td class="center" id="td_hrs_<%= cellKey %>">
+                                    <% 
+                                        let th = 0, pr = 0, hasCreds = false;
+                                        if (isSaved && savedCourse) {
+                                            th = parseInt(savedCourse.credits_theory) || 0;
+                                            pr = parseInt(savedCourse.credits_practical) || 0;
+                                            hasCreds = true;
+                                        } else if (cellDraft.credit_scheme) {
+                                            let parts = cellDraft.credit_scheme.split('+');
+                                            if(parts.length === 2) {
+                                                th = parseInt(parts[0]);
+                                                pr = parseInt(parts[1]);
+                                                hasCreds = true;
+                                            }
+                                        }
+                                        if (hasCreds) {
+                                            let lt_split = cellDraft.lt_split || "0";
+                                            let p = pr * 2;
+                                            let tot = th + p;
+                                            if (th > 1) {
+                                                %>
+                                                <select id="ltsplit_<%= cellKey %>" onchange="debounceSaveDraft()" style="background-color: <%= isSaved ? '#e9ecef' : 'transparent' %>; border: 1px solid #ccc; padding: 2px;">
+                                                    <option value="0" <%= lt_split === "0" ? "selected" : "" %>><%= th %>+0+<%= p %>=<%= tot %></option>
+                                                    <option value="1" <%= lt_split === "1" ? "selected" : "" %>><%= th-1 %>+1+<%= p %>=<%= tot %></option>
+                                                </select>
+                                                <%
+                                            } else {
+                                                %>
+                                                <span id="ltsplit_val_<%= cellKey %>"><%= th %>+0+<%= p %>=<%= tot %></span>
+                                                <%
+                                            }
+                                        }
+                                    %>
+                                </td>
+                                <td class="center" id="td_int_<%= cellKey %>"><%= savedCourse ? (savedCourse.marks_internal_total || 0) : '' %></td>
+                                <td class="center" id="td_end_<%= cellKey %>"><%= savedCourse ? (savedCourse.marks_endterm_total || 0) : '' %></td>
+                                <td class="center" id="td_max_<%= cellKey %>"><%= savedCourse ? (savedCourse.marks_max || 0) : '' %></td>
+                                <td class="center" id="td_dur_<%= cellKey %>"><%= savedCourse ? (savedCourse.exam_duration || '') : '' %></td>
+                            <% } %>
+                        </tr>
+                    <% }) %>
+                    <tr style="background-color: <%= sem.color %>;" class="total-row">
+                        <td>Total</td>
+                        <td></td> <td></td> <td></td>
+                        <td class="center"><%= sem.totalCredits %></td>
+                        <td></td> <td></td> <td></td> <td></td> <td></td>
+                    </tr>
+                <% } %>
             <% }) %>
         </tbody>
     </table>
 
     <script>
-        function openCourseForm(event, linkElement, nomId, codeId, isSaved, semester) {
-            event.preventDefault();
-            const nomenclature = document.getElementById(nomId).value.trim();
-            const courseCode = document.getElementById(codeId).value.trim();
-            
-            if (!courseCode) {
-                alert("Please fill the Course Code before opening the course form.");
+        const schemesData = {
+            "4+0": { cred: 4, th: 4, pr: 0, int: 30, end: 70, max: 100, dur: "3 Hours" },
+            "0+4": { cred: 4, th: 0, pr: 4, int: 30, end: 70, max: 100, dur: "4 Hours" },
+            "3+1": { cred: 4, th: 3, pr: 1, int: 30, end: 70, max: 100, dur: "3 Hours (Theory), 3 Hours (Practical)" },
+            "2+2": { cred: 4, th: 2, pr: 2, int: 30, end: 70, max: 100, dur: "2 Hours (Theory), 3 Hours (Practical)" },
+            "3+0": { cred: 3, th: 3, pr: 0, int: 30, end: 70, max: 100, dur: "3 Hours" },
+            "2+0": { cred: 2, th: 2, pr: 0, int: 15, end: 35, max: 50, dur: "2 Hours" },
+            "1+1": { cred: 2, th: 1, pr: 1, int: 15, end: 35, max: 50, dur: "2 Hours (Theory), 3 Hours (Practical)" },
+            "2+1": { cred: 3, th: 2, pr: 1, int: 25, end: 50, max: 75, dur: "2 Hours (Theory), 3 Hours (Practical)" }
+        };
+
+        function renderHrsCell(cellKey, th, pr, isSaved) {
+            const td = document.getElementById('td_hrs_' + cellKey);
+            if (th === 0 && pr === 0) {
+                td.innerHTML = '';
                 return;
+            }
+            const p = pr * 2;
+            const totalHrs = th + p;
+            const bg = isSaved ? '#e9ecef' : 'transparent';
+            
+            const oldSelect = document.getElementById('ltsplit_' + cellKey);
+            const oldVal = oldSelect ? oldSelect.value : "0";
+
+            if (th > 1) {
+                td.innerHTML = `
+                    <select id="ltsplit_${cellKey}" onchange="debounceSaveDraft()" style="background-color: ${bg}; border: 1px solid #ccc; padding: 2px;">
+                        <option value="0" ${oldVal === "0" ? "selected" : ""}>${th}+0+${p}=${totalHrs}</option>
+                        <option value="1" ${oldVal === "1" ? "selected" : ""}>${th-1}+1+${p}=${totalHrs}</option>
+                    </select>
+                `;
+            } else {
+                td.innerHTML = `<span id="ltsplit_val_${cellKey}">${th}+0+${p}=${totalHrs}</span>`;
+            }
+        }
+
+        function updateSchemeValues(cellKey, schemeVal) {
+            if (schemeVal && schemesData[schemeVal]) {
+                const s = schemesData[schemeVal];
+                document.getElementById('td_cred_' + cellKey).innerText = s.cred;
+                renderHrsCell(cellKey, s.th, s.pr, false);
+                document.getElementById('td_int_' + cellKey).innerText = s.int;
+                document.getElementById('td_end_' + cellKey).innerText = s.end;
+                document.getElementById('td_max_' + cellKey).innerText = s.max;
+                document.getElementById('td_dur_' + cellKey).innerText = s.dur;
+            } else {
+                document.getElementById('td_hrs_' + cellKey).innerHTML = '';
+                ['td_int_', 'td_end_', 'td_max_', 'td_dur_'].forEach(prefix => document.getElementById(prefix + cellKey).innerText = '');
+                const codeInput = document.getElementById('code_' + cellKey);
+                if (codeInput) {
+                    document.getElementById('td_cred_' + cellKey).innerText = codeInput.getAttribute('data-credits');
+                }
+            }
+        }
+
+        async function handleSchemeChange(selectEl, cellKey) {
+            const newScheme = selectEl.value;
+            const dbScheme = selectEl.getAttribute('data-dbscheme');
+            const codeInput = document.getElementById('code_' + cellKey);
+            const courseCode = codeInput ? codeInput.value.trim() : '';
+
+            // If this is an existing DB course, and it already had a scheme, and the scheme is changing
+            if (courseCode && dbScheme && dbScheme !== newScheme) {
+                if (!confirm(`WARNING: Changing the credit scheme for ${courseCode} will completely DELETE the existing course and recreate it as an empty shell. All teacher data (Units, CLOs, Mappings) will be permanently lost!\n\nAre you sure you want to proceed?`)) {
+                    // Revert selection and cancel
+                    selectEl.value = dbScheme;
+                    return;
+                }
+
+                try {
+                    const row = selectEl.closest('tr');
+                    const nomInput = row.querySelector('input[id^="nom_"]');
+                    const typeSpan = document.getElementById('type_' + cellKey);
+                    const urlParams = new URLSearchParams(window.location.search);
+
+                    const response = await fetch('/reset-course-scheme', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            courseCode, 
+                            creditScheme: newScheme, 
+                            courseName: nomInput ? nomInput.value.trim() : '', 
+                            courseType: typeSpan ? typeSpan.getAttribute('data-type') : '', 
+                            creditsTotal: row.querySelector('input[id^="code_"]').getAttribute('data-credits'), 
+                            programCode: urlParams.get('program_code') 
+                        })
+                    });
+                    const result = await response.json();
+                    if (result.success) {
+                        selectEl.setAttribute('data-dbscheme', newScheme);
+                    } else {
+                        alert("Failed to reset course. Please try again.");
+                        selectEl.value = dbScheme;
+                        return;
+                    }
+                } catch (err) {
+                    console.error("Error resetting course:", err);
+                    alert("An error occurred while resetting the course.");
+                    selectEl.value = dbScheme;
+                    return;
+                }
             }
 
-            if (!nomenclature) {
-                alert("Please fill the Nomenclature of the course before opening the course form.");
-                return;
-            }
-            
-            const courseType = linkElement.innerText.replace('✅', '').trim();
-            
-            // Extract program name from current URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const programName = urlParams.get('program_name') || '';
-            
-            if (isSaved && courseCode) {
-                window.open(`/edit-course/${encodeURIComponent(courseCode)}`, '_blank');
-            } else {
-                let url = `/courses?courseName=${encodeURIComponent(nomenclature)}&courseType=${encodeURIComponent(courseType)}`;
-                if (courseCode) url += `&courseCode=${encodeURIComponent(courseCode)}`;
-                if (programName) url += `&programmeName=${encodeURIComponent(programName)}`;
-                if (semester) url += `&semester=${encodeURIComponent(semester)}`;
-                
-                window.open(url, '_blank');
-            }
+            updateSchemeValues(cellKey, newScheme);
+            debounceSaveDraft();
         }
 
         async function checkCourseCode(input, cellKey, originalCredits, semester, originalColor) {
             const code = input.value.trim();
             const nomInput = document.getElementById('nom_' + cellKey);
-            const link = document.getElementById('link_' + cellKey);
+            const typeSpan = document.getElementById('type_' + cellKey);
             const row = input.closest('tr');
-            const courseType = link.getAttribute('data-type');
+            const courseType = typeSpan.getAttribute('data-type');
 
             if (!code) {
                 nomInput.readOnly = false;
                 nomInput.style.backgroundColor = 'transparent';
-                link.style.color = '#0056b3';
-                link.innerHTML = courseType;
-                link.setAttribute('onclick', `openCourseForm(event, this, 'nom_${cellKey}', 'code_${cellKey}', false, '${semester}')`);
+                typeSpan.style.color = '#0056b3';
+                typeSpan.innerHTML = courseType;
                 
-                ['td_tp_', 'td_hrs_', 'td_int_', 'td_end_', 'td_max_', 'td_dur_'].forEach(prefix => document.getElementById(prefix + cellKey).innerText = '');
+                const schemeSelect = document.getElementById('scheme_' + cellKey);
+                if (schemeSelect) {
+                    schemeSelect.value = '';
+                    schemeSelect.setAttribute('data-dbscheme', '');
+                    schemeSelect.style.backgroundColor = 'transparent';
+                }
+                
+                document.getElementById('td_hrs_' + cellKey).innerHTML = '';
+                ['td_int_', 'td_end_', 'td_max_', 'td_dur_'].forEach(prefix => document.getElementById(prefix + cellKey).innerText = '');
                 document.getElementById('td_cred_' + cellKey).innerText = originalCredits;
                 row.style.backgroundColor = originalColor; 
+                debounceSaveDraft();
                 return;
             }
 
@@ -162,36 +361,46 @@
                 const data = await response.json();
                 
                 if (data.exists) {
-                    alert("Existing course found! Auto-populating row data.");
+                    console.log("Existing course found! Auto-populating row data.");
                     const c = data.course;
                     nomInput.value = c.course_name;
                     nomInput.readOnly = true;
                     nomInput.style.backgroundColor = '#e9ecef';
                     
-                    document.getElementById('td_tp_' + cellKey).innerText = (c.credits_theory || 0) + 'T / ' + (c.credits_practical || 0) + 'P';
+                    const schemeSelect = document.getElementById('scheme_' + cellKey);
+                    if (schemeSelect) {
+                        schemeSelect.value = c.credit_scheme || '';
+                        schemeSelect.setAttribute('data-dbscheme', c.credit_scheme || '');
+                        schemeSelect.style.backgroundColor = '#e9ecef';
+                    }
+                    
                     document.getElementById('td_cred_' + cellKey).innerText = (c.credits_total || 0);
-                    document.getElementById('td_hrs_' + cellKey).innerText = (c.credits_theory || 0) + ((c.credits_practical || 0) * 2);
+                    renderHrsCell(cellKey, c.credits_theory || 0, c.credits_practical || 0, true);
                     document.getElementById('td_int_' + cellKey).innerText = (c.marks_internal_total || 0);
                     document.getElementById('td_end_' + cellKey).innerText = (c.marks_endterm_total || 0);
                     document.getElementById('td_max_' + cellKey).innerText = (c.marks_max || 0);
                     document.getElementById('td_dur_' + cellKey).innerText = (c.exam_duration || '');
                     
-                    link.style.color = '#155724';
-                    link.innerHTML = courseType + ' ✅';
-                    link.setAttribute('onclick', `openCourseForm(event, this, 'nom_${cellKey}', 'code_${cellKey}', true, '${semester}')`);
+                    typeSpan.style.color = '#155724';
+                    typeSpan.innerHTML = courseType + ' ✅';
                     row.style.backgroundColor = '#d4edda';
                     
                     debounceSaveDraft();
                 } else {
                     nomInput.readOnly = false;
                     nomInput.style.backgroundColor = 'transparent';
-                    link.style.color = '#0056b3';
-                    link.innerHTML = courseType;
-                    link.setAttribute('onclick', `openCourseForm(event, this, 'nom_${cellKey}', 'code_${cellKey}', false, '${semester}')`);
+                    typeSpan.style.color = '#0056b3';
+                    typeSpan.innerHTML = courseType;
                     row.style.backgroundColor = originalColor; 
+                    const schemeSelect = document.getElementById('scheme_' + cellKey);
+                    if (schemeSelect) {
+                        schemeSelect.setAttribute('data-dbscheme', '');
+                    }
+                    debounceSaveDraft();
                 }
             } catch (err) {
                 console.error("Error checking course code:", err);
+                debounceSaveDraft();
             }
         }
 
@@ -204,21 +413,54 @@
 
         async function saveDraft() {
             const urlParams = new URLSearchParams(window.location.search);
-            const program_name = urlParams.get('program_name');
-            const specialization = urlParams.get('specialization');
-            if (!program_name || !specialization) return;
+            const program_code = urlParams.get('program_code');
+            if (!program_code) return;
 
             const draft_data = {};
-            const rows = document.querySelectorAll('tbody tr:not(.total-row)');
+            const rows = document.querySelectorAll('tbody tr:not(.total-row):not(.divider-row)');
             
             rows.forEach(row => {
-                const codeInput = row.querySelector('input[id^="code_"]');
-                const nomInput = row.querySelector('input[id^="nom_"]');
-                if(codeInput && nomInput) {
-                    const key = codeInput.id.replace('code_', '');
-                    const code = codeInput.value.trim();
-                    const nom = nomInput.value.trim();
-                    if (code || nom) draft_data[key] = { code, nom };
+                const typeSpan = row.querySelector('span[id^="type_"]');
+                if (typeSpan) {
+                    const key = typeSpan.id.replace('type_', '');
+                    const type = typeSpan.getAttribute('data-type');
+                    const isCustomRow = /^(Internship|Intership|PROJECT(?:\s*WORK)?\/DISSERTATION)$/i.test(type);
+
+                    if (isCustomRow) {
+                        const code = row.querySelector('#code_' + key) ? row.querySelector('#code_' + key).value.trim() : "";
+                        const nom = row.querySelector('#nom_' + key) ? row.querySelector('#nom_' + key).value.trim() : "";
+                        const tp = row.querySelector('#tp_' + key) ? row.querySelector('#tp_' + key).value.trim() : "";
+                        const credits = row.querySelector('#cred_' + key) ? row.querySelector('#cred_' + key).value.trim() : "";
+                        const hrs = row.querySelector('#hrs_' + key) ? row.querySelector('#hrs_' + key).value.trim() : "";
+                        const int = row.querySelector('#int_' + key) ? row.querySelector('#int_' + key).value.trim() : "";
+                        const end = row.querySelector('#end_' + key) ? row.querySelector('#end_' + key).value.trim() : "";
+                        const max = row.querySelector('#max_' + key) ? row.querySelector('#max_' + key).value.trim() : "";
+                        const dur = row.querySelector('#dur_' + key) ? row.querySelector('#dur_' + key).value.trim() : "";
+
+                        if (code || nom || tp || credits || hrs || int || end || max || dur) {
+                            draft_data[key] = { is_custom_row: true, type, code, nom, tp, credits, hrs, int, end, max, dur };
+                        }
+                    } else {
+                        const codeInput = row.querySelector('#code_' + key);
+                        const nomInput = row.querySelector('#nom_' + key);
+                        const schemeSelect = row.querySelector('#scheme_' + key);
+                        const ltSplitSelect = row.querySelector('#ltsplit_' + key);
+                        if (codeInput && nomInput) {
+                            const code = codeInput.value.trim();
+                            const nom = nomInput.value.trim();
+                            const credits = codeInput.getAttribute('data-credits');
+                            const credit_scheme = schemeSelect ? schemeSelect.value : "";
+                            const lt_split = ltSplitSelect ? ltSplitSelect.value : "0";
+                            if (code || nom || credit_scheme) draft_data[key] = { code, nom, type, credits, credit_scheme, lt_split };
+                        }
+                    }
+                }
+            });
+            
+            const yearlyDividers = document.querySelectorAll('input[id^="yearly_divider_"]');
+            yearlyDividers.forEach(input => {
+                if(input.value.trim() !== '') {
+                    draft_data[input.id] = input.value.trim();
                 }
             });
 
@@ -226,7 +468,7 @@
                 const response = await fetch('/save-curriculum-draft', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ program_name, specialization, draft_data })
+                    body: JSON.stringify({ program_code, draft_data })
                 });
                 
                 const result = await response.json();

@@ -1,0 +1,36 @@
+2026-05-14 13:25:36 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-05-14 13:25:36 - Started 22200
+2026-05-14 13:47:48 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-05-14 13:47:48 - Started 12636
+2026-05-14 14:05:23 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-05-14 14:05:23 - Started 23796
+2026-05-15 10:22:12 - Stopping iguservicestunnel.exe
+2026-05-15 10:22:12 - ProcessKill 23796
+2026-05-15 10:22:12 - Found child process: 4476 Name: conhost.exe
+2026-05-15 10:22:12 - Found child process: 3592 Name: node.exe
+2026-05-15 10:22:12 - Stopping process 4476
+2026-05-15 10:22:12 - Send SIGINT 4476
+2026-05-15 10:22:12 - SIGINT to 4476 failed - Killing as fallback
+2026-05-15 10:22:12 - Found child process: 16360 Name: cmd.exe
+2026-05-15 10:22:12 - Found child process: 14864 Name: conhost.exe
+2026-05-15 10:22:12 - Found child process: 19616 Name: ngrok.exe
+2026-05-15 10:22:12 - Stopping process 14864
+2026-05-15 10:22:12 - Send SIGINT 14864
+2026-05-15 10:22:12 - SIGINT to 14864 failed - Killing as fallback
+2026-05-15 10:22:12 - Stopping process 19616
+2026-05-15 10:22:12 - Send SIGINT 19616
+2026-05-15 10:22:12 - SIGINT to 19616 failed - Killing as fallback
+2026-05-15 10:22:12 - Stopping process 16360
+2026-05-15 10:22:12 - Send SIGINT 16360
+2026-05-15 10:22:12 - SIGINT to 16360 failed - Killing as fallback
+2026-05-15 10:22:13 - Stop exception
+Message:Access is denied
+Stacktrace:   at System.Diagnostics.Process.Kill()
+   at winsw.WrapperService.StopProcess(Int32 pid)
+   at winsw.WrapperService.StopProcessAndChildren(Int32 pid)
+   at winsw.WrapperService.StopProcessAndChildren(Int32 pid)
+   at winsw.WrapperService.StopProcessAndChildren(Int32 pid)
+   at winsw.WrapperService.StopIt()
+   at winsw.WrapperService.OnStop()
+2026-05-15 17:01:27 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-05-15 17:01:27 - Started 18552

@@ -1,58 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <link rel="shortcut icon" href="https://igu1.ucanapply.com/images/webicon.png" type="image/png">
     <meta charset="UTF-8">
-    <title>View Syllabus - <%= data.course_code %>
-    </title>
+    <title>View Syllabus - <%= data.course_code %></title>
     <style>
-        body {
-            font-family: serif;
-            line-height: 1.5;
-            color: black;
-            margin: 20px auto;
-            max-width: 900px;
-        }
+        body { font-family: 'Times New Roman', serif; line-height: 1.4; color: #000; margin: 0; padding: 20px; }
+        .container { width: 90%; margin: auto; max-width: 1000px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; }
+        th, td { border: 1px solid black; padding: 5px; vertical-align: top; word-wrap: break-word; }
+        
+        .header-cell { font-weight: bold; width: 35%; }
+        .section-title { text-align: center; font-weight: bold; background-color: #f2f2f2; }
+        
+        .justified-text { text-align: justify; text-justify: inter-word; }
+        .center { text-align: center; }
+        .bold { font-weight: bold; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        th,
-        td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-            text-align: center;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .section-title {
-            font-weight: bold;
-            text-decoration: underline;
-            margin-top: 25px;
-            margin-bottom: 10px;
-            font-size: 1.2em;
-        }
-
-        .unit-block {
-            margin-bottom: 15px;
-        }
-
-        .print-btn {
-            display: block;
+        .action-buttons { text-align: center; margin: 20px 0; }
+        .print-btn, .back-btn {
+            display: inline-block;
             width: 200px;
-            margin: 30px auto;
+            margin: 10px;
             padding: 10px;
             background-color: #6c757d;
             color: white;
@@ -62,228 +32,27 @@
             font-family: sans-serif;
             font-size: 16px;
             border: none;
-        }
-
-        .back-btn {
-            display: block;
-            margin-bottom: 20px;
-        }
-
-        @page {
-            size: auto;
-            margin: 5mm;
+            text-decoration: none;
         }
 
         @media print {
-            body {
-                margin: 0;
-                padding: 15mm;
-                max-width: 100%;
-            }
-
-            .print-btn,
-            .back-btn {
-                display: none !important;
-            }
+            body { max-width: 100%; margin: 0; padding: 0; }
+            .container { width: 100%; }
+            .print-btn, .back-btn, .action-buttons { display: none !important; }
+            tr, .unit-block { page-break-inside: avoid; }
         }
     </style>
 </head>
-
 <body>
+    <div class="action-buttons">
+        <a href="/courses-list" class="back-btn">Go Back</a>
+        <button class="print-btn" onclick="window.print()">Print Syllabus</button>
+        <button class="print-btn" onclick="window.location.href='/download-pdf/<%= data.course_code %>'">Download PDF</button>
+    </div>
 
-    <a href="/" class="back-btn"><img src="/images/goBackArrow.png" alt="Go Back" style="width: 30px;"></a>
+    <div class="container">
+         <%- include('partials/courseDetails', { data: data, programme_name_display: 'As per Curriculum Framework', semester_display: 'As per Curriculum Framework' }) %>
 
-    <center>
-        <h1>Indira Gandhi University, Meerpur</h1>
-        <img src="https://d2xe8shibzpjog.cloudfront.net/logo/igu_logo.png" style="max-height: 100px;">
-        <h3>(Course Design & Syllabus Proforma)</h3>
-    </center>
-
-    <hr>
-
-    <div class="section-title">General Information & Scheme</div>
-    <table>
-        <tr>
-            <td style="width: 25%; font-weight: bold;">Course Code</td>
-            <td>
-                <%= data.course_code %>
-            </td>
-        </tr>
-        <% if (data.category) { %>
-        <tr>
-            <td style="font-weight: bold;">Category</td>
-            <td>
-                <%= data.category %>
-            </td>
-        </tr>
-        <% } %>
-        <% if (data.course_title) { %>
-        <tr>
-            <td style="font-weight: bold;">Course Title</td>
-            <td>
-                <%= data.course_title %>
-            </td>
-        </tr>
-        <% } %>
-        <% if (data.total_credits > 0) { %>
-        <tr>
-            <td style="font-weight: bold;">Credits</td>
-            <td style="padding: 0;">
-                <table style="width: 100%; margin-bottom: 0; border: none;">
-                    <tr>
-                        <th>L</th>
-                        <th>T</th>
-                        <th>P</th>
-                        <th>Total</th>
-                    </tr>
-                    <tr>
-                        <td class="text-center">
-                            <%= data.credits_l %>
-                        </td>
-                        <td class="text-center">
-                            <%= data.credits_t %>
-                        </td>
-                        <td class="text-center">
-                            <%= data.credits_p %>
-                        </td>
-                        <td class="text-center"><b>
-                                <%= data.total_credits %>
-                            </b></td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-        <% } %>
-        <% if (data.class_marks > 0) { %>
-        <tr>
-            <td style="font-weight: bold;">Class Work</td>
-            <td>
-                <%= data.class_marks %> Marks
-            </td>
-        </tr>
-        <% } %>
-        <% if (data.exam_marks > 0) { %>
-        <tr>
-            <td style="font-weight: bold;">Exam</td>
-            <td>
-                <%= data.exam_marks %> Marks
-            </td>
-        </tr>
-        <% } %>
-        <% if (data.practical_marks > 0) { %>
-        <tr>
-            <td style="font-weight: bold;">Practical</td>
-            <td>
-                <%= data.practical_marks %> Marks
-            </td>
-        </tr>
-        <% } %>
-        <% if (data.total_marks > 0) { %>
-        <tr>
-            <td style="font-weight: bold;">Total Marks</td>
-            <td>
-                <%= data.total_marks %> Marks
-            </td>
-        </tr>
-        <% } %>
-        <% if (data.exam_duration) { %>
-        <tr>
-            <td style="font-weight: bold;">Duration of Exam</td>
-            <td>
-                <%= data.exam_duration %>
-            </td>
-        </tr>
-        <% } %>
-    </table>
-
-    <% if (data.objectives && data.objectives.trim() !== '' && data.objectives.trim() !== '<p><br></p>') { %>
-    <div class="section-title">Objectives of the course</div>
-    <div><%- data.objectives %></div>
-    <% } %>
-
-    <% if (data.important_note && data.important_note.trim() !=='' ) { %>
-        <div class="section-title">Important Note</div>
-        <div style="border: 1px solid black; padding: 10px;">
-            <%- data.important_note %>
-        </div>
-    <% } %>
-
-    <% if (data.syllabus_units && data.syllabus_units.length > 0) { %>
-            <div class="section-title">Syllabus Units</div>
-            <% data.syllabus_units.forEach(unit=> { %>
-                <div class="unit-block">
-                    <b>
-                        <%= unit.title %>
-                    </b>
-                    <div><%- unit.content %></div>
-                </div>
-                <% }) %>
-    <% } %>
-
-    <% if (data.course_outcomes && data.course_outcomes.length > 0) { %>
-                    <div class="section-title">Course Outcomes</div>
-                    <% data.course_outcomes.forEach(co=> { %>
-                        <div>
-                            <%= co %>
-                        </div>
-                        <% }) %>
-    <% } %>
-
-    <% if (data.co_po_mapping && data.co_po_mapping.length > 0) { %>
-                            <div class="section-title">Mapping of Course Outcomes to Program Outcomes</div>
-                            <table>
-                                <tr>
-                                    <th>CO</th>
-                                    <% for(let i=1; i<=11; i++) { %>
-                                        <th>PO<%= i %>
-                                        </th>
-                                        <% } %>
-                                            <% for(let i=1; i<=4; i++) { %>
-                                                <th>PSO<%= i %>
-                                                </th>
-                                                <% } %>
-                                </tr>
-                                <% data.co_po_mapping.forEach(map=> { %>
-                                    <tr>
-                                        <td class="text-center" style="font-weight: bold;">
-                                            <%= map.co %>
-                                        </td>
-                                        <% for(let i=1; i<=11; i++) { %>
-                                            <td class="text-center">
-                                                <%= map['po'+i] %>
-                                            </td>
-                                            <% } %>
-                                                <% for(let i=1; i<=4; i++) { %>
-                                                    <td class="text-center">
-                                                        <%= map['pso'+i] %>
-                                                    </td>
-                                                    <% } %>
-                                    </tr>
-                                    <% }) %>
-                            </table>
-                            <p style="font-weight: bold; text-align: center;">S=Strong, M=Medium, W=Weak</p>
-    <% } %>
-
-    <% if (data.suggested_books && data.suggested_books.length > 0) { %>
-                            <div class="section-title">Suggested Books</div>
-                            <% data.suggested_books.forEach((book, index)=> { %>
-                                <div>
-                                    <%= index + 1 %>. <%= book %>
-                                </div>
-                                <% }) %>
-    <% } %>
-
-    <% if (data.reference_books && data.reference_books.length > 0) { %>
-                                    <div class="section-title">Suggested Reference Books</div>
-                                    <% data.reference_books.forEach((ref, index)=> { %>
-                                        <div>
-                                            <%= index + 1 %>. <%= ref %>
-                                        </div>
-                                        <% }) %>
-    <% } %>
-
-    <button class="print-btn" onclick="window.location.href='/download-pdf/<%= data.course_code %>'">Download PDF</button>
-
+    </div>
 </body>
-
 </html>

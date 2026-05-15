@@ -38,6 +38,8 @@ const createCourseTableQuery = `
       co_po_mapping JSONB,
       nep_mapping JSONB,
       
+      owning_program_code TEXT,
+      
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
 `;
@@ -50,9 +52,10 @@ const insertCourseQuery = `
     marks_internal_theory, marks_internal_practical, marks_internal_total,
     marks_endterm_theory, marks_endterm_practical, marks_endterm_total, marks_max,
     exam_duration, paper_setter_instructions,
-    course_outcomes, syllabus_units, evaluation_criteria, learning_resources, co_po_mapping, nep_mapping
+    course_outcomes, syllabus_units, evaluation_criteria, learning_resources, co_po_mapping, nep_mapping,
+    owning_program_code
   ) VALUES (
-    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24
+    $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25
   )
   ON CONFLICT (course_code) DO UPDATE SET
     credit_scheme = EXCLUDED.credit_scheme,
@@ -77,41 +80,49 @@ const insertCourseQuery = `
     evaluation_criteria = EXCLUDED.evaluation_criteria,
     learning_resources = EXCLUDED.learning_resources,
     co_po_mapping = EXCLUDED.co_po_mapping,
-    nep_mapping = EXCLUDED.nep_mapping;
+    nep_mapping = EXCLUDED.nep_mapping,
+    owning_program_code = EXCLUDED.owning_program_code;
 `;
 
 const createProgramTableQuery = `
   CREATE TABLE IF NOT EXISTS programs (
-      program_name TEXT,
+      program_code TEXT PRIMARY KEY,
+      subject_name TEXT,
       specialization TEXT,
       level TEXT,
       scheme TEXT,
-      PRIMARY KEY (program_name, specialization)
+      num_pos INTEGER DEFAULT 11,
+      num_peos INTEGER DEFAULT 4,
+      num_psos INTEGER DEFAULT 2,
+      program_details JSONB
   );
 `;
 
 const insertProgramQuery = `
-  INSERT INTO programs (program_name, specialization, level, scheme)
-  VALUES ($1, $2, $3, $4)
-  ON CONFLICT (program_name, specialization) DO UPDATE SET
+  INSERT INTO programs (program_code, subject_name, specialization, level, scheme, num_pos, num_peos, num_psos, program_details)
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+  ON CONFLICT (program_code) DO UPDATE SET
+    subject_name = EXCLUDED.subject_name,
+    specialization = EXCLUDED.specialization,
     level = EXCLUDED.level,
-    scheme = EXCLUDED.scheme;
+    scheme = EXCLUDED.scheme,
+    num_pos = EXCLUDED.num_pos,
+    num_peos = EXCLUDED.num_peos,
+    num_psos = EXCLUDED.num_psos;
 `;
 
 const createCurriculumDraftsTableQuery = `
   CREATE TABLE IF NOT EXISTS curriculum_drafts (
-      program_name TEXT,
-      specialization TEXT,
+      program_code TEXT PRIMARY KEY,
       draft_data JSONB,
-      PRIMARY KEY (program_name, specialization),
-      FOREIGN KEY (program_name, specialization) REFERENCES programs(program_name, specialization) ON DELETE CASCADE
+      FOREIGN KEY (program_code) REFERENCES programs(program_code) ON DELETE CASCADE
   );
 `;
 
 const insertCurriculumDraftQuery = `
-  INSERT INTO curriculum_drafts (program_name, specialization, draft_data)
-  VALUES ($1, $2, $3)
-  ON CONFLICT (program_name, specialization) DO UPDATE SET
+  INSERT INTO curriculum_drafts (program_code, draft_data)
+  VALUES ($1, $2)
+  ON CONFLICT (program_code) DO UPDATE SET
     draft_data = EXCLUDED.draft_data;
 `;
 

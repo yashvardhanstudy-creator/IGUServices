@@ -1,0 +1,34 @@
+<service>
+	<id>iguservicesserver.exe</id>
+	<name>IGUServices Server</name>
+	<description>Internal Tool for IGU Syllabus Data Management</description>
+	<executable>C:\nvm4w\nodejs\node.exe</executable>
+	<argument>--max-old-space-size=4096</argument>
+	<argument>--optimize_for_size</argument>
+	<argument>C:\IGUServices\node_modules\node-windows\lib\wrapper.js</argument>
+	<argument>--file</argument>
+	<argument>C:\IGUServices\index.js</argument>
+	<argument>--scriptoptions=</argument>
+	<argument>--log</argument>
+	<argument>IGUServices Server wrapper</argument>
+	<argument>--grow</argument>
+	<argument>0.25</argument>
+	<argument>--wait</argument>
+	<argument>5</argument>
+	<argument>--maxrestarts</argument>
+	<argument>5</argument>
+	<argument>--abortonerror</argument>
+	<argument>n</argument>
+	<argument>--stopparentfirst</argument>
+	<argument>undefined</argument>
+	<argument>--maxretries</argument>
+	<argument>10</argument>
+	<logmode>rotate</logmode>
+	<stoptimeout>30sec</stoptimeout>
+	<serviceaccount>
+		<domain>DESKTOP-5AUUDDD</domain>
+		<user>LocalSystem</user>
+		<password></password>
+	</serviceaccount>
+	<workingdirectory>C:\IGUServices</workingdirectory>
+</service>

@@ -3,75 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <link rel="shortcut icon" href="https://igu1.ucanapply.com/images/webicon.png" type="image/png">
-    <title>Complete Syllabus - <%= specialization %></title>
+    <title>Syllabus - <%= (!specialization || specialization === 'None') ? academic_program : specialization %></title>
     <style>
-        body { font-family: 'Times New Roman', serif; line-height: 1.4; color: #000; margin: 0; padding: 20px; }
+        body { font-family: 'Arial', serif; line-height: 1.4; color: #000; margin: 0; padding: 20px; }
         .container { width: 90%; margin: auto; max-width: 1000px; }
         
         table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; }
-        th, td { border: 1px solid black; padding: 5px; vertical-align: top; word-wrap: break-word; }
-        
-        .header-cell { font-weight: bold; width: 35%; }
+        th, td { border: 1px solid black; padding: 2px; vertical-align: top; word-wrap: break-word; }
         .section-title { text-align: center; font-weight: bold; background-color: #f2f2f2; }
-        
         .justified-text { text-align: justify; text-justify: inter-word; }
         .center { text-align: center; }
         .bold { font-weight: bold; }
-
-        .col-label { width: 40%; }
-        .col-val { width: 20%; text-align: center; }
-
-        .print-btn {
-            display: inline-block;
-            width: 200px;
-            margin: 10px;
-            padding: 10px;
-            background-color: #6c757d;
-            color: white;
-            text-align: center;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            border: none;
-        }
+        .page-break-before { page-break-before: always; padding-top: 20px; }
+        .no-border-table, .no-border-table td { border: none; }
 
         .cover-page {
-            height: 90vh;
+            min-height: 90vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
+            border: 6px double #000;
+            padding: 20px;
+            box-sizing: border-box;
         }
-
-        .page-break-before { page-break-before: always; padding-top: 20px; }
         
         @media print {
             body { max-width: 100%; margin: 0; padding: 0; }
-            .print-btn { display: none !important; }
             .action-buttons { display: none !important; }
             .container { width: 100%; }
             tr, .unit-block { page-break-inside: avoid; }
             a { text-decoration: none; color: black; }
+            .cover-page { margin: 0; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="action-buttons center" style="margin-top: 20px; margin-bottom: 20px;">
-            <button class="print-btn" onclick="window.print()">Print Syllabus</button>
-            <button class="print-btn" onclick="window.location.href='/download-full-syllabus-pdf?academic_program=<%= encodeURIComponent(academic_program) %>&specialization=<%= encodeURIComponent(specialization) %>' ">Download PDF</button>
+            <button style="padding: 10px 20px;" onclick="window.print()">Print Syllabus</button>
+            <button style="padding: 10px 20px;" onclick="window.location.href='/download-full-syllabus-pdf?program_code=<%= encodeURIComponent(program.program_code) %>' ">Download PDF</button>
         </div>
 
         <!-- Page 1: Cover Page -->
         <div class="cover-page">
-            <img src="https://d2xe8shibzpjog.cloudfront.net/logo/igu_logo.png" alt="IGU Logo" style="max-height: 180px; margin-bottom: 30px;">
-            <h1 style="font-size: 2.5em; text-align: center; margin-bottom: 10px;">Indira Gandhi University, Meerpur</h1>
-            <h2 style="font-size: 1.8em; margin-top: 50px; text-align: center;">Syllabus for</h2>
-            <h1 style="font-size: 2.8em; margin: 10px 0; text-align: center; text-decoration: underline;"><%= academic_program %></h1>
-            <h2 style="font-size: 1.8em; text-align: center;">Specialization: <%= specialization %></h2>
+            <div class="center">
+                <p class="bold">INDIRA GANDHI UNIVERSITY, MEERPUR, REWARI</p>
+                <p>(A State University Established under Haryana Act No.29 of 2013)</p>
+                <p>(Recognized u/s 12B & 2f of UGC Act, 1956)</p>
+            </div>
+            <img src="https://himachal365.s3.ap-south-1.amazonaws.com/68/igu-logo.jpg" alt="IGU Logo" style="max-height: 150px; margin: 20px 0;">
+            <div class="center">
+                <p class="bold">Syllabus and Scheme of Examination</p>
+                <p>(as per NEP 2020)</p>
+                <p>for</p>
+                <p class="bold"><%= (program.level && program.level.toUpperCase() === 'UG') ? 'Under' : 'Post' %> Graduate Programme</p>
+                <p>in</p>
+                <p class="bold" style="font-size: 1.2em;"><%= programDetails.title || academic_program %></p>
+                <p>Program Code: <%= programDetails.program_code || 'N/A' %></p>
+                <p>Effective from Academic Year <%= programDetails.academic_year || 'N/A' %></p>
+                <br>
+                <p>Department of <%= programDetails.department || 'N/A' %></p>
+                <p>Faculty of <%= programDetails.faculty || 'N/A' %></p>
+            </div>
+            <div class="center">
+                <p class="bold">Indira Gandhi University</p>
+                <p>Meerpur-Rewari (122502)</p>
+                <p>Haryana, India</p>
+            </div>
         </div>
 
-        <!-- Page 2: Master Curriculum Table -->
+        <% if (program.program_code !== 'UNIVERSITY_POOL') { %>
+        <!-- Page 2: Approvals -->
+        <div class="page-break-before">
+            <h2 class="center">Details of Approvals</h2>
+            <table>
+                <thead><tr><th>Council/Board</th><th>Date</th><th>Remark</th></tr></thead>
+                <tbody>
+                    <tr><td>Staff Council</td><td></td><td></td></tr>
+                    <tr><td>Board of Studies</td><td></td><td></td></tr>
+                    <tr><td>Faculty</td><td></td><td></td></tr>
+                    <tr><td>Academic Council</td><td></td><td></td></tr>
+                </tbody>
+            </table>
+            <p class="bold">Year of Implementation: <%= programDetails.year_of_implementation || ' ' %></p>
+            <div style="text-align: right; margin-top: 200px;">
+                <p class="bold">Chairperson</p>
+                <p>(Signature with Stamp)</p>
+            </div>
+        </div>
+
+        <!-- Page 3: University Vision/Mission -->
+        <div class="page-break-before">
+            <h2 class="center">VISION AND MISSION OF THE UNIVERSITY</h2>
+            <h3 class="bold">VISION</h3>
+            <p class="justified-text">To be a globally renowned university, recognized for excellence in teaching, innovative research, and welfare of the society, imbibing the spirit of “Vasudhaiv kutumbkam”.</p>
+            <h3 class="bold">MISSION</h3>
+            <ul style="padding-left: 20px;">
+                <li>To introduce and implement innovation in teaching and learning process matching up the global standards to strengthen academic delivery through curriculum design, teaching pedagogy and usage of ICT.</li>
+                <li>To develop a mechanism that attracts talented, qualified and experienced faculty from across the globe for pursuing their academic and research careers at the University.</li>
+                <li>To offer academic programs at UG, PG, doctoral, Post-Doctoral levels which are learner- centric, industry focused, and adhere to outcome based international models.</li>
+                <li>To create an ambiance that is conducive for undertaking sponsored research, innovation and consultancy services to a wide spectrum of societal and industrial requirements while encouraging interdisciplinary approach of learning, team work, and research.</li>
+                <li>To establish state of art centres of excellence in frontier areas of research and design innovation through industry collaboration to innovate and incubate the products and services.</li>
+                <li>To establish smart campus and promote e-governance activities in the university for the digitally empowered society and knowledge economy.</li>
+                <li>To provide a hygienic, modern, environment friendly and vivacious campus attuned to the urgent needs of Green Technology.</li>
+                <li>To consider and implement norms, metrics, standards, procedures and benchmarks for assessing and improving the quality in every aspect of University system and achieve quality certifications by National and International bodies.</li>
+                <li>To make society self-reliant by organizing various programmes including literacy, gender sensitization, health awareness, and dissemination of information about livelihood generation.</li>
+            </ul>
+        </div>
+
+        <!-- Page 4: Department Details -->
+        <div class="page-break-before">
+            <h3 class="bold">VISION AND MISSION OF THE DEPARTMENT</h3>
+            <p class="justified-text"><%- (programDetails.vision_mission_dept || '').replace(/\n/g, '<br>') %></p>
+
+            <h3 class="bold">ABOUT THE PROGRAMME</h3>
+            <p class="justified-text"><%- (programDetails.about_programme || '').replace(/\n/g, '<br>') %></p>
+
+            <h3 class="bold">INTAKE IN THE PROGRAMME</h3>
+            <p class="justified-text"><%- (programDetails.intake || '').replace(/\n/g, '<br>') %></p>
+
+            <h3 class="bold">MINIMUM ELIGIBILITY CRITERIA</h3>
+            <p class="justified-text"><%- (programDetails.min_eligibility || '').replace(/\n/g, '<br>') %></p>
+
+            <h3 class="bold">PASSING CRITERIA</h3>
+            <p class="justified-text"><%- (programDetails.passing_criteria || '').replace(/\n/g, '<br>') %></p>
+
+            <h3 class="bold">ELIGIBILITY FOR EXAMINATION</h3>
+            <p class="justified-text"><%- (programDetails.eligibility_exam || '').replace(/\n/g, '<br>') %></p>
+        </div>
+
+        <!-- Page 5: Objectives -->
+        <div class="page-break-before">
+            <h3 class="bold">PROGRAMME EDUCATIONAL OBJECTIVES (PEOs)</h3>
+            <table>
+                <% (programDetails.peos || []).forEach((peo, i) => { %>
+                    <tr><td style="width: 15%;" class="bold">PEO<%= i + 1 %></td><td><%= peo %></td></tr>
+                <% }) %>
+            </table>
+
+            <h3 class="bold">PROGRAMME OBJECTIVES (POs)</h3>
+            <table>
+                <% (programDetails.pos || []).forEach((po, i) => { %>
+                    <tr><td style="width: 15%;" class="bold">PO<%= i + 1 %></td><td><%= po %></td></tr>
+                <% }) %>
+            </table>
+
+            <% if (programDetails.psos && programDetails.psos.length > 0) { %>
+                <h3 class="bold">PROGRAMME SPECIFIC OBJECTIVES (PSOs)</h3>
+                <table>
+                    <% programDetails.psos.forEach((pso, i) => { %>
+                        <tr><td style="width: 15%;" class="bold">PSO<%= i + 1 %></td><td><%= pso %></td></tr>
+                    <% }) %>
+                </table>
+            <% } %>
+        </div>
+
+        <!-- Page 6: Scheme of Examination -->
+        <div class="page-break-before">
+            <h2 class="center">Scheme of Examination for <%= (program.level && program.level.toUpperCase() === 'UG') ? 'Under' : 'Post' %>graduate Programme</h2>
+            <table class="no-border-table">
+                <tr><td style="width: 40%;" class="bold">Subject</td><td><%= programDetails.title || academic_program %></td></tr>
+                <tr><td class="bold">Total number of Semesters</td><td><%= totalSemesters %></td></tr>
+                <tr><td class="bold">Total Marks</td><td><%= totalProgramMarks %></td></tr>
+                <tr><td class="bold">Total Credit</td><td><%= totalProgramCredits %></td></tr>
+                <% if (program.level.toUpperCase() !== 'UG') { %>
+                <tr><td class="bold">Framework</td><td>2</td></tr>
+                <% } %>
+                <tr><td class="bold">Scheme</td><td><%= program.scheme %></td></tr>
+            </table>
+        
+        </div>
+        <!-- Page 7: Curriculum -->
         <div class="page-break-before">
             <h2 class="center">Curriculum Framework</h2>
             <table>
@@ -80,147 +183,135 @@
                         <th>Semester</th>
                         <th>Course Type</th>
                         <th>Course Code</th>
-                        <th>Nomenclature of course</th>
+                        <th style="width: 20%;">Nomenclature of course</th>
                         <th>Theory(T) / Practical(P)</th>
                         <th>Credit</th>
-                        <th>Contact hours per week</th>
+                        <th>Contact hours per week<br>(L+T+P=Total)</th>
                         <th>Internal Assessment Marks</th>
                         <th>End Term Examination Marks</th>
                         <th>Total Marks</th>
-                        <th>Exam Hours</th>
+                        <th>Exam Hours Theory, Practical</th>
                     </tr>
                 </thead>
                 <tbody>
                     <% semesters.forEach(sem => { %>
-                        <% sem.detailed_courses.forEach((course, index) => { %>
-                            <tr>
-                                <% if (index === 0) { %>
-                                    <td rowspan="<%= sem.detailed_courses.length %>" class="center bold" style="vertical-align: middle;">Semester <%= sem.semester %></td>
-                                <% } %>
-                                <td><a href="#course-<%= course.course_code %>" style="color: #0056b3; text-decoration: underline;"><%= course.course_type || course.category || sem.courses_code[index] %></a></td>
-                                <td><%= course.course_code %></td>
-                                <td <%- course.is_missing ? 'style="color: red; font-weight: bold;"' : '' %>><%= course.course_name || course.course_title %></td>
-                                <td class="center"><%= course.is_missing ? '-' : ((course.credits_theory || 0) + 'T / ' + (course.credits_practical || 0) + 'P') %></td>
-                                <td class="center"><%= course.is_missing ? '-' : (course.credits_total || 0) %></td>
-                                <td class="center"><%= course.is_missing ? '-' : ((course.credits_theory || 0) + ((course.credits_practical || 0) * 2)) %></td>
-                                <td class="center"><%= course.is_missing ? '-' : (course.marks_internal_total || 0) %></td>
-                                <td class="center"><%= course.is_missing ? '-' : (course.marks_endterm_total || ((course.marks_endterm_theory || 0) + (course.marks_endterm_practical || 0))) %></td>
-                                <td class="center"><%= course.is_missing ? '-' : (course.marks_max || 0) %></td>
-                                <td class="center"><%= course.is_missing ? '-' : (course.exam_duration || '-') %></td>
+                        <% if (sem.isDivider) { %>
+                            <tr style="text-align: center; font-weight: bold;">
+                                <td colspan="11" style="padding: 5px; font-size: 16px; letter-spacing: 2px;"><%= sem.title %></td>
                             </tr>
-                        <% }) %>
+                        <% } else if (sem.isYearlyDivider) { %>
+                            <% if (sem.text && sem.text.trim() !== '') { %>
+                                <tr style="text-align: center; font-weight: bold; background-color: #f8f9fa;">
+                                    <td colspan="11" style="padding: 10px; font-size: 14px;"><%= sem.text %></td>
+                                </tr>
+                            <% } %>
+                        <% } else { %>
+                            <%
+                                let semTotalCredits = 0;
+                                let semTotalHours = 0;
+                                let semTotalInternal = 0;
+                                let semTotalEndTerm = 0;
+                                let semTotalMaxMarks = 0;
+                                sem.detailed_courses.forEach((course, index) => { 
+                                    semTotalCredits += parseInt(course.credits_total) || 0;
+                                    semTotalHours += parseInt((course.credits_theory || 0) + ((course.credits_practical || 0) * 2)) || 0;
+                                    semTotalInternal += parseInt(course.marks_internal_total) || 0;
+                                    semTotalEndTerm += parseInt(course.marks_endterm_total) || 0;
+                                    semTotalMaxMarks += parseInt(course.marks_max) || 0;
+                            %>
+                                <tr>
+                                    <% if (index === 0) { %>
+                                        <td rowspan="<%= sem.detailed_courses.length + 1 %>" class="center bold" style="vertical-align: middle;"><%= sem.semester %></td>
+                                    <% } %>
+                                    <td>
+                                        <% if (!course.is_db_course) { %>
+                                            <%= course.course_type || 'N/A' %>
+                                        <% } else { %>
+                                            <a href="#course-<%= course.course_code %>"><%= course.course_type || 'N/A' %></a>
+                                        <% } %>
+                                    </td>
+                                    <td><%= course.course_code %></td>
+                                    <td <%- course.is_missing ? 'style="color: red;"' : '' %>>
+                                        <%= course.course_name=='Unassigned Slot' ? ' ' : course.course_name %>
+                                        <% if (!course.is_missing && course.is_db_course && (!course.owning_program_code || course.owning_program_code === 'From University Pool')) { %>
+                                            <div style="font-size: 0.85em; font-style: italic; margin-top: 3px; color: #555;">(University Pool)</div>
+                                        <% } %>
+                                    </td>
+                                    <td class="center"><%= course.is_custom_row ? course.tp : ((!course.is_db_course || course.is_missing) ? ' ' : ((course.credits_theory || 0) + 'T / ' + (course.credits_practical || 0) + 'P')) %></td>
+                                    <td class="center"><%= course.is_missing ? ' ' : (course.credits_total || 0) %></td>
+                                    <td class="center">
+                                        <% 
+                                            if (course.is_custom_row) {
+                                                %><%= course.hrs %><%
+                                            } else if (!course.is_db_course || course.is_missing) { 
+                                                %> <%
+                                            } else {
+                                                let th = parseInt(course.credits_theory) || 0;
+                                                let pr = parseInt(course.credits_practical) || 0;
+                                                let p = pr * 2;
+                                                let lt = course.lt_split === "1" && th > 1 ? 1 : 0;
+                                                let l = th - lt;
+                                                let tot = l + lt + p;
+                                                %><%= l %>+<%= lt %>+<%= p %>=<%= tot %><%
+                                            }
+                                        %>
+                                    </td>
+                                    <td class="center"><%= course.is_custom_row ? (course.marks_internal_total || '') : ((!course.is_db_course || course.is_missing) ? ' ' : (course.marks_internal_total || 0)) %></td>
+                                    <td class="center"><%= course.is_custom_row ? (course.marks_endterm_total || '') : ((!course.is_db_course || course.is_missing) ? ' ' : (course.marks_endterm_total || 0)) %></td>
+                                    <td class="center"><%= course.is_custom_row ? (course.marks_max || '') : ((!course.is_db_course || course.is_missing) ? ' ' : (course.marks_max || 0)) %></td>
+                                    <td class="center"><%= course.is_custom_row ? (course.exam_duration || '') : ((!course.is_db_course || course.is_missing) ? ' ' : (course.exam_duration || '-')) %></td>
+                                </tr>
+                            <% }) %>
+                            <tr class="bold" style="background-color: #f2f2f2;">
+                                <td>Total</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="center"><%= semTotalCredits %></td>
+                                <td class="center"><%= semTotalHours %></td>
+                                <td class="center"><%= semTotalInternal %></td>
+                                <td class="center"><%= semTotalEndTerm %></td>
+                                <td class="center"><%= semTotalMaxMarks %></td>
+                                <td></td>
+                            </tr>
+                        <% } %>
                     <% }) %>
                 </tbody>
             </table>
         </div>
-
-        <!-- Page 3+: Detailed Course Syllabi -->
+        <% } else { %>
+        <div class="page-break-before">
+            <h2 class="center">University Pool Courses List</h2>
+            <p class="center">The following courses are available as electives under the University Pool.</p>
+            <table class="no-border-table" style="margin: auto; width: 50%;">
+                <tr><td class="bold">Total Pool Courses:</td><td><%= allCourses.length %></td></tr>
+            </table>
+        </div>
+        <% } %>
+        <!-- Subsequent Pages: Detailed Course Syllabi -->
         <% allCourses.forEach(data => { %>
             <% if (!data.is_missing) { %>
                 <% 
                     // Determine which semester this course is mapped to in this program
                     let courseSem = [];
                     semesters.forEach(s => {
-                        if(s.courses_code.includes(data.course_code)) courseSem.push(s.semester);
+                        if(!s.isDivider && s.detailed_courses) {
+                            s.detailed_courses.forEach(dc => {
+                                if(dc.course_code === data.course_code) {
+                                    courseSem.push(s.semester);
+                                }
+                            });
+                        }
                     });
-                    const clos = Array.isArray(data.course_outcomes) ? data.course_outcomes : [];
-                    const units = Array.isArray(data.syllabus_units) ? data.syllabus_units : [];
-                    const mappings = Array.isArray(data.co_po_mapping) ? data.co_po_mapping : [];
                 %>
-                
                 <div class="page-break-before" id="course-<%= data.course_code %>">
-                    
-                    <table>
-                        <tr><td colspan="4" class="section-title">Part A – Introduction</td></tr>
-                        <tr><td class="header-cell">Name of the Programme</td><td colspan="3"><%= academic_program %> (<%= specialization %>)</td></tr>
-                        <tr><td class="header-cell">Semester</td><td colspan="3">Semester <%= courseSem.join(', ') %></td></tr>
-                        <tr><td class="header-cell">Nature of Course/Course Composition</td><td colspan="3"><%= data.nature_of_course || '-' %></td></tr>
-                        <tr><td class="header-cell">Name of the Course</td><td colspan="3"><%= data.course_name || data.course_title %></td></tr>
-                        <tr><td class="header-cell">Course Code</td><td colspan="3"><%= data.course_code %></td></tr>
-                        <tr><td class="header-cell">Course Type</td><td colspan="3"><%= data.course_type || '-' %></td></tr>
-                        <tr><td class="header-cell">Pre-requisite for the course (if any)</td><td colspan="3"><%= data.prerequisite || 'Nil' %></td></tr>
-                        <tr>
-                            <td class="header-cell">Course Learning Outcomes (CLOs)<br>After completing this course, the learner will be able to:</td>
-                            <td colspan="3">
-                                <% clos.forEach((clo, i) => { %>
-                                    CLO<sub><%= i+1 %></sub>: <%= clo %><br>
-                                <% }) %>
-                            </td>
-                        </tr>
-                        <tr class="center bold">
-                            <td></td><td>Theory</td><td>Practical</td><td>Total</td>
-                        </tr>
-                        <tr>
-                            <td class="bold">Credits</td>
-                            <td class="center"><%= data.credits_theory || 0 %></td><td class="center"><%= data.credits_practical || 0 %></td><td class="center"><%= data.credits_total || 0 %></td>
-                        </tr>
-                        <tr>
-                            <td class="bold">Teaching hours per week</td>
-                            <td class="center"><%= data.credits_theory || 0 %></td><td class="center"><%= (data.credits_practical || 0) * 2 %></td><td class="center"><%= (data.credits_theory || 0) + ((data.credits_practical || 0) * 2) %></td>
-                        </tr>
-                        <tr>
-                            <td class="bold">Internal Assessment Marks</td>
-                            <td class="center"><%= data.marks_internal_theory || 0 %></td><td class="center"><%= data.marks_internal_practical || 0 %></td><td class="center"><%= data.marks_internal_total || 0 %></td>
-                        </tr>
-                        <tr>
-                            <td class="bold">End Term Exam Marks</td>
-                            <td class="center"><%= data.marks_endterm_theory || 0 %></td><td class="center"><%= data.marks_endterm_practical || 0 %></td><td class="center"><%= data.marks_endterm_total || ((data.marks_endterm_theory || 0) + (data.marks_endterm_practical || 0)) %></td>
-                        </tr>
-                        <tr>
-                            <td class="bold">Max. Marks</td>
-                            <td class="center"><%= (data.marks_internal_theory || 0) + (data.marks_endterm_theory || 0) %></td><td class="center"><%= (data.marks_internal_practical || 0) + (data.marks_endterm_practical || 0) %></td><td class="center"><%= data.marks_max || 0 %></td>
-                        </tr>
-                        <tr>
-                            <td class="bold">Examination Duration (in Hours)</td>
-                            <td class="center"><%= data.exam_duration || '-' %></td><td class="center"><%= data.credits_practical ? 'As per scheme' : 'NA' %></td><td class="center"><%= data.exam_duration || '-' %></td>
-                        </tr>
-                    </table>
-            
-                    <table>
-                        <tr><td colspan="3" class="section-title">Part B - Contents of the Course</td></tr>
-                        <tr>
-                            <td colspan="3" class="justified-text">
-                                <span class="bold">Instructions for Examiner:</span><br>
-                                <%- data.paper_setter_instructions || 'Nil' %>
-                            </td>
-                        </tr>
-                        <tr class="bold">
-                            <td style="width: 15%;">Unit</td><td style="width: 65%;">Topics</td><td style="width: 20%;" class="center">Contact Hours</td>
-                        </tr>
-                        <% units.forEach(unit => { %>
-                            <tr>
-                                <td><%= unit.title %></td>
-                                <td class="justified-text"><%- unit.content %></td>
-                                <td class="center"><%= unit.hours %></td>
-                            </tr>
-                        <% }) %>
-                    </table>
-            
-                    <table>
-                        <tr><td colspan="14" class="section-title">Mapping of Course Learning Outcomes (CLOs) to Program Outcomes & Program Specific Outcomes</td></tr>
-                        <tr class="center bold">
-                            <td>CLOs</td>
-                            <% for(let i=1; i<=11; i++) { %><td>PO<sub><%= i %></sub></td><% } %>
-                            <td>PSO<sub>1</sub></td><td>PSO<sub>2</sub></td>
-                        </tr>
-                        <% if (mappings.length > 0) { %>
-                            <% mappings.forEach((map, i) => { %>
-                                <tr class="center">
-                                    <td class="bold"><%= map.co || ('CLO' + (i+1)) %></td>
-                                    <% for(let j=1; j<=11; j++) { %><td><%= map['po'+j] || '' %></td><% } %>
-                                    <td><%= map.pso1 || '' %></td><td><%= map.pso2 || '' %></td>
-                                </tr>
-                            <% }) %>
-                        <% } else { %>
-                            <% clos.forEach((clo, i) => { %>
-                                <tr class="center">
-                                    <td class="bold">CLO<sub><%= i+1 %></sub></td>
-                                    <% for(let j=1; j<=13; j++) { %><td></td><% } %>
-                                </tr>
-                            <% }) %>
-                        <% } %>
-                    </table>
-            
+                    <%- include('partials/courseDetails', { 
+                        data: data, 
+                        programme_name_display: (!specialization || specialization === 'None') ? academic_program : `${academic_program} (${specialization})`, 
+                        semester_display: `Semester ${courseSem.join(', ')}`,
+                        program_pos: programDetails.pos ? programDetails.pos.length : null,
+                        program_psos: programDetails.psos ? programDetails.psos.length : null
+                    }) %>
                 </div>
             <% } %>
         <% }) %>

@@ -1,83 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="shortcut icon" href="https://igu1.ucanapply.com/images/webicon.png" type="image/png">
     <meta charset="UTF-8">
     <title>Generate Full Syllabus</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 20px;
-            background-color: #f4f7f6;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            max-width: 900px;
-            width: 100%;
-        }
-        h1 { text-align: center; color: #333; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
-            text-align: left;
-        }
-        th { background-color: #f8f9fa; }
-        .action-btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            color: white;
-            font-size: 14px;
-        }
-        .view-btn { background-color: #17a2b8; }
-        .back-btn {
-            display: inline-block;
-            margin-bottom: 20px;
-            padding: 8px 15px;
-            background-color: #6c757d;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; padding: 20px; display: flex; justify-content: center; }
+        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); max-width: 800px; width: 100%; }
+        h1 { color: #333; margin-bottom: 20px; text-align: center; }
+        ul { list-style-type: none; padding: 0; }
+        li { background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 15px; margin-bottom: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
+        a.btn { padding: 8px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+        a.btn:hover { background: #0056b3; }
+        .back-btn { display: inline-block; margin-bottom: 20px; padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="/" class="back-btn">← Go Back</a>
-        <h1>Select Program to Generate</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Academic Program</th>
-                    <th>Specialization</th>
-                    <th>Year Onward</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
+        <a href="/" class="back-btn">← Back to Home</a>
+        <h1>Select a Program to Generate Syllabus</h1>
+        
+        <% if (locals.query && locals.query.error) { %>
+            <div style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;"><%= locals.query.error %></div>
+        <% } %>
+
+        <% if (options.length > 0) { %>
+            <ul>
                 <% options.forEach(opt => { %>
-                    <tr>
-                        <td><strong><%= opt.academic_program %></strong></td>
-                        <td><%= opt.specialization %></td>
-                        <td><%= opt.year_onward %></td>
-                        <td><a href="/view-full-syllabus?academic_program=<%= encodeURIComponent(opt.academic_program) %>&specialization=<%= encodeURIComponent(opt.specialization) %>&year_onward=<%= encodeURIComponent(opt.year_onward) %>" target="_blank" class="action-btn view-btn">Generate Preview</a></td>
-                    </tr>
+                    <li>
+                        <span>
+                            <strong><%= opt.subject_name %></strong> - <%= opt.specialization || 'General' %> (<%= opt.program_code %>)
+                        </span>
+                        <a href="/program-details-form?program_code=<%= encodeURIComponent(opt.program_code) %>" class="btn">
+                            Fill Details & View
+                        </a>
+                    </li>
                 <% }) %>
-            </tbody>
-        </table>
+            </ul>
+        <% } else { %>
+            <p style="text-align: center;">No programs found. Please create a program and a curriculum draft first.</p>
+        <% } %>
     </div>
 </body>
 </html>

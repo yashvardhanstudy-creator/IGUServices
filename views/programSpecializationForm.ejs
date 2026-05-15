@@ -78,17 +78,21 @@
     <div class="container">
         <h1><%= locals.program ? "Edit" : "New" %> Program & Specialization</h1>
         <form action="/program-specialization" method="POST">
-            <label for="program_name">Program Name:</label>
-            <input type="text" id="program_name" name="program_name" required 
-                   value="<%= locals.program ? locals.program.program_name : '' %>" 
+            <label for="program_code">Program Code (Unique):</label>
+            <input type="text" id="program_code" name="program_code" required 
+                   value="<%= locals.program ? locals.program.program_code : '' %>" 
                    <%= locals.program ? 'readonly' : '' %>
+                   placeholder="e.g. BTECH-CSE-2024">
+
+            <label for="subject_name">Subject Name (Title for Full Syllabus):</label>
+            <input type="text" id="subject_name" name="subject_name" required 
+                   value="<%= locals.program ? locals.program.subject_name : '' %>" 
                    placeholder="e.g. Master of Science">
 
-            <label for="specialization">Specialization:</label>
-            <input type="text" id="specialization" name="specialization" required 
+            <label for="specialization">Specialization (Optional):</label>
+            <input type="text" id="specialization" name="specialization" 
                    value="<%= locals.program ? locals.program.specialization : '' %>" 
-                   <%= locals.program ? 'readonly' : '' %>
-                   placeholder="e.g. Computer Science">
+                   placeholder="e.g. Computer Science (Leave blank for 'None')">
 
             <label for="level">Level (UG / PG):</label>
             <select id="level" name="level" required onchange="updateSchemes()">
@@ -101,6 +105,18 @@
             <select id="scheme" name="scheme" required>
                 <option value="">Select Scheme</option>
             </select>
+
+            <label for="num_pos">Number of POs (8 to 12):</label>
+            <input type="number" id="num_pos" name="num_pos" required min="8" max="12"
+                   value="<%= locals.program ? locals.program.num_pos : '11' %>">
+
+            <label for="num_peos">Number of PEOs (4 or 5):</label>
+            <input type="number" id="num_peos" name="num_peos" required min="4" max="5"
+                   value="<%= locals.program ? locals.program.num_peos : '4' %>">
+
+            <label for="num_psos">Number of PSOs (0 to 4):</label>
+            <input type="number" id="num_psos" name="num_psos" required min="0" max="4"
+                   value="<%= locals.program ? locals.program.num_psos : '2' %>">
 
             <button type="submit">Save Program Data</button>
         </form>

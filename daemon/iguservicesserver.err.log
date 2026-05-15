@@ -1,0 +1,64 @@
+C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\BrowserLauncher.js:337
+                    throw new Error(`Could not find Chrome (ver. ${this.puppeteer.browserVersion}). This can occur if either\n` +
+                          ^
+
+Error: Could not find Chrome (ver. 147.0.7727.57). This can occur if either
+ 1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or
+ 2. your cache path is incorrectly configured (which is: C:\WINDOWS\system32\config\systemprofile\.cache\puppeteer).
+For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.
+    at ChromeLauncher.resolveExecutablePath (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\BrowserLauncher.js:337:27)
+    at ChromeLauncher.computeLaunchArguments (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\ChromeLauncher.js:94:24)
+    at async ChromeLauncher.launch (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\BrowserLauncher.js:85:28)
+    at async C:\IGUServices\index.js:974:25
+
+Node.js v25.6.1
+C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\BrowserLauncher.js:337
+                    throw new Error(`Could not find Chrome (ver. ${this.puppeteer.browserVersion}). This can occur if either\n` +
+                          ^
+
+Error: Could not find Chrome (ver. 147.0.7727.57). This can occur if either
+ 1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or
+ 2. your cache path is incorrectly configured (which is: C:\WINDOWS\system32\config\systemprofile\.cache\puppeteer).
+For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.
+    at ChromeLauncher.resolveExecutablePath (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\BrowserLauncher.js:337:27)
+    at ChromeLauncher.computeLaunchArguments (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\ChromeLauncher.js:94:24)
+    at async ChromeLauncher.launch (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\BrowserLauncher.js:85:28)
+    at async C:\IGUServices\index.js:974:25
+
+Node.js v25.6.1
+C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\BrowserLauncher.js:337
+                    throw new Error(`Could not find Chrome (ver. ${this.puppeteer.browserVersion}). This can occur if either\n` +
+                          ^
+
+Error: Could not find Chrome (ver. 147.0.7727.57). This can occur if either
+ 1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or
+ 2. your cache path is incorrectly configured (which is: C:\WINDOWS\system32\config\systemprofile\.cache\puppeteer).
+For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.
+    at ChromeLauncher.resolveExecutablePath (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\BrowserLauncher.js:337:27)
+    at ChromeLauncher.computeLaunchArguments (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\ChromeLauncher.js:94:24)
+    at async ChromeLauncher.launch (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\BrowserLauncher.js:85:28)
+    at async C:\IGUServices\index.js:974:25
+
+Node.js v25.6.1
+C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\BrowserLauncher.js:337
+                    throw new Error(`Could not find Chrome (ver. ${this.puppeteer.browserVersion}). This can occur if either\n` +
+                          ^
+
+Error: Could not find Chrome (ver. 147.0.7727.57). This can occur if either
+ 1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or
+ 2. your cache path is incorrectly configured (which is: C:\WINDOWS\system32\config\systemprofile\.cache\puppeteer).
+For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.
+    at ChromeLauncher.resolveExecutablePath (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\BrowserLauncher.js:337:27)
+    at ChromeLauncher.computeLaunchArguments (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\ChromeLauncher.js:94:24)
+    at async ChromeLauncher.launch (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\BrowserLauncher.js:85:28)
+    at async C:\IGUServices\index.js:974:25
+
+Node.js v25.6.1
+❌ PDF Generation Error: Error: Could not find Chrome (ver. 147.0.7727.57). This can occur if either
+ 1. you did not perform an installation before running the script (e.g. `npx puppeteer browsers install chrome`) or
+ 2. your cache path is incorrectly configured (which is: C:\WINDOWS\system32\config\systemprofile\.cache\puppeteer).
+For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides/configuration.
+    at ChromeLauncher.resolveExecutablePath (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\BrowserLauncher.js:337:27)
+    at ChromeLauncher.computeLaunchArguments (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\ChromeLauncher.js:94:24)
+    at async ChromeLauncher.launch (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\BrowserLauncher.js:85:28)
+    at async C:\IGUServices\index.js:975:27

@@ -52,6 +52,7 @@
             text-decoration: none;
             border-radius: 5px;
             font-size: 14px;
+            display: inline-block;
         }
         .btn:hover {
             background: #117a8b;
@@ -71,25 +72,36 @@
 <body>
     <div class="container">
         <h1>Existing Programs & Specializations</h1>
+        <% if (locals.query && locals.query.message) { %>
+            <div style="color: green; background-color: #e8f5e9; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;"><%= locals.query.message %></div>
+        <% } %>
         <table>
             <thead>
                 <tr>
-                    <th>Program Name</th>
+                    <th>Program Code</th>
+                    <th>Subject Name</th>
                     <th>Specialization</th>
                     <th>Level</th>
                     <th>Scheme</th>
+                    <th>POs/PEOs/PSOs</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <% programs.forEach(p => { %>
                     <tr>
-                        <td><%= p.program_name %></td>
-                        <td><%= p.specialization %></td>
+                        <td><strong><%= p.program_code %></strong></td>
+                        <td><%= p.subject_name %></td>
+                        <td><%= p.specialization || 'General' %></td>
                         <td><%= p.level %></td>
-                        <td><%= p.scheme %></td>
-                        <td>
-                            <a class="btn" href="/curriculum?program_name=<%= encodeURIComponent(p.program_name) %>&specialization=<%= encodeURIComponent(p.specialization) %>&scheme=<%= encodeURIComponent(p.scheme) %>">Edit</a>
+                        <td>Scheme <%= p.scheme %></td>
+                        <td><%= p.num_pos %> / <%= p.num_peos %> / <%= p.num_psos %></td>
+                        <td style="white-space: nowrap;">
+                            <a class="btn" href="/curriculum?program_code=<%= encodeURIComponent(p.program_code) %>&scheme=<%= encodeURIComponent(p.scheme) %>">Edit</a>
+                            <form action="/delete-program" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this program? Its curriculum draft will also be permanently deleted.');">
+                                <input type="hidden" name="program_code" value="<%= p.program_code %>">
+                                <button type="submit" class="btn" style="background-color: #dc3545; color: white; border: none; cursor: pointer; margin-left: 5px;">Delete</button>
+                            </form>
                         </td>
                     </tr>
                 <% }) %>

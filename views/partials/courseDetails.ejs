@@ -1,0 +1,237 @@
+<% 
+    let rawClos = Array.isArray(data.course_outcomes) ? data.course_outcomes : [];
+    if (rawClos.length === 1 && rawClos[0].includes('\n')) {
+        rawClos = rawClos[0].split(/\r?\n/);
+    }
+    const clos = rawClos.map(c => c.trim()).filter(c => c !== '');
+    const units = Array.isArray(data.syllabus_units) ? data.syllabus_units : [];
+    const mappings = Array.isArray(data.co_po_mapping) ? data.co_po_mapping : [];
+
+    let isPoolCourse = false;
+    let programmeNameDisplay = data.owning_program_code || 'University Pool';
+    
+    if (!data.owning_program_code || data.owning_program_code === 'From University Pool' || data.owning_program_code.startsWith('POOL')) {
+        isPoolCourse = true;
+        if (data.owning_program_code && data.owning_program_code.startsWith('POOL|')) {
+            programmeNameDisplay = data.owning_program_code.substring(5);
+        } else {
+            programmeNameDisplay = 'University Pool';
+        }
+    }
+
+    let numPOs = 11;
+    let numPSOs = 2;
+    
+    if (typeof program_pos !== 'undefined' && program_pos !== null && !isPoolCourse) {
+        numPOs = program_pos;
+        numPSOs = program_psos;
+    } else if (mappings && mappings.length > 0) {
+        numPOs = 8;
+        numPSOs = 0;
+        mappings.forEach(m => {
+            for (let i = 1; i <= 12; i++) if (m[`po${i}`] !== undefined) numPOs = Math.max(numPOs, i);
+            for (let i = 1; i <= 4; i++) if (m[`pso${i}`] !== undefined) numPSOs = Math.max(numPSOs, i);
+        });
+    }
+
+    let natureOfCourseDisplay = data.nature_of_course || '-';
+    if (data.credits_theory > 0 && data.credits_practical > 0) natureOfCourseDisplay = 'Theory + Practical';
+    else if (data.credits_theory > 0 && (!data.credits_practical || data.credits_practical == 0)) natureOfCourseDisplay = 'Theory(Theory + Tutorial)';
+    else if ((!data.credits_theory || data.credits_theory == 0) && data.credits_practical > 0) natureOfCourseDisplay = 'Practical';
+
+    let thDuration = 0;
+    if (data.credits_theory >= 3) thDuration = 3;
+    else if (data.credits_theory >= 1) thDuration = 2;
+
+    let prDuration = 0;
+    if (data.credits_practical >= 3) prDuration = 4;
+    else if (data.credits_practical >= 1) prDuration = 3;
+
+    let thDurDisplay = thDuration > 0 ? thDuration + " Hours" : "NA";
+    let prDurDisplay = prDuration > 0 ? prDuration + " Hours" : "NA";
+    let totalDurDisplay = "0 Hours";
+    if (thDuration > 0 && prDuration > 0) totalDurDisplay = `${thDuration} Hours (Theory), ${prDuration} Hours (Practical)`;
+    if (thDuration > 0 && prDuration > 0) totalDurDisplay = `${thDuration} Hours, ${prDuration} Hours`;
+    else if (thDuration > 0) totalDurDisplay = `${thDuration} Hours`;
+    else if (prDuration > 0) totalDurDisplay = `${prDuration} Hours`;
+
+    let storedSemester = (data.nep_mapping && data.nep_mapping.course_semester) ? data.nep_mapping.course_semester : '-';
+%>
+
+<table>
+    <tr><td colspan="4" class="section-title">Part A – Introduction</td></tr>
+    <tr><td class="header-cell"><%= isPoolCourse ? 'Department Name' : 'Name of the Programme/Subject' %></td><td colspan="3"><%= typeof programme_name_display !== 'undefined' ? programme_name_display : programmeNameDisplay %></td></tr>
+    <tr><td class="header-cell">Semester</td><td colspan="3"><%= typeof semester_display !== 'undefined' ? semester_display : storedSemester %></td></tr>
+    <tr><td class="header-cell">Nature of Course</td><td colspan="3"><%= natureOfCourseDisplay %></td></tr>
+    <tr><td class="header-cell">Name of the Course</td><td colspan="3"><%= data.course_name || data.course_title %></td></tr>
+    <tr><td class="header-cell">Course Code</td><td colspan="3"><%= data.course_code %></td></tr>
+    <tr><td class="header-cell">Course Type</td><td colspan="3"><%= data.course_type || '-' %></td></tr>
+    <tr><td class="header-cell">Pre-requisites for the course (if any)</td><td colspan="3"><%= data.prerequisite || 'Nil' %></td></tr>
+    <tr>
+        <td class="header-cell">Course Learning Outcomes (CLOs)<br>After completing this course, the learner will be able to:</td>
+        <td colspan="3">
+            <% clos.forEach((clo, i) => { %>
+                CLO<sub><%= i+1 %></sub>: <%= clo %><br>
+            <% }) %>
+        </td>
+    </tr>
+    <tr class="center bold">
+        <td></td><td>Theory</td><td>Practical</td><td>Total</td>
+    </tr>
+    <tr>
+        <td class="bold">Credits</td>
+        <td class="center"><%= data.credits_theory || 0 %></td><td class="center"><%= data.credits_practical || 0 %></td><td class="center"><%= data.credits_total || 0 %></td>
+    </tr>
+    <tr>
+        <td class="bold">Teaching hours per week</td>
+        <td class="center"><%= data.credits_theory || 0 %></td><td class="center"><%= (data.credits_practical || 0) * 2 %></td><td class="center"><%= (data.credits_theory || 0) + ((data.credits_practical || 0) * 2) %></td>
+    </tr>
+    <tr>
+        <td class="bold">Internal Assessment Marks</td>
+        <td class="center"><%= data.marks_internal_theory || 0 %></td><td class="center"><%= data.marks_internal_practical || 0 %></td><td class="center"><%= data.marks_internal_total || 0 %></td>
+    </tr>
+    <tr>
+        <td class="bold">End Term Exam Marks</td>
+        <td class="center"><%= data.marks_endterm_theory || 0 %></td><td class="center"><%= data.marks_endterm_practical || 0 %></td><td class="center"><%= data.marks_endterm_total || ((data.marks_endterm_theory || 0) + (data.marks_endterm_practical || 0)) %></td>
+    </tr>
+    <tr>
+        <td class="bold">Max. Marks</td>
+        <td class="center"><%= (data.marks_internal_theory || 0) + (data.marks_endterm_theory || 0) %></td><td class="center"><%= (data.marks_internal_practical || 0) + (data.marks_endterm_practical || 0) %></td><td class="center"><%= data.marks_max || 0 %></td>
+    </tr>
+    <tr>
+        <td class="bold">Examination Duration (in Hours)</td>
+        <td class="center"><%= thDurDisplay %></td><td class="center"><%= prDurDisplay %></td><td class="center"><%= totalDurDisplay %></td>
+    </tr>
+</table>
+
+<table>
+    <colgroup>
+        <col style="width: 12%;">
+        <col style="width: 60%;">
+        <col style="width: 18%;">
+        <col style="width: 15%;">
+    </colgroup>
+    <tr><td colspan="4" class="section-title">Part B - Contents of the Course</td></tr>
+    <tr>
+        <td colspan="4" class="justified-text">
+            <span class="bold">Instructions for Examiner:</span><br>
+            <%- data.paper_setter_instructions ? data.paper_setter_instructions.replace(/ Practical:/g, '<br><br>Practical:') : 'Nil' %>
+        </td>
+    </tr>
+    <tr class="bold">
+        <td>Unit</td><td>Topics</td><td class="center">CLOs</td><td class="center">Contact Hours</td>
+    </tr>
+    <% units.forEach(unit => { %>
+        <tr>
+            <td><%= unit.title %></td>
+            <td class="justified-text"><%- unit.content %></td>
+            <td class="center"><%= unit.clos || '-' %></td>
+            <td class="center"><%= unit.hours %></td>
+        </tr>
+    <% }) %>
+</table>
+
+<% const eval = data.evaluation_criteria || {}; %>
+<table>
+    <tr><td colspan="6" class="section-title">Suggested Evaluation Methods</td></tr>
+    <tr class="section-title">
+        <td class="bold" style="width: 35%;">Internal Assessment: <%= data.marks_internal_total || 0 %></td>
+        <td class="center bold" style="width: 7.5%;">TH-<%= data.marks_internal_theory || 0 %></td>
+        <td class="center bold" style="width: 7.5%;">PR-<%= data.marks_internal_practical || 0 %></td>
+        <td class="bold" style="width: 35%;">End Term Examination: <%= data.marks_endterm_total || 0 %></td>
+        <td class="center bold" style="width: 7.5%;">TH-<%= data.marks_endterm_theory || 0 %></td>
+        <td class="center bold" style="width: 7.5%;">PR-<%= data.marks_endterm_practical || 0 %></td>
+    </tr>
+    <tr>
+        <td>Class Participation:</td>
+        <td class="center"><%= eval.eval_cp_th || 'NA' %></td>
+        <td class="center"><%= eval.eval_cp_pr || 'NA' %></td>
+        <td>Written Examination</td>
+        <td class="center"><%= eval.eval_written_exam_th || 'NA' %></td>
+        <td class="center"><%= eval.eval_written_exam_pr || 'NA' %></td>
+    </tr>
+    <tr>
+        <td>Seminar/presentation/assignment/quiz/class test etc.:</td>
+        <td class="center"><%= eval.eval_seminar_th || 'NA' %></td>
+        <td class="center"><%= eval.eval_seminar_pr || 'NA' %></td>
+        <td>Lab record</td>
+        <td class="center"><%= eval.eval_lab_record_th || 'NA' %></td>
+        <td class="center"><%= eval.eval_lab_record_pr || 'NA' %></td>
+    </tr>
+    <tr>
+        <td>Seminar/Demonstration/Viva-voce/Lab records etc.:</td>
+        <td class="center"><%= eval.eval_seminar_demo_th || 'NA' %></td>
+        <td class="center"><%= eval.eval_seminar_demo_pr || 'NA' %></td>
+        <td>Viva-Voce</td>
+        <td class="center"><%= eval.eval_viva_th || 'NA' %></td>
+        <td class="center"><%= eval.eval_viva_pr || 'NA' %></td>
+    </tr>
+    <tr>
+        <td>Mid-Term Exam:</td>
+        <td class="center"><%= eval.eval_midterm_th || 'NA' %></td>
+        <td class="center"><%= eval.eval_midterm_pr || 'NA' %></td>
+        <td>Write-up and execution of the practical</td>
+        <td class="center"><%= eval.eval_execution_th || 'NA' %></td>
+        <td class="center"><%= eval.eval_execution_pr || 'NA' %></td>
+    </tr>
+</table>
+
+<table>
+    <tr><td colspan="<%= 1 + numPOs + numPSOs %>" class="section-title">Mapping of (CLOs) to Program Outcomes & Program Specific Outcomes</td></tr>
+    <tr class="center bold">
+        <td>CLOs</td>
+        <% for(let i=1; i<=numPOs; i++) { %><td>PO<sub><%= i %></sub></td><% } %>
+        <% for(let i=1; i<=numPSOs; i++) { %><td>PSO<sub><%= i %></sub></td><% } %>
+    </tr>
+    <% if (mappings.length > 0) { %>
+        <% mappings.forEach((map, i) => { %>
+            <tr class="center">
+                <td class="bold"><%= map.co || ('CLO' + (i+1)) %></td>
+                <% for(let j=1; j<=numPOs; j++) { %><td><%= map['po'+j] || '' %></td><% } %>
+                <% for(let j=1; j<=numPSOs; j++) { %><td><%= map['pso'+j] || '' %></td><% } %>
+            </tr>
+        <% }) %>
+    <% } else { %>
+        <% clos.forEach((clo, i) => { %>
+            <tr class="center">
+                <td class="bold">CLO<sub><%= i+1 %></sub></td>
+                <% for(let j=1; j<=(numPOs + numPSOs); j++) { %><td></td><% } %>
+            </tr>
+        <% }) %>
+    <% } %>
+</table>
+<% if (isPoolCourse) { %>
+    <div style="font-size: 13px; font-style: italic; margin-top: -15px; margin-bottom: 15px;">* Note: This is a University Pool course with independent mapping.</div>
+<% } %>
+
+<% if (data.learning_resources && data.learning_resources.trim() !== '') { %>
+<table>
+    <tr><td class="section-title">Part C - Learning Resources</td></tr>
+    <tr>
+        <td style="white-space: pre-wrap; padding: 2px;"><%= data.learning_resources %></td>
+    </tr>
+</table>
+<% } %>
+
+<% 
+    const nep = data.nep_mapping || {};
+    const hasNep = nep.employability || nep.skill_enhancement || nep.communication_development || nep.indian_knowledge_system || nep.environmental_awareness || nep.current_issues || nep.women_empowerment || nep.public_policies || nep.any_other;
+%>
+<% if (hasNep) { %>
+<table>
+    <tr><td colspan="2" class="section-title">Content Mapping with NEP thrust areas</td></tr>
+    <tr class="center bold">
+        <td style="width: 35%;">Field</td>
+        <td>Content/s</td>
+    </tr>
+    <% if (nep.employability) { %><tr><td class="header-cell">Employability/Entrepreneurship</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.employability %></td></tr><% } %>
+    <% if (nep.skill_enhancement) { %><tr><td class="header-cell">Skill Enhancement</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.skill_enhancement %></td></tr><% } %>
+    <% if (nep.communication_development) { %><tr><td class="header-cell">Communication Development</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.communication_development %></td></tr><% } %>
+    <% if (nep.indian_knowledge_system) { %><tr><td class="header-cell">Indian Knowledge System</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.indian_knowledge_system %></td></tr><% } %>
+    <% if (nep.environmental_awareness) { %><tr><td class="header-cell">Environmental Awareness</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.environmental_awareness %></td></tr><% } %>
+    <% if (nep.current_issues) { %><tr><td class="header-cell">Current Issues and Social Awareness</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.current_issues %></td></tr><% } %>
+    <% if (nep.women_empowerment) { %><tr><td class="header-cell">Women empowerment/ Gender issues</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.women_empowerment %></td></tr><% } %>
+    <% if (nep.public_policies) { %><tr><td class="header-cell">Public policies</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.public_policies %></td></tr><% } %>
+    <% if (nep.any_other) { %><tr><td class="header-cell">Any Other</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.any_other %></td></tr><% } %>
+</table>
+<% } %>

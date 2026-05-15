@@ -51,29 +51,98 @@
         button {
             width: 100%;
             padding: 12px;
-            margin-bottom: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin-bottom: 10px;
             color: white;
             border: none;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
         }
 
         button:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+            filter: brightness(1.1);
         }
 
         button:active {
             transform: translateY(0);
         }
+
+        .btn-create { background: linear-gradient(135deg, #28a745 0%, #218838 100%); box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3); }
+        .btn-edit { background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%); box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3); }
+        .btn-print { background: linear-gradient(135deg, #6f42c1 0%, #563d7c 100%); box-shadow: 0 4px 15px rgba(111, 66, 193, 0.3); }
+        .btn-admin { background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); }
+        .btn-account { background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: #000 !important; box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3); }
+        .btn-logout { background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3); }
+
+        .button-group {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px 15px 5px 15px;
+            margin-bottom: 15px;
+        }
+
+        .group-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #6c757d;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 5px;
+        }
+        
+        .action-row {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-row button {
+            margin-bottom: 0;
+            flex: 1;
+            font-size: 14px;
+            padding: 10px;
+        }
+
+        .dashboard-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            align-items: center;
+        }
+
+        .rules-container {
+            background: #fff8e1;
+            border: 1px solid #ffeeba;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 550px;
+            width: 100%;
+            text-align: left;
+            font-size: 14px;
+            color: #856404;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (min-width: 1024px) {
+            .dashboard-wrapper {
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <div class="dashboard-wrapper">
     <div class="container">
         <img src="https://d2xe8shibzpjog.cloudfront.net/logo/igu_logo.png" alt="IGU" style="height: 80px; width: auto;margin-bottom: 20px;">
         <h1>Syllabus & Course Management</h1>
@@ -81,21 +150,55 @@
         <% if (locals.query && locals.query.message) { %>
             <div class="success-message"><%= locals.query.message %></div>
         <% } %>
-        <button onclick="window.location.href='/courses-list'">View, Edit, or Download Existing Course Syllabi</button>
-        <button onclick="window.location.href='/courses'">Create a New Course Syllabus</button>
-        <button onclick="window.location.href='/semester-courses-form'">Create a Semester's Course Structure</button>
-        <button onclick="window.location.href='/semester-courses-list'">View or Edit Saved Semester Structures</button>
-        <button onclick="window.location.href='/generate-full-syllabus'">Generate Full Syllabus Print Document</button>
         
-        <button onclick="window.location.href='/program-specialization-form'" style="background: linear-gradient(135deg, #28a745 0%, #218838 100%);">New Program/Specialization</button>
-        <button onclick="window.location.href='/programs-list'" style="background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%);">Edit Program/Specialization</button>
+        <div class="button-group">
+            <div class="group-title">Program Management</div>
+            <button class="btn-create" onclick="window.location.href='/program-specialization-form'">✨ New Program/Specialization</button>
+            <button class="btn-edit" onclick="window.location.href='/programs-list'">✏️ Edit Program/Specialization</button>
+        </div>
 
-        <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
-        <% if (locals.role) { %>
-            <button onclick="window.location.href='/register'" style="background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%);">Register New Admin</button>
-        <% } %>
-        <button onclick="window.location.href='/editPass'" style="background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%); color: black;">Edit Password</button>
-        <button onclick="window.location.href='/logout'" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);">Logout</button>
+        <div class="button-group">
+            <div class="group-title">Course Management</div>
+            <button class="btn-create" onclick="window.location.href='/courses'">➕ Create New University Pool Course</button>
+            <button class="btn-edit" onclick="window.location.href='/courses-list'">📚 View, Edit, or Download Courses</button>
+        </div>
+
+        <div class="button-group" style="margin-bottom: 25px;">
+            <div class="group-title">Document Generation</div>
+            <button class="btn-print" onclick="window.location.href='/generate-full-syllabus'">🖨️ Generate Full Syllabus Print Document</button>
+        </div>
+        
+        <div class="action-row">
+            <% if (locals.role) { %>
+                <button class="btn-admin" onclick="window.location.href='/register'">👤 Register Admin</button>
+            <% } %>
+            <button class="btn-account" onclick="window.location.href='/editPass'">🔑 Edit Password</button>
+            <button class="btn-logout" onclick="window.location.href='/logout'">🚪 Logout</button>
+        </div>
+    </div>
+
+        <div class="rules-container">
+            <h3 style="margin-bottom: 12px; font-size: 18px; color: #856404; border-bottom: 1px solid #ffeeba; padding-bottom: 10px;">📋 Workflow & Rules Guide</h3>
+            <ol style="padding-left: 20px; margin-bottom: 0; line-height: 1.6;">
+                <li style="margin-bottom: 12px;"><strong>Step 1 (Admin):</strong> Create a new Program with or without a Specialization.<br>
+                    <span style="font-size: 13px; color: #666;">👉 Click <strong>"New Program/Specialization"</strong> (<code>/program-specialization-form</code>)</span>
+                </li>
+                <li style="margin-bottom: 12px;"><strong>Step 2 (Admin):</strong> Define Program Details & Mapping Parameters (POs/PEOs).<br>
+                    <span style="font-size: 13px; color: #666;">👉 Click <strong>"Generate Full Syllabus Print Document"</strong> ➔ <strong>"Fill Details & View"</strong> (<code>/generate-full-syllabus</code> ➔ <code>/program-details-form</code>)</span>
+                </li>
+                <li style="margin-bottom: 12px;"><strong>Step 3 (Admin):</strong> Build the Curriculum Framework and assign Credit Schemes.<br>
+                    <span style="font-size: 13px; color: #666;">👉 Click <strong>"Edit Program/Specialization"</strong> ➔ <strong>"Edit"</strong>. Assigning a Code & Scheme automatically generates empty "shell" courses!</span>
+                </li>
+                <li style="margin-bottom: 12px;"><strong>Step 4 (Teachers/Admins):</strong> Fill out Course Data or create Pool Courses.<br>
+                    <span style="font-size: 13px; color: #666;">👉 To Edit Shells: Click <strong>"View, Edit, or Download Existing Course Syllabi"</strong> ➔ <strong>"Edit"</strong>.<br>
+                    👉 To Create Pool Courses: Click <strong>"Create a New University Pool Course"</strong> to build global electives from scratch.</span>
+                </li>
+                <li><strong>Step 5 (Admin):</strong> Generate the Final Syllabus Document.<br>
+                    <span style="font-size: 13px; color: #666;">👉 Click <strong>"Generate Full Syllabus Print Document"</strong> ➔ <strong>"Fill Details & View"</strong> ➔ <strong>"Save Details & Generate Syllabus"</strong></span><br>
+                    <strong style="color: #d9534f;">Rule:</strong> The entire curriculum and all its courses must be fully completed before printing is permitted.
+                </li>
+            </ol>
+        </div>
     </div>
 </body>
 
