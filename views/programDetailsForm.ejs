@@ -134,14 +134,27 @@
 
     <script>
         const initialData = <%- JSON.stringify(programDetails) %>;
-
-        function addRow(type, value = '') {
+        const posPlaceholders = [
+            "Knowledge",
+            "Research Aptitude",
+            "Communication",
+            "Problem Solving",
+            "Individual and Team Work",
+            "Investigation of Problems",
+            "Modern Tool Usage",
+            "Scientific Temperament",
+            "Life-long Learning",
+            "Ethics",
+            "Project Management",
+            "Entrepreneurship"
+        ];
+        function addRow(type, value = '', placeholder = '') {
             const container = document.getElementById(`${type}-body`);
             const index = container.rows.length;
             const row = container.insertRow();
             row.innerHTML = `
                 <td style="width: 10%; font-weight: bold;">${type.toUpperCase()}${index + 1}</td>
-                <td><textarea name="${type}[]" rows="2" required>${value}</textarea></td>
+                <td><textarea name="${type}[]" rows="2" placeholder="${placeholder}" required>${value}</textarea></td>
             `;
         }
 
@@ -157,7 +170,7 @@
             const pos = initialData.pos || [];
             const numPos = <%= program.num_pos %>;
             for (let i = 0; i < numPos; i++) {
-                addRow('po', pos[i] || '');
+                addRow('po', pos[i] || '', posPlaceholders[i] || '');
             }
 
             // Pre-populate PSOs
