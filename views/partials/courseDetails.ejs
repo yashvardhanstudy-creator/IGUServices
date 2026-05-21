@@ -13,7 +13,12 @@
     if (!data.owning_program_code || data.owning_program_code === 'From University Pool' || data.owning_program_code.startsWith('POOL')) {
         isPoolCourse = true;
         if (data.owning_program_code && data.owning_program_code.startsWith('POOL|')) {
-            programmeNameDisplay = data.owning_program_code.substring(5);
+            const parts = data.owning_program_code.split('|');
+            if (parts.length === 3) {
+                programmeNameDisplay = `${parts[2]} (${parts[1]})`;
+            } else {
+                programmeNameDisplay = parts[1] || 'University Pool';
+            }
         } else {
             programmeNameDisplay = 'University Pool';
         }
@@ -34,18 +39,51 @@
         });
     }
 
+    let th = parseInt(data.credits_theory) || 0;
+    let pr = parseInt(data.credits_practical) || 0;
+    if (th === 0 && pr === 0 && data.credit_scheme) {
+        let parts = data.credit_scheme.split('+');
+        if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
+    }
+
+    let intTh = parseInt(data.marks_internal_theory) || 0;
+    let intPr = parseInt(data.marks_internal_practical) || 0;
+    let intTot = parseInt(data.marks_internal_total) || 0;
+    let endTh = parseInt(data.marks_endterm_theory) || 0;
+    let endPr = parseInt(data.marks_endterm_practical) || 0;
+    let endTot = parseInt(data.marks_endterm_total) || 0;
+    let maxM = parseInt(data.marks_max) || 0;
+
+    if (maxM === 0 && data.credit_scheme) {
+        const smMap = {
+            "4+0": { it: 30, ip: 0, itot: 30, et: 70, ep: 0, etot: 70, m: 100 },
+            "0+4": { it: 0, ip: 30, itot: 30, et: 0, ep: 70, etot: 70, m: 100 },
+            "3+1": { it: 20, ip: 10, itot: 30, et: 50, ep: 20, etot: 70, m: 100 },
+            "2+2": { it: 15, ip: 15, itot: 30, et: 35, ep: 35, etot: 70, m: 100 },
+            "3+0": { it: 25, ip: 0, itot: 25, et: 50, ep: 0, etot: 50, m: 75 },
+            "2+0": { it: 15, ip: 0, itot: 15, et: 35, ep: 0, etot: 35, m: 50 },
+            "1+1": { it: 10, ip: 5, itot: 15, et: 20, ep: 15, etot: 35, m: 50 },
+            "2+1": { it: 15, ip: 5, itot: 20, et: 35, ep: 20, etot: 55, m: 75 }
+        };
+        if (smMap[data.credit_scheme]) {
+            let sm = smMap[data.credit_scheme];
+            intTh = sm.it; intPr = sm.ip; intTot = sm.itot;
+            endTh = sm.et; endPr = sm.ep; endTot = sm.etot; maxM = sm.m;
+        }
+    }
+
     let natureOfCourseDisplay = data.nature_of_course || '-';
-    if (data.credits_theory > 0 && data.credits_practical > 0) natureOfCourseDisplay = 'Theory + Practical';
-    else if (data.credits_theory > 0 && (!data.credits_practical || data.credits_practical == 0)) natureOfCourseDisplay = 'Theory(Theory + Tutorial)';
-    else if ((!data.credits_theory || data.credits_theory == 0) && data.credits_practical > 0) natureOfCourseDisplay = 'Practical';
+    if (th > 0 && pr > 0) natureOfCourseDisplay = 'Theory + Practical';
+    else if (th > 0 && pr === 0) natureOfCourseDisplay = 'Theory(Theory + Tutorial)';
+    else if (th === 0 && pr > 0) natureOfCourseDisplay = 'Practical';
 
     let thDuration = 0;
-    if (data.credits_theory >= 3) thDuration = 3;
-    else if (data.credits_theory >= 1) thDuration = 2;
+    if (th >= 3) thDuration = 3;
+    else if (th >= 1) thDuration = 2;
 
     let prDuration = 0;
-    if (data.credits_practical >= 3) prDuration = 4;
-    else if (data.credits_practical >= 1) prDuration = 3;
+    if (pr >= 3) prDuration = 4;
+    else if (pr >= 1) prDuration = 3;
 
     let thDurDisplay = thDuration > 0 ? thDuration + " Hours" : "NA";
     let prDurDisplay = prDuration > 0 ? prDuration + " Hours" : "NA";
@@ -62,8 +100,8 @@
     <tr><td colspan="4" class="section-title">Part A – Introduction</td></tr>
     <tr><td class="header-cell"><%= isPoolCourse ? 'Department Name' : 'Name of the Programme/Subject' %></td><td colspan="3"><%= typeof programme_name_display !== 'undefined' ? programme_name_display : programmeNameDisplay %></td></tr>
     <tr><td class="header-cell">Semester</td><td colspan="3"><%= typeof semester_display !== 'undefined' ? semester_display : storedSemester %></td></tr>
-    <tr><td class="header-cell">Nature of Course</td><td colspan="3"><%= natureOfCourseDisplay %></td></tr>
-    <tr><td class="header-cell">Name of the Course</td><td colspan="3"><%= data.course_name || data.course_title %></td></tr>
+    <tr><td class="header-cell">Course Composition</td><td colspan="3"><%= natureOfCourseDisplay %></td></tr>
+    <tr><td class="header-cell">Nomenclature of the Course</td><td colspan="3"><%= data.course_name || data.course_title %></td></tr>
     <tr><td class="header-cell">Course Code</td><td colspan="3"><%= data.course_code %></td></tr>
     <tr><td class="header-cell">Course Type</td><td colspan="3"><%= data.course_type || '-' %></td></tr>
     <tr><td class="header-cell">Pre-requisites for the course (if any)</td><td colspan="3"><%= data.prerequisite || 'Nil' %></td></tr>
@@ -71,7 +109,7 @@
         <td class="header-cell">Course Learning Outcomes (CLOs)<br>After completing this course, the learner will be able to:</td>
         <td colspan="3">
             <% clos.forEach((clo, i) => { %>
-                CLO<sub><%= i+1 %></sub>: <%= clo %><br>
+                <%= (data.course_code || '[Course Code]') %>.<%= i+1 %>: <%= clo %><br>
             <% }) %>
         </td>
     </tr>
@@ -80,23 +118,23 @@
     </tr>
     <tr>
         <td class="bold">Credits</td>
-        <td class="center"><%= data.credits_theory || 0 %></td><td class="center"><%= data.credits_practical || 0 %></td><td class="center"><%= data.credits_total || 0 %></td>
+        <td class="center"><%= th %></td><td class="center"><%= pr %></td><td class="center"><%= data.credits_total || 0 %></td>
     </tr>
     <tr>
         <td class="bold">Teaching hours per week</td>
-        <td class="center"><%= data.credits_theory || 0 %></td><td class="center"><%= (data.credits_practical || 0) * 2 %></td><td class="center"><%= (data.credits_theory || 0) + ((data.credits_practical || 0) * 2) %></td>
+        <td class="center"><%= th %></td><td class="center"><%= pr * 2 %></td><td class="center"><%= th + (pr * 2) %></td>
     </tr>
     <tr>
-        <td class="bold">Internal Assessment Marks</td>
-        <td class="center"><%= data.marks_internal_theory || 0 %></td><td class="center"><%= data.marks_internal_practical || 0 %></td><td class="center"><%= data.marks_internal_total || 0 %></td>
+        <td class="bold">Internal Assessment Marks (Th+P=Total)</td>
+        <td class="center"><%= intTh %></td><td class="center"><%= intPr %></td><td class="center"><%= intTot %></td>
     </tr>
     <tr>
         <td class="bold">End Term Exam Marks</td>
-        <td class="center"><%= data.marks_endterm_theory || 0 %></td><td class="center"><%= data.marks_endterm_practical || 0 %></td><td class="center"><%= data.marks_endterm_total || ((data.marks_endterm_theory || 0) + (data.marks_endterm_practical || 0)) %></td>
+        <td class="center"><%= endTh %></td><td class="center"><%= endPr %></td><td class="center"><%= endTot %></td>
     </tr>
     <tr>
         <td class="bold">Max. Marks</td>
-        <td class="center"><%= (data.marks_internal_theory || 0) + (data.marks_endterm_theory || 0) %></td><td class="center"><%= (data.marks_internal_practical || 0) + (data.marks_endterm_practical || 0) %></td><td class="center"><%= data.marks_max || 0 %></td>
+        <td class="center"><%= intTh + endTh %></td><td class="center"><%= intPr + endPr %></td><td class="center"><%= maxM %></td>
     </tr>
     <tr>
         <td class="bold">Examination Duration (in Hours)</td>
@@ -119,7 +157,7 @@
         </td>
     </tr>
     <tr class="bold">
-        <td>Unit</td><td>Topics</td><td class="center">CLOs</td><td class="center">Contact Hours</td>
+        <td>Unit</td><td class="center" style="vertical-align: middle;">Topics</td><td class="center">CLOs</td><td class="center">Contact Hours</td>
     </tr>
     <% units.forEach(unit => { %>
         <tr>
@@ -135,12 +173,12 @@
 <table>
     <tr><td colspan="6" class="section-title">Suggested Evaluation Methods</td></tr>
     <tr class="section-title">
-        <td class="bold" style="width: 35%;">Internal Assessment: <%= data.marks_internal_total || 0 %></td>
-        <td class="center bold" style="width: 7.5%;">TH-<%= data.marks_internal_theory || 0 %></td>
-        <td class="center bold" style="width: 7.5%;">PR-<%= data.marks_internal_practical || 0 %></td>
-        <td class="bold" style="width: 35%;">End Term Examination: <%= data.marks_endterm_total || 0 %></td>
-        <td class="center bold" style="width: 7.5%;">TH-<%= data.marks_endterm_theory || 0 %></td>
-        <td class="center bold" style="width: 7.5%;">PR-<%= data.marks_endterm_practical || 0 %></td>
+        <td class="bold" style="width: 35%;">Internal Assessment: <%= intTot %></td>
+        <td class="center bold" style="width: 7.5%;">TH-<%= intTh %></td>
+        <td class="center bold" style="width: 7.5%;">PR-<%= intPr %></td>
+        <td class="bold" style="width: 35%;">End Term Examination: <%= endTot %></td>
+        <td class="center bold" style="width: 7.5%;">TH-<%= endTh %></td>
+        <td class="center bold" style="width: 7.5%;">PR-<%= endPr %></td>
     </tr>
     <tr>
         <td>Class Participation:</td>
@@ -177,7 +215,7 @@
 </table>
 
 <table>
-    <tr><td colspan="<%= 1 + numPOs + numPSOs %>" class="section-title">Mapping of (CLOs) to Program Outcomes & Program Specific Outcomes</td></tr>
+    <tr><td colspan="<%= 1 + numPOs + numPSOs %>" class="section-title">Mapping of (CLOs) to Programme Outcomes & Programme Specific Outcomes</td></tr>
     <tr class="center bold">
         <td>CLOs</td>
         <% for(let i=1; i<=numPOs; i++) { %><td>PO<sub><%= i %></sub></td><% } %>
@@ -186,7 +224,7 @@
     <% if (mappings.length > 0) { %>
         <% mappings.forEach((map, i) => { %>
             <tr class="center">
-                <td class="bold"><%= map.co || ('CLO' + (i+1)) %></td>
+                <td class="bold"><%= (data.course_code || '[Course Code]') %>.<%= i+1 %></td>
                 <% for(let j=1; j<=numPOs; j++) { %><td><%= map['po'+j] || '' %></td><% } %>
                 <% for(let j=1; j<=numPSOs; j++) { %><td><%= map['pso'+j] || '' %></td><% } %>
             </tr>
@@ -194,7 +232,7 @@
     <% } else { %>
         <% clos.forEach((clo, i) => { %>
             <tr class="center">
-                <td class="bold">CLO<sub><%= i+1 %></sub></td>
+                <td class="bold"><%= (data.course_code || '[Course Code]') %>.<%= i+1 %></td>
                 <% for(let j=1; j<=(numPOs + numPSOs); j++) { %><td></td><% } %>
             </tr>
         <% }) %>
@@ -215,7 +253,7 @@
 
 <% 
     const nep = data.nep_mapping || {};
-    const hasNep = nep.employability || nep.skill_enhancement || nep.communication_development || nep.indian_knowledge_system || nep.environmental_awareness || nep.current_issues || nep.women_empowerment || nep.public_policies || nep.any_other;
+    const hasNep = nep.employability || nep.entrepreneurship || nep.skill_enhancement || nep.communication_development || nep.indian_knowledge_system || nep.environmental_awareness || nep.current_issues || nep.women_empowerment || nep.public_policies || nep.any_other;
 %>
 <% if (hasNep) { %>
 <table>
@@ -224,13 +262,14 @@
         <td style="width: 35%;">Field</td>
         <td>Content/s</td>
     </tr>
-    <% if (nep.employability) { %><tr><td class="header-cell">Employability/Entrepreneurship</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.employability %></td></tr><% } %>
+    <% if (nep.employability) { %><tr><td class="header-cell">Employability</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.employability %></td></tr><% } %>
+    <% if (nep.entrepreneurship) { %><tr><td class="header-cell">Entrepreneurship</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.entrepreneurship %></td></tr><% } %>
     <% if (nep.skill_enhancement) { %><tr><td class="header-cell">Skill Enhancement</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.skill_enhancement %></td></tr><% } %>
     <% if (nep.communication_development) { %><tr><td class="header-cell">Communication Development</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.communication_development %></td></tr><% } %>
     <% if (nep.indian_knowledge_system) { %><tr><td class="header-cell">Indian Knowledge System</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.indian_knowledge_system %></td></tr><% } %>
     <% if (nep.environmental_awareness) { %><tr><td class="header-cell">Environmental Awareness</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.environmental_awareness %></td></tr><% } %>
     <% if (nep.current_issues) { %><tr><td class="header-cell">Current Issues and Social Awareness</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.current_issues %></td></tr><% } %>
-    <% if (nep.women_empowerment) { %><tr><td class="header-cell">Women empowerment/ Gender issues</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.women_empowerment %></td></tr><% } %>
+    <% if (nep.women_empowerment) { %><tr><td class="header-cell">Gender Issues</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.women_empowerment %></td></tr><% } %>
     <% if (nep.public_policies) { %><tr><td class="header-cell">Public policies</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.public_policies %></td></tr><% } %>
     <% if (nep.any_other) { %><tr><td class="header-cell">Any Other</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.any_other %></td></tr><% } %>
 </table>

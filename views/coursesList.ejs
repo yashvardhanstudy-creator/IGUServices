@@ -55,6 +55,8 @@
             color: white;
             font-size: 14px;
             margin-right: 5px;
+            display: inline-block;
+            margin-bottom: 5px;
         }
 
         .view-btn {
@@ -80,6 +82,14 @@
             text-decoration: none;
             border-radius: 5px;
         }
+        .guide-box {
+            background: #e8f4f8; border: 1px solid #b8daff; border-radius: 6px;
+            padding: 15px 20px; margin-bottom: 25px; color: #004085; text-align: left;
+        }
+        .guide-box h3 {
+            margin: 0 0 10px 0; border-bottom: 1px solid #b8daff; padding-bottom: 8px;
+            font-size: 16px; text-transform: none; color: #004085; text-align: left;
+        }
     </style>
 </head>
 
@@ -94,12 +104,29 @@
             <div style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;"><%= locals.query.error %></div>
         <% } %>
         
+        <div class="guide-box">
+            <h3>💡 How to find and manage your courses:</h3>
+            <ul style="margin: 0; padding-left: 20px; line-height: 1.5; font-size: 14px;">
+                <li><strong>Filter by Program:</strong> Use the dropdown below to select your specific program or a University Pool category. This will load all courses assigned to that group.</li>
+                <li><strong>Search:</strong> Once the list loads, you can use the Search Bar to instantly find a course by typing its Code or Title.</li>
+                <li><strong>Deletion Rules:</strong> If a course is currently being used inside a Curriculum Framework, it is locked and <b>cannot be deleted</b>. You must remove it from the Curriculum Builder first.</li>
+            </ul>
+        </div>
+
         <form method="GET" action="/courses-list" style="margin-bottom: 20px; width: 100%; display: flex; gap: 10px;">
             <select name="program_filter" onchange="this.form.submit()" style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px; background-color: #fff;">
                 <option value="">-- Select a Program to View Courses --</option>
                 <option value="all" <%= selectedFilter === 'all' ? 'selected' : '' %>>All Courses</option>
                 <option value="unassigned" <%= selectedFilter === 'unassigned' ? 'selected' : '' %>>Unassigned Courses</option>
-                <option value="pool" <%= selectedFilter === 'pool' ? 'selected' : '' %>>University Pool Courses</option>
+                <option value="pool_all" <%= selectedFilter === 'pool_all' ? 'selected' : '' %>>All University Pool Courses</option>
+                <optgroup label="University Pool Categories">
+                    <option value="pool_AEC" <%= selectedFilter === 'pool_AEC' ? 'selected' : '' %>>Pool: AEC</option>
+                    <option value="pool_SEC" <%= selectedFilter === 'pool_SEC' ? 'selected' : '' %>>Pool: SEC</option>
+                    <option value="pool_VAC" <%= selectedFilter === 'pool_VAC' ? 'selected' : '' %>>Pool: VAC</option>
+                    <option value="pool_MDC" <%= selectedFilter === 'pool_MDC' ? 'selected' : '' %>>Pool: MDC</option>
+                    <option value="pool_Minor" <%= selectedFilter === 'pool_Minor' ? 'selected' : '' %>>Pool: Minor</option>
+                    <option value="pool_Minor (Vocational)" <%= selectedFilter === 'pool_Minor (Vocational)' ? 'selected' : '' %>>Pool: Minor (Vocational)</option>
+                </optgroup>
                 <optgroup label="Programs">
                     <% programsList.forEach(p => { %>
                         <option value="<%= p.program_code %>" <%= selectedFilter === p.program_code ? 'selected' : '' %>>
@@ -110,12 +137,47 @@
             </select>
         </form>
 
+        <% if (locals.commonCourses && locals.commonCourses.length > 0) { %>
+            <div style="margin-bottom: 40px; width: 100%;">
+                <h2 style="text-align: center; color: #333; margin-bottom: 10px;">Common PG Courses (EEC & CHM)</h2>
+                <table id="commonCoursesTable">
+                    <thead>
+                        <tr>
+                            <th>Course Code</th>
+                            <th>Course Title</th>
+                            <th>Category</th>
+                            <th>Linked Programs</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% commonCourses.forEach(course=> { %>
+                            <tr>
+                                <td><strong><%= course.course_code %></strong></td>
+                                <td><%= course.course_title %></td>
+                                <td><%= course.category %></td>
+                                <td><span style="font-style: italic; color: #555;"><%= course.linked_programs[0] %></span></td>
+                                <td style="white-space: nowrap;">
+                                    <a href="/view-course/<%= course.course_code %>" class="action-btn view-btn">View</a>
+                                    <a href="/edit-course/<%= course.course_code %>" class="action-btn edit-btn">Edit</a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            <hr style="width: 100%; border: 0; border-top: 1px solid #ccc; margin-bottom: 20px;">
+        <% } %>
+
         <% if (!selectedFilter) { %>
             <p style="text-align: center; margin-top: 20px; color: #666;">Please select a program or category from the dropdown above to view courses.</p>
         <% } else if (courses.length === 0) { %>
             <p style="text-align: center; margin-top: 20px;">No courses found for the selected filter.</p>
         <% } else { %>
-                <table>
+                <div style="margin-bottom: 15px; width: 100%;">
+                    <input type="text" id="courseSearch" placeholder="🔍 Search by Course Code or Title..." onkeyup="filterCourses()" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box;">
+                </div>
+                <table id="coursesTable">
                     <thead>
                         <tr>
                             <th>Course Code</th>
@@ -148,12 +210,13 @@
                                         <span style="color: #888; font-style: italic;">Unassigned</span>
                                     <% } %>
                                 </td>
-                                <td>
+                                <td style="white-space: nowrap;">
                                     <a href="/view-course/<%= course.course_code %>" class="action-btn view-btn">View</a>
                                     <a href="/edit-course/<%= course.course_code %>" class="action-btn edit-btn">Edit</a>
                                     <% if (locals.isAdmin) { %>
                                         <form action="/delete-course" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this course? This action cannot be undone.');">
                                             <input type="hidden" name="courseCode" value="<%= course.course_code %>">
+                                            <input type="hidden" name="program_filter" value="<%= selectedFilter %>">
                                             <button type="submit" class="action-btn delete-btn">Delete</button>
                                         </form>
                                     <% } %>
@@ -164,6 +227,29 @@
                 </table>
         <% } %>
     </div>
+    <script>
+        function filterCourses() {
+            const input = document.getElementById("courseSearch");
+            const filter = input.value.toUpperCase();
+            const table = document.getElementById("coursesTable");
+            if (!table) return;
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                const tdCode = tr[i].getElementsByTagName("td")[0];
+                const tdTitle = tr[i].getElementsByTagName("td")[1];
+                if (tdCode || tdTitle) {
+                    const codeText = tdCode.textContent || tdCode.innerText;
+                    const titleText = tdTitle.textContent || tdTitle.innerText;
+                    if (codeText.toUpperCase().indexOf(filter) > -1 || titleText.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }       
+            }
+        }
+    </script>
 </body>
 
 </html>

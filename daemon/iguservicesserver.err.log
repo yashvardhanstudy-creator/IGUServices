@@ -62,3 +62,11 @@ For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides
     at ChromeLauncher.computeLaunchArguments (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\ChromeLauncher.js:94:24)
     at async ChromeLauncher.launch (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\node\BrowserLauncher.js:85:28)
     at async C:\IGUServices\index.js:975:27
+❌ Error generating full syllabus: Error: Program not found.
+    at getFullSyllabusData (C:\IGUServices\index.js:965:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async C:\IGUServices\index.js:1178:18
+❌ Error generating full syllabus: Error: Program not found.
+    at getFullSyllabusData (C:\IGUServices\index.js:965:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async C:\IGUServices\index.js:1178:18

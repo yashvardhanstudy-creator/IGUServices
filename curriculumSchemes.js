@@ -2,11 +2,9 @@ const schemeA = [
   {
     number: 1,
     color: "#d9e2f3",
-    totalCredits: 24,
+    totalCredits: 16,
     courses: [
-      { type: "CC-A1", credits: 4 },
-      { type: "CC-B1", credits: 4 },
-      { type: "CC-C1", credits: 4 },
+      { type: "CC-1", credits: 4 },
       { type: "CC-M1", credits: 2 },
       { type: "MDC-1", credits: 3 },
       { type: "AEC-1", credits: 2 },
@@ -22,11 +20,9 @@ const schemeA = [
   {
     number: 2,
     color: "#fbe5d6",
-    totalCredits: 24,
+    totalCredits: 16,
     courses: [
-      { type: "CC-A2", credits: 4 },
-      { type: "CC-B2", credits: 4 },
-      { type: "CC-C2", credits: 4 },
+      { type: "CC-2", credits: 4 },
       { type: "CC-M2", credits: 2 },
       { type: "MDC-2", credits: 3 },
       { type: "AEC-2", credits: 2 },
@@ -43,11 +39,9 @@ const schemeA = [
   {
     number: 3,
     color: "#d9e2f3",
-    totalCredits: 24,
+    totalCredits: 16,
     courses: [
-      { type: "CC-A3", credits: 4 },
-      { type: "CC-B3", credits: 4 },
-      { type: "CC-C3", credits: 4 },
+      { type: "CC-3", credits: 4 },
       { type: "CC-M3", credits: 4 },
       { type: "MDC-3", credits: 3 },
       { type: "AEC-3", credits: 2 },
@@ -62,11 +56,9 @@ const schemeA = [
   {
     number: 4,
     color: "#fbe5d6",
-    totalCredits: 20,
+    totalCredits: 12,
     courses: [
-      { type: "CC-A4", credits: 4 },
-      { type: "CC-B4", credits: 4 },
-      { type: "CC-C4", credits: 4 },
+      { type: "CC-4", credits: 4 },
       { type: "CC-M4(V)", credits: 4 },
       { type: "AEC-4", credits: 2 },
       { type: "VAC-3", credits: 2 },
@@ -81,11 +73,9 @@ const schemeA = [
   {
     number: 5,
     color: "#d9e2f3",
-    totalCredits: 20,
+    totalCredits: 12,
     courses: [
-      { type: "CC-A5", credits: 4 },
-      { type: "CC-B5", credits: 4 },
-      { type: "CC-C5", credits: 4 },
+      { type: "CC-5", credits: 4 },
       { type: "CC-M5(V)", credits: 4 },
       { type: "Intership", credits: 4 },
     ],
@@ -98,11 +88,9 @@ const schemeA = [
   {
     number: 6,
     color: "#fbe5d6",
-    totalCredits: 20,
+    totalCredits: 12,
     courses: [
-      { type: "CC-A6", credits: 4 },
-      { type: "CC-B6", credits: 4 },
-      { type: "CC-C6", credits: 4 },
+      { type: "CC-6", credits: 4 },
       { type: "CC-M6", credits: 4 },
       { type: "CC-M7(V)", credits: 4 },
     ],
@@ -372,7 +360,7 @@ const schemeC = [
     courses: [
       { type: "CC-H4", credits: 4 },
       { type: "CC-H5", credits: 4 },
-      { type: "DDSE-H2", credits: 4 },
+      { type: "DSE-H2", credits: 4 },
       { type: "PC-H2", credits: 4 },
       { type: "CC-HM2", credits: 4 },
     ],
@@ -473,6 +461,12 @@ const schemeD = [
       { type: "CC-M5(V)", credits: 4 },
       { type: "Internship", credits: 4 },
     ],
+  },
+  {
+    isDivider: true,
+    title:
+      "4 credits of internship, earned by a student during summer internship after 2nd Semester or 4th semester, will be taken into account in 5th semester of a student who pursue 3 year UG Programme without taking exit option.",
+    color: "#fff3cd",
   },
   { isDivider: true, title: " ", color: "#fff3cd" },
   {

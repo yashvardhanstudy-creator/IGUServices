@@ -14,7 +14,7 @@ const schemes = {
     theoryUnits: 4,
     instructions: {
       theory:
-        "The paper setter shall prepare 9 questions selecting two questions from each unit with consideration <br> given to the Course Learning Outcomes. Among these, question number 1 will be compulsory question, <br> comprising 7 short answer type questions carrying two marks each (total 14 marks) and covering the <br> entire syllabus. The remaining questions will be carrying 14 marks each. Examinees will be required to <br> attempt five questions: the compulsory question no. 1 and 1 question from the each of the four units. ",
+        "The paper setter shall prepare 9 questions selecting two questions from each unit with consideration <br> given to the Course Learning Outcomes. Among these, question number 1 will be compulsory, <br> comprising 7 short answer type questions carrying two marks each (total 14 marks) and covering the <br> entire syllabus. The remaining questions will be carrying 14 marks each. Examinees will be required to <br> attempt five questions: the compulsory question no. 1 and 1 question from the each of the four units. ",
       practical: "",
     },
     evaluation: {
@@ -88,7 +88,7 @@ const schemes = {
     theoryUnits: 3,
     instructions: {
       theory:
-        "The paper setter shall prepare 7 questions selecting two questions from each of the three units <br> with consideration given to the Course Learning Outcomes. Among these, question number 1 <br> will be compulsory question comprising 4 short answer type questions carrying two marks each <br> (total 08 marks) and covering the entire syllabus. The remaining questions will be carrying 14 <br> marks each. Examinees will be required to attempt four questions: the compulsory question no. 1 <br> and 1 question from the each of the three units.",
+        "The paper setter shall prepare 7 questions selecting two questions from each of the three units <br> with consideration given to the Course Learning Outcomes. Among these, question number 1 <br> will be compulsory comprising 4 short answer type questions carrying two marks each <br> (total 08 marks) and covering the entire syllabus. The remaining questions will be carrying 14 <br> marks each. Examinees will be required to attempt four questions: the compulsory question no. 1 <br> and 1 question from the each of the three units.",
       practical:
         "Write-up and execution of the practical will be conducted as per the nature of the practical by <br> the external examiner, with consideration given to the Course Learning Outcomes. The <br> maximum marks for the write-up and execution of the practical will be 10.",
     },
@@ -164,7 +164,7 @@ const schemes = {
     theoryUnits: 3,
     instructions: {
       theory:
-        "The paper setter shall prepare 7 questions selecting two questions from each of the three units with <br> consideration given to the Course Learning Outcomes. Among these, question number 1 will be <br> compulsory question comprising 4 short answer type questions carrying two marks each (total 08 <br> marks) and covering the entire syllabus. The remaining questions will be carrying 14 marks each. <br> Examinees will be required to attempt four questions: the compulsory question no. 1 and 1 question <br> from the each of the three units.",
+        "The paper setter shall prepare 7 questions selecting two questions from each of the three units with <br> consideration given to the Course Learning Outcomes. Among these, question number 1 will be <br> compulsory comprising 4 short answer type questions carrying two marks each (total 08 <br> marks) and covering the entire syllabus. The remaining questions will be carrying 14 marks each. <br> Examinees will be required to attempt four questions: the compulsory question no. 1 and 1 question <br> from the each of the three units.",
       practical: "",
     },
     evaluation: {
@@ -236,7 +236,7 @@ const schemes = {
     theoryUnits: 1,
     instructions: {
       theory:
-        "The paper setter shall prepare 4 questions from unit 01 with consideration given to the Course <br> Learning Outcomes. Among these, question number 1 will be compulsory question comprising 6 <br> short answer type questions carrying one mark each (total 06 marks). The remaining questions <br> will be carrying 07 marks each. Examinees will be required to attempt three questions: the <br> compulsory question no. 1 and 02 questions from other 03 questions.",
+        "The paper setter shall prepare 4 questions from unit 01 with consideration given to the Course <br> Learning Outcomes. Among these, question number 1 will be compulsory comprising 6 <br> short answer type questions carrying one mark each (total 06 marks). The remaining questions <br> will be carrying 07 marks each. Examinees will be required to attempt three questions: the <br> compulsory question no. 1 and 02 questions from other 03 questions.",
       practical:
         "Write-up and execution of the practical will be conducted as per the nature of the practical by <br> the external examiner, with consideration given to the Course Learning Outcomes. The <br> maximum marks for the write-up and execution of the practical will be 5",
     },
@@ -247,8 +247,8 @@ const schemes = {
       end_term_th_total: 20,
       end_term_pr_total: 15,
       class_participation_th: 5,
-      class_participation_pr: 0,
-      seminar_th: 0,
+      class_participation_pr: "NA",
+      seminar_th: "NA",
       seminar_pr: "NA",
       mid_term_th: 5,
       seminar_demo_pr: 5,
@@ -273,13 +273,13 @@ const schemes = {
     theoryUnits: 2,
     instructions: {
       theory:
-        "The paper setter shall prepare 5 questions selecting two questions from each of the two <br> units with consideration given to the Course Learning Outcomes. Among these, question <br> number 1 will be compulsory question comprising 7 short answer type questions carrying <br> one mark each (total 07 marks) and covering the entire syllabus. The remaining questions <br> will be carrying 14 marks each. Examinees will be required to attempt three questions: the <br> compulsory question no. 1 and 1 question from the each of the two units.",
+        "The paper setter shall prepare 5 questions selecting two questions from each of the two <br> units with consideration given to the Course Learning Outcomes. Among these, question <br> number 1 will be compulsory comprising 7 short answer type questions carrying <br> one mark each (total 07 marks) and covering the entire syllabus. The remaining questions <br> will be carrying 14 marks each. Examinees will be required to attempt three questions: the <br> compulsory question no. 1 and 1 question from the each of the two units.",
       practical:
         "Write-up and execution of the practical will be conducted as per the nature of the <br> practical by the external examiner, with consideration given to the Course Learning <br> Outcomes. The maximum marks for the write-up and execution of the practical will be <br> 10.",
     },
     evaluation: {
       internal_th_total: 15,
-      internal_pr_total: 10,
+      internal_pr_total: 5,
       end_term_total: 55,
       end_term_th_total: 35,
       end_term_pr_total: 20,
@@ -332,7 +332,7 @@ function autofillForm() {
   } else if (scheme.credits.theory === 0 && scheme.credits.practical > 0) {
     nature = "Practical";
   }
-  const natureInput = document.getElementById("natureOfCourse");
+  const natureInput = document.querySelector('[name="natureOfCourse"]');
   if (natureInput) natureInput.value = nature;
 
   document.getElementById("marks_internal_theory").value =
@@ -417,6 +417,8 @@ function autofillForm() {
   );
 
   // Autofill Evaluation Table
+  document.getElementById("eval_internal_total").innerText =
+    `Internal Assessment: ${scheme.marks.internalTotal}`;
   document.getElementById("eval_internal_th_total").innerText =
     `TH-${scheme.evaluation.internal_th_total}`;
   document.getElementById("eval_internal_pr_total").innerText =
@@ -585,6 +587,12 @@ function generateMappingTable() {
   const tbody = document.getElementById("mappingBody");
   if (!tbody) return;
 
+  const courseCodeInput = document.querySelector('input[name="courseCode"]');
+  const courseCode =
+    courseCodeInput && courseCodeInput.value.trim() !== ""
+      ? courseCodeInput.value.trim()
+      : "[Course Code]";
+
   const numPOsInput = document.getElementById("numPOs");
   const numPSOsInput = document.getElementById("numPSOs");
   let numPOs =
@@ -651,7 +659,10 @@ function generateMappingTable() {
 
   closList.forEach((clo, index) => {
     const row = document.createElement("tr");
-    let rowHtml = `<td><input type="text" name="mapCO[]" value="CLO${index + 1}" readonly style="width: 100%; font-weight: bold; background-color: transparent; border: none; outline: none; cursor: default;" title="${clo.replace(/"/g, "&quot;")}"></td>`;
+    let rowHtml = `<td style="vertical-align: middle;">
+      <input type="text" name="mapCO[]" value="${courseCode}.${index + 1}" readonly style="width: 100%; font-weight: bold; background-color: transparent; border: none; outline: none; cursor: default;" title="${clo.replace(/"/g, "&quot;")}">
+      <div style="font-size: 12px; color: #555; white-space: normal; text-align: left; margin-top: 4px; line-height: 1.3; min-width: 200px; max-width: 350px;">${clo}</div>
+    </td>`;
 
     // Generate PO1 to numPOs columns
     for (let i = 1; i <= numPOs; i++) {
@@ -660,7 +671,7 @@ function generateMappingTable() {
         existingData[index] && existingData[index][fieldName]
           ? existingData[index][fieldName]
           : "";
-      rowHtml += `<td><input type="text" name="${fieldName}" value="${prevValue}" style="text-align: center; width: 100%; border: 1px solid #ccc; box-sizing: border-box;" maxlength="1" pattern="[1-3]" title="Enter 3 (Strong), 2 (Medium), or 1 (Weak)" oninput="this.value=this.value.replace(/[^1-3]/g,'')"></td>`;
+      rowHtml += `<td style="vertical-align: middle;"><input type="text" name="${fieldName}" value="${prevValue}" style="text-align: center; width: 100%; border: 1px solid #ccc; box-sizing: border-box;" maxlength="1" pattern="[1-3]" title="Enter 3 (Strong), 2 (Medium), or 1 (Weak)" oninput="this.value=this.value.replace(/[^1-3]/g,'')"></td>`;
     }
 
     // Generate PSO1 to numPSOs columns
@@ -670,7 +681,7 @@ function generateMappingTable() {
         existingData[index] && existingData[index][fieldName]
           ? existingData[index][fieldName]
           : "";
-      rowHtml += `<td><input type="text" name="${fieldName}" value="${prevValue}" style="text-align: center; width: 100%; border: 1px solid #ccc; box-sizing: border-box;" maxlength="1" pattern="[1-3]" title="Enter 3 (Strong), 2 (Medium), or 1 (Weak)" oninput="this.value=this.value.replace(/[^1-3]/g,'')"></td>`;
+      rowHtml += `<td style="vertical-align: middle;"><input type="text" name="${fieldName}" value="${prevValue}" style="text-align: center; width: 100%; border: 1px solid #ccc; box-sizing: border-box;" maxlength="1" pattern="[1-3]" title="Enter 3 (Strong), 2 (Medium), or 1 (Weak)" oninput="this.value=this.value.replace(/[^1-3]/g,'')"></td>`;
     }
 
     row.innerHTML = rowHtml;
@@ -683,20 +694,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const numPOsInput = document.getElementById("numPOs");
   const numPSOsInput = document.getElementById("numPSOs");
   const closInput = document.getElementById("clos");
+  const courseCodeInput = document.querySelector('input[name="courseCode"]');
 
   // Ensure input events trigger table regeneration if typing occurs
   if (closInput) closInput.addEventListener("input", generateMappingTable);
   if (numPOsInput) numPOsInput.addEventListener("input", generateMappingTable);
   if (numPSOsInput)
     numPSOsInput.addEventListener("input", generateMappingTable);
+  if (courseCodeInput)
+    courseCodeInput.addEventListener("input", generateMappingTable);
 
   function enforceLocking() {
     if (!numPOsInput || !numPSOsInput) return;
 
     let isPool = false;
+    let isCommon = false;
     const poolHidden = document.querySelector('input[name="is_pool_course"]');
     if (poolHidden) {
       isPool = poolHidden.value === "true";
+    }
+    const commonHidden = document.querySelector(
+      'input[name="is_common_course"]',
+    );
+    if (commonHidden) {
+      isCommon = commonHidden.value === "true";
     }
 
     const setLocked = (el, locked) => {
@@ -719,8 +740,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     };
 
-    setLocked(numPOsInput, !isPool);
-    setLocked(numPSOsInput, !isPool);
+    setLocked(numPOsInput, !(isPool || isCommon));
+    setLocked(numPSOsInput, !(isPool || isCommon));
   }
 
   // Run on load

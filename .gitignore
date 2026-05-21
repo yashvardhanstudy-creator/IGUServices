@@ -1,5 +1,7 @@
 node_modules/
 singleSQL.js
 test/
-# pdf/
+pdf/
+uploads/
 daemon/
+*.log

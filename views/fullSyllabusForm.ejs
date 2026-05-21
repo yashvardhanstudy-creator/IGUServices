@@ -8,31 +8,77 @@
         .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1); max-width: 800px; width: 100%; }
         h1 { color: #333; margin-bottom: 20px; text-align: center; }
         ul { list-style-type: none; padding: 0; }
-        li { background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 15px; margin-bottom: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
+        li { background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 15px; margin-bottom: 10px; border-radius: 5px; display: flex; flex-direction: column; align-items: stretch; gap: 10px; }
+        .list-row { width: 100%; display: flex; justify-content: space-between; align-items: center; }
         a.btn { padding: 8px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; }
         a.btn:hover { background: #0056b3; }
         .back-btn { display: inline-block; margin-bottom: 20px; padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px; }
+        .guide-box {
+            background: #e8f4f8; border: 1px solid #b8daff; border-radius: 6px;
+            padding: 15px 20px; margin-bottom: 25px; color: #004085; text-align: left;
+        }
+        .guide-box h3 {
+            margin: 0 0 10px 0; border-bottom: 1px solid #b8daff; padding-bottom: 8px;
+            font-size: 16px; text-transform: none; color: #004085; text-align: left;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <a href="/" class="back-btn">← Back to Home</a>
-        <h1>Select a Program to Generate Syllabus</h1>
+        <h1>Select a Programme to Generate Syllabus</h1>
         
         <% if (locals.query && locals.query.error) { %>
             <div style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;"><%= locals.query.error %></div>
         <% } %>
 
+        <div class="guide-box">
+            <h3>🖨️ Syllabus Printing Guide</h3>
+            <ul style="margin: 0; padding-left: 20px; line-height: 1.5; font-size: 14px;">
+                <li><strong>Approvals Template:</strong> <a href="/download-approval-template" target="_blank" style="color: #007bff; text-decoration: underline;">Download Empty Details of Approval PDF</a> to print, sign, and upload in the Program Details form.</li>
+                <li><strong>Full Syllabus:</strong> Click "Fill Details & View Main Syllabus" to add program approvals, vision/mission statements, and generate the complete PDF document.</li>
+                <li><strong>Internal Program Code:</strong>The Generated Internal Program Code is not the Actual Program Code designated by the University.</li>
+                <li><strong>Master Catalogs:</strong> To print lists of University Electives grouped by Faculty and Department, select the catalogs under the "All University Pool Courses" section.</li>
+            </ul>
+        </div>
+
         <% if (options.length > 0) { %>
             <ul>
                 <% options.forEach(opt => { %>
                     <li>
-                        <span>
-                            <strong><%= opt.subject_name %></strong> - <%= opt.specialization || 'General' %> (<%= opt.program_code %>)
-                        </span>
-                        <a href="/program-details-form?program_code=<%= encodeURIComponent(opt.program_code) %>" class="btn">
-                            Fill Details & View
-                        </a>
+                        <div class="list-row">
+                            <span>
+                                <strong><%= opt.subject_name %></strong> - <%= opt.specialization || 'General' %> (<%= opt.program_code %>)
+                            </span>
+                            <% if (opt.program_code !== 'UNIVERSITY_POOL') { %>
+                                <a href="/program-details-form?program_code=<%= encodeURIComponent(opt.program_code) %>" class="btn">
+                                    Fill Details & View Main Syllabus
+                                </a>
+                            <% } %>
+                        </div>
+                        <% if (opt.ug_pg === 'UG') { %>
+                            <div style="width: 100%; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px;">
+                                <% if (!opt.program_code.endsWith('_CORE')) { %>
+                                    <div style="font-size: 13px; color: #666; margin-right: auto; padding-top: 5px;">⤷ Department Contributions:</div>
+                                    <a href="/download-pool-pdf?program_code=<%= encodeURIComponent(opt.program_code) %>&pool_type=aec_sec_vac_mdc" class="btn" style="background: #17a2b8; font-size: 13px; padding: 6px 12px;">📄 AEC/SEC/VAC/MDC Pool</a>
+                                    <a href="/download-pool-pdf?program_code=<%= encodeURIComponent(opt.program_code) %>&pool_type=minor" class="btn" style="background: #6f42c1; font-size: 13px; padding: 6px 12px;">📄 Minor/Minor(V) Pool</a>
+                                <% } %>
+                                <% if (opt.discipline_type === 'Multi-disciplinary' && !opt.program_code.endsWith('_CORE')) { %>
+                                    <a href="/download-full-syllabus-pdf?program_code=<%= encodeURIComponent(opt.program_code + '_CORE') %>" onclick="downloadPdf(this, 'Core PDF')" class="btn" style="background: #28a745; font-size: 13px; padding: 6px 12px; margin-left: auto;">📄 Download Core Syllabus (Scheme A)</a>
+                                <% } %>
+                            </div>
+                        <% } %>
+                        <% if (opt.program_code === 'UNIVERSITY_POOL') { %>
+                            <div style="width: 100%; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 5px;">
+                                <div style="font-size: 13px; color: #666; margin-right: auto; padding-top: 5px;">⤷ Download Master Catalogs:</div>
+                                <a href="/download-master-pool-pdf?category=AEC" class="btn" style="background: #17a2b8; font-size: 13px; padding: 6px 12px;">📄 AEC</a>
+                                <a href="/download-master-pool-pdf?category=SEC" class="btn" style="background: #17a2b8; font-size: 13px; padding: 6px 12px;">📄 SEC</a>
+                                <a href="/download-master-pool-pdf?category=VAC" class="btn" style="background: #17a2b8; font-size: 13px; padding: 6px 12px;">📄 VAC</a>
+                                <a href="/download-master-pool-pdf?category=MDC" class="btn" style="background: #17a2b8; font-size: 13px; padding: 6px 12px;">📄 MDC</a>
+                                <a href="/download-master-pool-pdf?category=Minor" class="btn" style="background: #6f42c1; font-size: 13px; padding: 6px 12px;">📄 Minor</a>
+                                <a href="/download-master-pool-pdf?category=Minor (Vocational)" class="btn" style="background: #6f42c1; font-size: 13px; padding: 6px 12px;">📄 Minor (Voc)</a>
+                            </div>
+                        <% } %>
                     </li>
                 <% }) %>
             </ul>
@@ -40,5 +86,20 @@
             <p style="text-align: center;">No programs found. Please create a program and a curriculum draft first.</p>
         <% } %>
     </div>
+
+    <script>
+        function downloadPdf(btn, type) {
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `⏳ Generating ${type}...`;
+            btn.style.cursor = 'not-allowed';
+            // The href attribute will trigger the download
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                btn.style.cursor = 'pointer';
+            }, 8000); // Reset after 8 seconds
+        }
+    </script>
 </body>
 </html>

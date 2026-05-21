@@ -35,3 +35,60 @@ ngrok stdout: Flag --domain has been deprecated, use --url instead
 [dotenv@17.3.1] injecting env (9) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
 🚀 Starting ngrok CLI tunnel for port 3005 with domain vice-gaffe-undercoat.ngrok-free.dev...
 ngrok stdout: Flag --domain has been deprecated, use --url instead
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ⚙️  load multiple .env files with { path: ['.env.local', '.env'] }
+🧹 Cleaned up orphaned ngrok processes.
+🚀 Starting ngrok CLI tunnel for port 3005 with domain vice-gaffe-undercoat.ngrok-free.dev...
+ngrok stdout: Flag --domain has been deprecated, use --url instead
+🛑 ngrok process exited with code 1
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+🧹 Cleaned up orphaned ngrok processes.
+🚀 Starting ngrok CLI tunnel for port 3005 with domain vice-gaffe-undercoat.ngrok-free.dev...
+ngrok stdout: Flag --domain has been deprecated, use --url instead
+🛑 ngrok process exited with code 1
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ⚙️  override existing env vars with { override: true }
+🧹 Cleaned up orphaned ngrok processes.
+🚀 Starting ngrok CLI tunnel for port 3005 with domain vice-gaffe-undercoat.ngrok-free.dev...
+ngrok stdout: Flag --domain has been deprecated, use --url instead
+🛑 ngrok process exited with code 1
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
+🚀 Starting ngrok CLI tunnel for port 3005 with domain vice-gaffe-undercoat.ngrok-free.dev...
+ngrok stdout: Flag --domain has been deprecated, use --url instead
+🛑 ngrok process exited with code 1
+[dotenv@17.3.1] injecting env (9) from .env -- tip: 🔐 prevent building .env in docker: https://dotenvx.com/prebuild
+🧹 Cleaned up orphaned ngrok processes.
+🚀 Starting ngrok CLI tunnel for port 3005 with domain vice-gaffe-undercoat.ngrok-free.dev...
+ngrok stdout: Flag --domain has been deprecated, use --url instead
+🛑 ngrok process exited with code 1
+[dotenv@17.3.1] injecting env (9) from .env -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
+🧹 Cleaned up orphaned ngrok processes.
+🚀 Starting ngrok CLI tunnel for port 3005 with domain vice-gaffe-undercoat.ngrok-free.dev...
+ngrok stdout: Flag --domain has been deprecated, use --url instead
+🛑 ngrok process exited with code 4294967295
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+🚀 Starting ngrok CLI tunnel for port 3005 with domain vice-gaffe-undercoat.ngrok-free.dev...
+ngrok stdout: Flag --domain has been deprecated, use --url instead
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ⚙️  write to custom object with { processEnv: myObject }
+🧹 Cleaned up orphaned ngrok processes.
+🚀 Starting ngrok CLI tunnel for port 3005 with domain vice-gaffe-undercoat.ngrok-free.dev...
+ngrok stdout: Flag --domain has been deprecated, use --url instead
+🛑 ngrok process exited with code 1
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+🧹 Cleaned up orphaned ngrok processes.
+🚀 Starting ngrok CLI tunnel for port 3005 with domain vice-gaffe-undercoat.ngrok-free.dev...
+ngrok stdout: Flag --domain has been deprecated, use --url instead
+🛑 ngrok process exited with code 1
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ⚙️  override existing env vars with { override: true }
+🧹 Cleaned up orphaned ngrok processes.
+🚀 Starting ngrok CLI tunnel for port 3005 with domain vice-gaffe-undercoat.ngrok-free.dev...
+ngrok stdout: Flag --domain has been deprecated, use --url instead
+🛑 ngrok process exited with code 1
+[dotenv@17.3.1] injecting env (9) from .env -- tip: 🤖 agentic secret storage: https://dotenvx.com/as2
+🧹 Cleaned up orphaned ngrok processes.
+🚀 Starting ngrok CLI tunnel for port 3005 with domain vice-gaffe-undercoat.ngrok-free.dev...
+ngrok stdout: Flag --domain has been deprecated, use --url instead
+🛑 ngrok process exited with code 1
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ⚡️ secrets for agents: https://dotenvx.com/as2
+🧹 Cleaned up orphaned ngrok processes.
+🚀 Starting ngrok CLI tunnel for port 3005 with domain vice-gaffe-undercoat.ngrok-free.dev...
+ngrok stdout: Flag --domain has been deprecated, use --url instead
+🛑 ngrok process exited with code 1

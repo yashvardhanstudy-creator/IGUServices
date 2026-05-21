@@ -210,3 +210,63 @@
 📥 Received Login Request: { username: 'admin' }
 ✅ Login successful for user: admin
 👤 User session found: { name: 'admin', role: 'admin' }
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ⚙️  specify custom .env file path with { path: '/custom/path/.env' }
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'programs' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+✅ Table 'auth' ensured to exist.
+📥 Received Login Request: { username: 'dev' }
+✅ Login successful for user: dev
+👤 User session found: { name: 'dev', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+[dotenv@17.3.1] injecting env (9) from .env -- tip: ⚙️  enable debug logging with { debug: true }
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'programs' ensured to exist.
+✅ Table 'auth' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'shivani' }
+❌ Invalid credentials for user: shivani
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+[dotenv@17.3.1] injecting env (9) from .env -- tip: 🛡️ auth for agents: https://vestauth.com
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'programs' ensured to exist.
+✅ Table 'auth' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }

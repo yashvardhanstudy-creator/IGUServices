@@ -29,12 +29,28 @@
         }
         
         @media print {
+                      @page {
+                size: A4;
+                margin: 20mm 10mm 25mm 10mm;
+            }
+            @page :first {
+                margin: 0mm;
+            }
+            @page landscape-page { size: A4 landscape; margin: 10mm 5mm; }
+            .landscape-section { page: landscape-page; }
             body { max-width: 100%; margin: 0; padding: 0; }
+            .html-only-approvals { display: none !important; }
             .action-buttons { display: none !important; }
             .container { width: 100%; }
             tr, .unit-block { page-break-inside: avoid; }
             a { text-decoration: none; color: black; }
-            .cover-page { margin: 0; }
+              .cover-page-wrapper { margin: 0; padding: 20mm 10mm 25mm 10mm; height: 100vh; box-sizing: border-box; }
+            .cover-page { margin: 0; height: 100%; }
+        }
+        
+        .cover-page-wrapper {
+            box-sizing: border-box;
+        }
         }
     </style>
 </head>
@@ -42,10 +58,11 @@
     <div class="container">
         <div class="action-buttons center" style="margin-top: 20px; margin-bottom: 20px;">
             <button style="padding: 10px 20px;" onclick="window.print()">Print Syllabus</button>
-            <button style="padding: 10px 20px;" onclick="window.location.href='/download-full-syllabus-pdf?program_code=<%= encodeURIComponent(program.program_code) %>' ">Download PDF</button>
+            <button id="downloadPdfBtn" style="padding: 10px 20px;" onclick="downloadPdf('/download-full-syllabus-pdf?program_code=<%= encodeURIComponent(program.program_code) %>')">Download PDF</button>
         </div>
 
         <!-- Page 1: Cover Page -->
+        <div class="cover-page-wrapper">
         <div class="cover-page">
             <div class="center">
                 <p class="bold">INDIRA GANDHI UNIVERSITY, MEERPUR, REWARI</p>
@@ -55,13 +72,25 @@
             <img src="https://himachal365.s3.ap-south-1.amazonaws.com/68/igu-logo.jpg" alt="IGU Logo" style="max-height: 150px; margin: 20px 0;">
             <div class="center">
                 <p class="bold">Syllabus and Scheme of Examination</p>
-                <p>(as per NEP 2020)</p>
+                 <p>in accordance with National Education Policy-2020</p>
                 <p>for</p>
                 <p class="bold"><%= (program.level && program.level.toUpperCase() === 'UG') ? 'Under' : 'Post' %> Graduate Programme</p>
                 <p>in</p>
-                <p class="bold" style="font-size: 1.2em;"><%= programDetails.title || academic_program %></p>
-                <p>Program Code: <%= programDetails.program_code || 'N/A' %></p>
-                <p>Effective from Academic Year <%= programDetails.academic_year || 'N/A' %></p>
+                <%
+                    let titleDisplay = programDetails.title || academic_program;
+                    if (program.level === 'UG') {
+                        if (program.discipline_type === 'Multi-disciplinary' && program.discipline_category && program.department) {
+                            titleDisplay = `${program.discipline_category} with major in ${program.department}`;
+                        } else if (program.discipline_type === 'Inter-disciplinary' && program.department) {
+                            titleDisplay = `${program.department}`;
+                        } else {
+                            titleDisplay = `${program.department || academic_program}`;
+                        }
+                    }
+                %>
+                <p class="bold" style="font-size: 1.2em;"><%= titleDisplay %></p>
+                <p>Programme Code: <%= programDetails.program_code || 'N/A' %></p>
+                <p>Effective from Academic Session <%= programDetails.academic_year || 'N/A' %></p>
                 <br>
                 <p>Department of <%= programDetails.department || 'N/A' %></p>
                 <p>Faculty of <%= programDetails.faculty || 'N/A' %></p>
@@ -72,43 +101,42 @@
                 <p>Haryana, India</p>
             </div>
         </div>
+        </div>
 
         <% if (program.program_code !== 'UNIVERSITY_POOL') { %>
         <!-- Page 2: Approvals -->
-        <div class="page-break-before">
+        <div class="page-break-before html-only-approvals">
             <h2 class="center">Details of Approvals</h2>
-            <table>
-                <thead><tr><th>Council/Board</th><th>Date</th><th>Remark</th></tr></thead>
-                <tbody>
-                    <tr><td>Staff Council</td><td></td><td></td></tr>
-                    <tr><td>Board of Studies</td><td></td><td></td></tr>
-                    <tr><td>Faculty</td><td></td><td></td></tr>
-                    <tr><td>Academic Council</td><td></td><td></td></tr>
-                </tbody>
-            </table>
-            <p class="bold">Year of Implementation: <%= programDetails.year_of_implementation || ' ' %></p>
-            <div style="text-align: right; margin-top: 200px;">
-                <p class="bold">Chairperson</p>
-                <p>(Signature with Stamp)</p>
-            </div>
+            <% if (programDetails.approval_pdf) { %>
+                <div class="center" style="padding: 30px; border: 2px dashed #28a745; margin-top: 20px; border-radius: 8px;">
+                    <p style="color: #28a745; font-weight: bold; font-size: 18px;">✅ Details of Approval PDF is attached!</p>
+                    <p>It will be automatically inserted into the final document when you click Download PDF.</p>
+                    <a href="/uploads/<%= programDetails.approval_pdf %>" target="_blank" style="display: inline-block; margin-top: 10px; padding: 10px 20px; background: #17a2b8; color: white; text-decoration: none; border-radius: 5px;">View Uploaded Document</a>
+                </div>
+            <% } else { %>
+                <div class="center" style="padding: 30px; border: 2px dashed #dc3545; margin-top: 20px; border-radius: 8px;">
+                    <p style="color: #dc3545; font-weight: bold; font-size: 18px;">❌ No Details of Approval PDF Uploaded.</p>
+                    <p>Please edit the Program Details to upload the signed PDF.</p>
+                </div>
+            <% } %>
         </div>
 
         <!-- Page 3: University Vision/Mission -->
         <div class="page-break-before">
             <h2 class="center">VISION AND MISSION OF THE UNIVERSITY</h2>
             <h3 class="bold">VISION</h3>
-            <p class="justified-text">To be a globally renowned university, recognized for excellence in teaching, innovative research, and welfare of the society, imbibing the spirit of “Vasudhaiv kutumbkam”.</p>
+            <p class="justified-text">To be a globally renowned university, recognized for excellence in teaching, innovative research and welfare of the society, imbibing the spirit of “<i>Vasudhaiv kutumbkam</i>”.</p>
             <h3 class="bold">MISSION</h3>
             <ul style="padding-left: 20px;">
                 <li>To introduce and implement innovation in teaching and learning process matching up the global standards to strengthen academic delivery through curriculum design, teaching pedagogy and usage of ICT.</li>
                 <li>To develop a mechanism that attracts talented, qualified and experienced faculty from across the globe for pursuing their academic and research careers at the University.</li>
-                <li>To offer academic programs at UG, PG, doctoral, Post-Doctoral levels which are learner- centric, industry focused, and adhere to outcome based international models.</li>
-                <li>To create an ambiance that is conducive for undertaking sponsored research, innovation and consultancy services to a wide spectrum of societal and industrial requirements while encouraging interdisciplinary approach of learning, team work, and research.</li>
+                <li>To offer academic programmes at UG, PG, Doctoral, Post-Doctoral levels which are learner-centric, industry focused and adhere to outcome based international models.</li>
+                <li>To create an ambiance that is conducive for undertaking sponsored research, innovation and consultancy services to a wide spectrum of societal and industrial requirements while encouraging interdisciplinary approach of learning, team work and research.</li>
                 <li>To establish state of art centres of excellence in frontier areas of research and design innovation through industry collaboration to innovate and incubate the products and services.</li>
                 <li>To establish smart campus and promote e-governance activities in the university for the digitally empowered society and knowledge economy.</li>
                 <li>To provide a hygienic, modern, environment friendly and vivacious campus attuned to the urgent needs of Green Technology.</li>
                 <li>To consider and implement norms, metrics, standards, procedures and benchmarks for assessing and improving the quality in every aspect of University system and achieve quality certifications by National and International bodies.</li>
-                <li>To make society self-reliant by organizing various programmes including literacy, gender sensitization, health awareness, and dissemination of information about livelihood generation.</li>
+                <li>To make society self-reliant by organizing various programmes including literacy, gender sensitization, health awareness and dissemination of information about livelihood generation.</li>
             </ul>
         </div>
 
@@ -138,14 +166,14 @@
             <h3 class="bold">PROGRAMME EDUCATIONAL OBJECTIVES (PEOs)</h3>
             <table>
                 <% (programDetails.peos || []).forEach((peo, i) => { %>
-                    <tr><td style="width: 15%;" class="bold">PEO<%= i + 1 %></td><td><%= peo %></td></tr>
+                    <tr><td style="width: 15%;" class="bold">PEO<%= i + 1 %></td><td class="justified-text"><%= peo %></td></tr>
                 <% }) %>
             </table>
 
             <h3 class="bold">PROGRAMME OBJECTIVES (POs)</h3>
             <table>
                 <% (programDetails.pos || []).forEach((po, i) => { %>
-                    <tr><td style="width: 15%;" class="bold">PO<%= i + 1 %></td><td><%= po %></td></tr>
+                    <tr><td style="width: 15%;" class="bold">PO<%= i + 1 %></td><td class="justified-text"><%= po %></td></tr>
                 <% }) %>
             </table>
 
@@ -153,7 +181,7 @@
                 <h3 class="bold">PROGRAMME SPECIFIC OBJECTIVES (PSOs)</h3>
                 <table>
                     <% programDetails.psos.forEach((pso, i) => { %>
-                        <tr><td style="width: 15%;" class="bold">PSO<%= i + 1 %></td><td><%= pso %></td></tr>
+                        <tr><td style="width: 15%;" class="bold">PSO<%= i + 1 %></td><td class="justified-text"><%= pso %></td></tr>
                     <% }) %>
                 </table>
             <% } %>
@@ -175,35 +203,37 @@
         
         </div>
         <!-- Page 7: Curriculum -->
-        <div class="page-break-before">
+        <div class="landscape-section page-break-before">
             <h2 class="center">Curriculum Framework</h2>
-            <table>
+            <table style="font-size: 11px;">
                 <thead>
                     <tr class="section-title">
-                        <th>Semester</th>
-                        <th>Course Type</th>
-                        <th>Course Code</th>
-                        <th style="width: 20%;">Nomenclature of course</th>
-                        <th>Theory(T) / Practical(P)</th>
-                        <th>Credit</th>
-                        <th>Contact hours per week<br>(L+T+P=Total)</th>
-                        <th>Internal Assessment Marks</th>
-                        <th>End Term Examination Marks</th>
-                        <th>Total Marks</th>
-                        <th>Exam Hours Theory, Practical</th>
+                        <th style="width: 5%;">Semester</th>
+                        <th style="width: 8%;">Course Type</th>
+                        <th style="width: 11%;">Course Code</th>
+                        <th style="width: 17%;">Nomenclature of the Course</th>
+                        <th style="width: 8%;">Theory (Th)/ Practical (P)</th>
+                        <th style="width: 4%;">Credit</th>
+                        <th style="width: 11%;">Contact hours per week<br>(L+T+P=Total)</th>
+                        <th style="width: 8%;">Internal Assessment Marks (Th+P=Total)</th>
+                        <th style="width: 8%;">End Term Examination Marks (Th+P=Total)</th>
+                        <th style="width: 6%;">Total Marks</th>
+                        <th style="width: 14%;">Exam Hours Theory, Practical</th>
                     </tr>
                 </thead>
                 <tbody>
                     <% semesters.forEach(sem => { %>
-                        <% if (sem.isDivider) { %>
-                            <tr style="text-align: center; font-weight: bold;">
-                                <td colspan="11" style="padding: 5px; font-size: 16px; letter-spacing: 2px;"><%= sem.title %></td>
-                            </tr>
-                        <% } else if (sem.isYearlyDivider) { %>
-                            <% if (sem.text && sem.text.trim() !== '') { %>
-                                <tr style="text-align: center; font-weight: bold; background-color: #f8f9fa;">
-                                    <td colspan="11" style="padding: 10px; font-size: 14px;"><%= sem.text %></td>
+                        <% if (sem.isDivider || sem.isYearlyDivider) { %>
+                            <% if (sem.isDivider) { %>
+                                <tr style="text-align: center; font-weight: bold;">
+                                    <td colspan="11" style="padding: 5px; font-size: 16px; letter-spacing: 2px;"><%= sem.title %></td>
                                 </tr>
+                            <% } else if (sem.isYearlyDivider) { %>
+                                <% if (sem.text && sem.text.trim() !== '') { %>
+                                    <tr style="text-align: center; font-weight: bold; background-color: #f8f9fa;">
+                                        <td colspan="11" style="padding: 10px; font-size: 14px;"><%= sem.text %></td>
+                                    </tr>
+                                <% } %>
                             <% } %>
                         <% } else { %>
                             <%
@@ -213,53 +243,93 @@
                                 let semTotalEndTerm = 0;
                                 let semTotalMaxMarks = 0;
                                 sem.detailed_courses.forEach((course, index) => { 
-                                    semTotalCredits += parseInt(course.credits_total) || 0;
-                                    semTotalHours += parseInt((course.credits_theory || 0) + ((course.credits_practical || 0) * 2)) || 0;
-                                    semTotalInternal += parseInt(course.marks_internal_total) || 0;
-                                    semTotalEndTerm += parseInt(course.marks_endterm_total) || 0;
-                                    semTotalMaxMarks += parseInt(course.marks_max) || 0;
+                                    if (!course.isDec || course.decOpt === 1) {
+                                        semTotalCredits += parseInt(course.credits_total) || 0;
+                                        semTotalHours += parseInt((course.credits_theory || 0) + ((course.credits_practical || 0) * 2)) || 0;
+                                        semTotalInternal += parseInt(course.marks_internal_total) || 0;
+                                        semTotalEndTerm += parseInt(course.marks_endterm_total) || 0;
+                                        semTotalMaxMarks += parseInt(course.marks_max) || 0;
+                                    }
+                                    const courseType = course.curriculum_display_type || course.course_type || '';
+                                    const isPoolGroup1 = ['VAC', 'SEC', 'AEC', 'MDC'].some(p => courseType.startsWith(p));
+                                    const isExceptionMinor = program.scheme && program.scheme.trim().toUpperCase() === 'D' && /^(CC-M1|CC-M2|CC-M3)$/.test(courseType);
+                                    const isPoolGroup2 = ['CC-M', 'CC-HM'].some(p => courseType.startsWith(p)) && !(isExceptionMinor && !course.is_missing && course.course_code !== '-');
                             %>
                                 <tr>
                                     <% if (index === 0) { %>
-                                        <td rowspan="<%= sem.detailed_courses.length + 1 %>" class="center bold" style="vertical-align: middle;"><%= sem.semester %></td>
+                                        <td rowspan="<%= sem.detailed_courses.length + 1 %>" class="center bold" style="vertical-align: middle;"><%= sem.number %></td>
                                     <% } %>
-                                    <td>
-                                        <% if (!course.is_db_course) { %>
-                                            <%= course.course_type || 'N/A' %>
-                                        <% } else { %>
-                                            <a href="#course-<%= course.course_code %>"><%= course.course_type || 'N/A' %></a>
-                                        <% } %>
-                                    </td>
-                                    <td><%= course.course_code %></td>
-                                    <td <%- course.is_missing ? 'style="color: red;"' : '' %>>
-                                        <%= course.course_name=='Unassigned Slot' ? ' ' : course.course_name %>
-                                        <% if (!course.is_missing && course.is_db_course && (!course.owning_program_code || course.owning_program_code === 'From University Pool')) { %>
-                                            <div style="font-size: 0.85em; font-style: italic; margin-top: 3px; color: #555;">(University Pool)</div>
-                                        <% } %>
-                                    </td>
-                                    <td class="center"><%= course.is_custom_row ? course.tp : ((!course.is_db_course || course.is_missing) ? ' ' : ((course.credits_theory || 0) + 'T / ' + (course.credits_practical || 0) + 'P')) %></td>
-                                    <td class="center"><%= course.is_missing ? ' ' : (course.credits_total || 0) %></td>
-                                    <td class="center">
-                                        <% 
-                                            if (course.is_custom_row) {
-                                                %><%= course.hrs %><%
-                                            } else if (!course.is_db_course || course.is_missing) { 
-                                                %> <%
-                                            } else {
-                                                let th = parseInt(course.credits_theory) || 0;
-                                                let pr = parseInt(course.credits_practical) || 0;
-                                                let p = pr * 2;
-                                                let lt = course.lt_split === "1" && th > 1 ? 1 : 0;
-                                                let l = th - lt;
-                                                let tot = l + lt + p;
-                                                %><%= l %>+<%= lt %>+<%= p %>=<%= tot %><%
-                                            }
-                                        %>
-                                    </td>
-                                    <td class="center"><%= course.is_custom_row ? (course.marks_internal_total || '') : ((!course.is_db_course || course.is_missing) ? ' ' : (course.marks_internal_total || 0)) %></td>
-                                    <td class="center"><%= course.is_custom_row ? (course.marks_endterm_total || '') : ((!course.is_db_course || course.is_missing) ? ' ' : (course.marks_endterm_total || 0)) %></td>
-                                    <td class="center"><%= course.is_custom_row ? (course.marks_max || '') : ((!course.is_db_course || course.is_missing) ? ' ' : (course.marks_max || 0)) %></td>
-                                    <td class="center"><%= course.is_custom_row ? (course.exam_duration || '') : ((!course.is_db_course || course.is_missing) ? ' ' : (course.exam_duration || '-')) %></td>
+                                    <% if (isPoolGroup1) { %>
+                                        <td><%= courseType %></td>
+                                        <td colspan="9" class="center" style="font-style: italic;">from available pool of <%= (courseType).slice(0, -2)%></td>
+                                    <% } else if (isPoolGroup2) { %>
+                                        <td><%= courseType %></td>
+                                        <td colspan="9" class="center" style="font-style: italic;">from available pool of Minor/Minor(Vocational)</td>
+                                    <% } else { %>
+                                        <td>
+                                        <% if (course.isElectiveGroup) { %>
+                                            <%= course.baseElectiveType %>
+                                        <% } else if (!course.is_db_course) { %>
+                                                <%= course.curriculum_display_type || course.course_type || 'N/A' %>
+                                            <% } else { %>
+                                                <a href="#course-<%= course.course_code %>"><%= course.curriculum_display_type || course.course_type || 'N/A' %></a>
+                                            <% } %>
+                                            <% if ((course.curriculum_display_type || course.course_type) === 'OEC' || (course.curriculum_display_type || course.course_type) === 'MDC') { %><br><span style="font-size:11px; font-style:italic;">(*offered for the other departments)</span><% } %>
+                                            <% if (course.isElectiveGroup && !course.isLinkedElective) { %><br><span style="font-size:11px; font-style:italic;">(pick any)</span><% } %>
+                                        </td>
+                                        <td><%= course.course_code %></td>
+                                        <td <%- course.is_missing ? 'style="color: red;"' : '' %>>
+                                            <%= course.course_name=='Unassigned Slot' ? ' ' : course.course_name %>
+                                            <% if (course.isLinkedElective) { %>
+                                                <div style="font-size: 0.85em; font-style: italic; margin-top: 3px; color: #555;">(Choices defined in Semester <%= course.masterSemester %>)</div>
+                                            <% } else if (!course.is_missing && course.is_db_course && (!course.owning_program_code || course.owning_program_code === 'From University Pool')) { %>
+                                                <div style="font-size: 0.85em; font-style: italic; margin-top: 3px; color: #555;">(University Pool)</div>
+                                            <% } %>
+                                        </td>
+                                        <td class="center" style="vertical-align: middle;">
+                                                <% 
+                                                    if (course.is_custom_row) {
+                                                        %><%= course.tp %><%
+                                                    } else if (!course.is_db_course || course.is_missing) { 
+                                                        %> <%
+                                                    } else {
+                                                        let th = parseInt(course.credits_theory) || 0;
+                                                        let pr = parseInt(course.credits_practical) || 0;
+                                                        if (th === 0 && pr === 0 && course.credit_scheme) {
+                                                            let parts = course.credit_scheme.split('+');
+                                                            if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
+                                                        }
+                                                        %><%= th %>T / <%= pr %>P<%
+                                                    }
+                                                %>
+                                            </td>
+                                        <td class="center" style="vertical-align: middle;"><%= course.is_custom_row ? course.credits_total : (course.is_missing ? ' ' : (course.credits_total || 0)) %></td>
+                                        <td class="center" style="vertical-align: middle;">
+                                                <% 
+                                                    if (course.is_custom_row) {
+                                                        %><%= course.hrs %><%
+                                                    } else if (!course.is_db_course || course.is_missing) { 
+                                                        %> <%
+                                                    } else {
+                                                        let th = parseInt(course.credits_theory) || 0;
+                                                        let pr = parseInt(course.credits_practical) || 0;
+                                                        if (th === 0 && pr === 0 && course.credit_scheme) {
+                                                            let parts = course.credit_scheme.split('+');
+                                                            if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
+                                                        }
+                                                        let p = pr * 2;
+                                                        let lt = course.lt_split === "1" && th > 1 ? 1 : 0;
+                                                        let l = th - lt;
+                                                        let tot = l + lt + p;
+                                                        %><%= l %>+<%= lt %>+<%= p %>=<%= tot %><%
+                                                    }
+                                                %>
+                                            </td>
+                                        <td class="center" style="vertical-align: middle;"><%= course.is_custom_row ? (course.marks_internal_total || '') : ((!course.is_db_course || course.is_missing) ? ' ' : `${course.marks_internal_theory || 0}+${course.marks_internal_practical || 0}=${course.marks_internal_total || 0}`) %></td>
+                                        <td class="center" style="vertical-align: middle;"><%= course.is_custom_row ? (course.marks_endterm_total || '') : ((!course.is_db_course || course.is_missing) ? ' ' : `${course.marks_endterm_theory || 0}+${course.marks_endterm_practical || 0}=${course.marks_endterm_total || 0}`) %></td>
+                                        <td class="center" style="vertical-align: middle;"><%= course.is_custom_row ? (course.marks_max || '') : ((!course.is_db_course || course.is_missing) ? ' ' : (course.marks_max || 0)) %></td>
+                                        <td class="center" style="vertical-align: middle;"><%= course.is_custom_row ? (course.exam_duration || '') : ((!course.is_db_course || course.is_missing) ? ' ' : (course.exam_duration || '-')) %></td>
+                                    <% } %>
                                 </tr>
                             <% }) %>
                             <tr class="bold" style="background-color: #f2f2f2;">
@@ -279,6 +349,35 @@
                 </tbody>
             </table>
         </div>
+        <p><i>*L: Lecture, T: Tutorial, P: Practical</i></p>
+
+        <% if (Object.keys(electiveCourseGroups).length > 0) { %>
+            <% for (const baseElectiveType in electiveCourseGroups) { %>
+                <% const choices = electiveCourseGroups[baseElectiveType]; %>
+                <% if (choices.length > 0) { %>
+                    <div class="landscape-section page-break-before">
+                        <h3 class="center" style="margin-top: 20px;">Choices for <%= baseElectiveType %></h3>
+                        <table style="font-size: 12px; width: 80%; margin-left: auto; margin-right: auto;">
+                            <thead>
+                                <tr class="section-title">
+                                    <th style="width: 30%;">Course Code</th>
+                                    <th style="width: 70%;">Nomenclature of the Course</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% choices.forEach(course => { %>
+                                    <tr>
+                                        <td class="center"><a href="#course-<%= course.course_code %>"><b><%= course.course_code %></b></a></td>
+                                        <td><%= course.course_name=='Unassigned Slot' ? ' ' : course.course_name %></td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } %>
+            <% } %>
+        <% } %>
+
         <% } else { %>
         <div class="page-break-before">
             <h2 class="center">University Pool Courses List</h2>
@@ -316,5 +415,21 @@
             <% } %>
         <% }) %>
     </div>
+
+    <script>
+        function downloadPdf(url) {
+            const btn = document.getElementById('downloadPdfBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Generating PDF... Please wait';
+            btn.style.cursor = 'not-allowed';
+            window.location.href = url;
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+                btn.style.cursor = 'pointer';
+            }, 8000);
+        }
+    </script>
 </body>
 </html>

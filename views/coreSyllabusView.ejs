@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Core Courses - <%= programDetails.department || program.department || 'N/A' %></title>
+    <style>
+        body { font-family: 'Arial', serif; line-height: 1.4; color: #000; margin: 0; padding: 20px; }
+        .container { width: 100%; margin: auto; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; font-size: 11px; }
+        th, td { border: 1px solid black; padding: 2px; vertical-align: top; word-wrap: break-word; text-align: center; vertical-align: middle; }
+        .section-title { text-align: center; font-weight: bold; background-color: #f2f2f2; }
+        .center { text-align: center; }
+        .bold { font-weight: bold; }
+        
+        @media print {
+            @page { size: A4 landscape; margin: 15mm 10mm 15mm 10mm; }
+            body { max-width: 100%; margin: 0; padding: 0; }
+            tr { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="center" style="margin-bottom: 20px;">
+            <h2 style="margin-bottom: 5px;">Indira Gandhi University, Meerpur</h2>
+            <h3 style="margin-top: 0; margin-bottom: 5px;">Department of <%= programDetails.department || program.department || 'N/A' %></h3>
+            <h4 style="margin-top: 0;">Courses offered by the department as Core Courses in Multi-disciplinary UG Program (Scheme A)</h4>
+        </div>
+
+        <table>
+            <thead>
+                <tr class="section-title">
+                    <th style="width: 5%;">Semester</th>
+                    <th style="width: 8%;">Course Type</th>
+                    <th style="width: 11%;">Course Code</th>
+                    <th style="width: 17%;">Nomenclature of the Course</th>
+                    <th style="width: 8%;">Theory (Th)/ Practical (P)</th>
+                    <th style="width: 4%;">Credit</th>
+                    <th style="width: 11%;">Contact hours per week<br>(L+T+P=Total)</th>
+                    <th style="width: 8%;">Internal Assessment Marks (Th+P=Total)</th>
+                    <th style="width: 8%;">End Term Examination Marks (Th+P=Total)</th>
+                    <th style="width: 6%;">Total Marks</th>
+                    <th style="width: 14%;">Exam Hours Theory, Practical</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% semesters.forEach(sem => { %>
+                    <% if (!sem.isDivider && !sem.isYearlyDivider) { %>
+                        <% sem.detailed_courses.forEach((course, index) => { 
+                            if (!course.isDec || course.decOpt === 1) { 
+                        %>
+                            <tr>
+                                <% if (index === 0) { %>
+                                    <td rowspan="<%= sem.detailed_courses.length %>" class="center bold"><%= sem.number %></td>
+                                <% } %>
+                                <td><%= course.course_type || 'N/A' %></td>
+                                <td><%= course.course_code %></td>
+                                <td <%- course.is_missing ? 'style="color: red;"' : '' %>><%= course.course_name=='Unassigned Slot' ? ' ' : course.course_name %></td>
+                                <td>
+                                    <% if (course.is_custom_row) { %><%= course.tp %><% } else if (!course.is_db_course || course.is_missing) { %> <% } else {
+                                        let th = parseInt(course.credits_theory) || 0; let pr = parseInt(course.credits_practical) || 0;
+                                        if (th === 0 && pr === 0 && course.credit_scheme) {
+                                            let parts = course.credit_scheme.split('+');
+                                            if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
+                                        }
+                                        %><%= th %>T / <%= pr %>P<% } 
+                                    %>
+                                </td>
+                                <td><%= course.is_missing ? ' ' : (course.credits_total || 0) %></td>
+                                <td>
+                                    <% if (course.is_custom_row) { %><%= course.hrs %><% } else if (!course.is_db_course || course.is_missing) { %> <% } else {
+                                        let th = parseInt(course.credits_theory) || 0; let pr = parseInt(course.credits_practical) || 0;
+                                        if (th === 0 && pr === 0 && course.credit_scheme) {
+                                            let parts = course.credit_scheme.split('+');
+                                            if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
+                                        }
+                                        let p = pr * 2; let lt = course.lt_split === "1" && th > 1 ? 1 : 0; let l = th - lt; let tot = l + lt + p;
+                                        %><%= l %>+<%= lt %>+<%= p %>=<%= tot %><% } 
+                                    %>
+                                </td>
+                                <td><%= course.is_custom_row ? (course.marks_internal_total || '') : ((!course.is_db_course || course.is_missing) ? ' ' : (course.marks_internal_total || 0)) %></td>
+                                <td><%= course.is_custom_row ? (course.marks_endterm_total || '') : ((!course.is_db_course || course.is_missing) ? ' ' : (course.marks_endterm_total || 0)) %></td>
+                                <td><%= course.is_custom_row ? (course.marks_max || '') : ((!course.is_db_course || course.is_missing) ? ' ' : (course.marks_max || 0)) %></td>
+                                <td><%= course.is_custom_row ? (course.exam_duration || '') : ((!course.is_db_course || course.is_missing) ? ' ' : (course.exam_duration || '-')) %></td>
+                            </tr>
+                        <% } }) %>
+                    <% } %>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

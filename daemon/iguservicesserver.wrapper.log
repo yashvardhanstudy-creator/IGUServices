@@ -80,3 +80,33 @@
 2026-05-15 10:22:15 - Finished iguservicesserver.exe
 2026-05-15 17:01:30 - Starting C:\nvm4w\nodejs\node.exe  --max-old-space-size=4096 --optimize_for_size C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\index.js --scriptoptions= --log "IGUServices Server wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
 2026-05-15 17:01:31 - Started 18756
+2026-05-18 15:57:39 - Stopping iguservicesserver.exe
+2026-05-18 15:57:39 - ProcessKill 23720
+2026-05-18 15:57:39 - Found child process: 26440 Name: conhost.exe
+2026-05-18 15:57:39 - Found child process: 1908 Name: node.exe
+2026-05-18 15:57:40 - Stopping process 26440
+2026-05-18 15:57:40 - Send SIGINT 26440
+2026-05-18 15:57:40 - SIGINT to 26440 failed - Killing as fallback
+2026-05-18 15:57:40 - Stopping process 1908
+2026-05-18 15:57:40 - Send SIGINT 1908
+2026-05-18 15:57:40 - SIGINT to 1908 failed - Killing as fallback
+2026-05-18 15:57:40 - Stopping process 23720
+2026-05-18 15:57:40 - Send SIGINT 23720
+2026-05-18 15:57:40 - SIGINT to 23720 failed - Killing as fallback
+2026-05-18 15:57:40 - Finished iguservicesserver.exe
+2026-05-19 11:21:38 - Starting C:\nvm4w\nodejs\node.exe  --max-old-space-size=4096 --optimize_for_size C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\index.js --scriptoptions= --log "IGUServices Server wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-05-19 11:21:38 - Started 13076
+2026-05-19 12:06:28 - Stopping iguservicesserver.exe
+2026-05-19 12:06:28 - ProcessKill 13076
+2026-05-19 12:06:28 - Found child process: 8176 Name: conhost.exe
+2026-05-19 12:06:28 - Found child process: 19412 Name: node.exe
+2026-05-19 12:06:29 - Stopping process 8176
+2026-05-19 12:06:29 - Send SIGINT 8176
+2026-05-19 12:06:29 - SIGINT to 8176 failed - Killing as fallback
+2026-05-19 12:06:29 - Stopping process 19412
+2026-05-19 12:06:29 - Send SIGINT 19412
+2026-05-19 12:06:29 - SIGINT to 19412 failed - Killing as fallback
+2026-05-19 12:06:29 - Stopping process 13076
+2026-05-19 12:06:29 - Send SIGINT 13076
+2026-05-19 12:06:29 - SIGINT to 13076 failed - Killing as fallback
+2026-05-19 12:06:29 - Finished iguservicesserver.exe

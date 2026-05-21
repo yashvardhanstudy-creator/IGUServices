@@ -1,150 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <link rel="shortcut icon" href="https://igu1.ucanapply.com/images/webicon.png" type="image/png">
     <meta charset="UTF-8">
-    <title><%= locals.program ? "Edit" : "New" %> Program & Specialization</title>
-    <link rel="stylesheet" href="/stylesheets/index.css">
+    <title>Create New Programme</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            max-width: 500px;
-            width: 100%;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #555;
-        }
-        input, select {
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background-color: #f4f7f6; }
+        .container { max-width: 700px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #333; margin-bottom: 25px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #555; }
+        input[type="text"], input[type="number"], select {
             width: 100%;
             padding: 10px;
-            margin-bottom: 20px;
             border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: 4px;
+            box-sizing: border-box;
         }
-        input[readonly] {
-            background-color: #e9ecef;
-            cursor: not-allowed;
-        }
-        button {
+        .row { display: flex; gap: 20px; }
+        .col { flex: 1; }
+        .btn {
+            display: block;
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-color: #28a745;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 5px;
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 20px;
         }
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-        .back-btn {
-            background: #6c757d;
-            margin-top: 10px;
-        }
-        .back-btn:hover {
-            box-shadow: 0 5px 20px rgba(108, 117, 125, 0.4);
-        }
+        .hidden { display: none; }
+        .back-btn { display: inline-block; margin-bottom: 20px; color: #007bff; text-decoration: none; }
     </style>
 </head>
-
 <body>
     <div class="container">
-        <h1><%= locals.program ? "Edit" : "New" %> Program & Specialization</h1>
+        <a href="/" class="back-btn">← Back to Dashboard</a>
+        <h1>Create New Programme</h1>
         <form action="/program-specialization" method="POST">
-            <label for="program_code">Program Code (Unique):</label>
-            <input type="text" id="program_code" name="program_code" required 
-                   value="<%= locals.program ? locals.program.program_code : '' %>" 
-                   <%= locals.program ? 'readonly' : '' %>
-                   placeholder="e.g. BTECH-CSE-2024">
+            <div class="row">
+                <div class="col form-group">
+                    <label for="faculty">Faculty</label>
+                    <select id="faculty" name="faculty" required onchange="populateDepartments('faculty', 'department', '', 'dept_container')">
+                        <option value="">-- Select Faculty --</option>
+                    </select>
+                </div>
+                <div class="col form-group" id="dept_container" style="display: none;">
+                    <label for="department">Department (Major Subject)</label>
+                    <select id="department" name="department" required>
+                        <option value="">-- Select Department --</option>
+                    </select>
+                </div>
+            </div>
 
-            <label for="subject_name">Subject Name (Title for Full Syllabus):</label>
-            <input type="text" id="subject_name" name="subject_name" required 
-                   value="<%= locals.program ? locals.program.subject_name : '' %>" 
-                   placeholder="e.g. Master of Science">
+            <div class="row">
+                <div class="col form-group">
+                    <label for="num_peos">Number of PEOs</label>
+                    <input type="number" id="num_peos" name="num_peos" min="1" value="4" required>
+                </div>
+                <div class="col form-group">
+                    <label for="num_pos">Number of POs</label>
+                    <input type="number" id="num_pos" name="num_pos" min="8" max="12" value="11" required>
+                </div>
+                <div class="col form-group">
+                    <label for="num_psos">Number of PSOs</label>
+                    <input type="number" id="num_psos" name="num_psos" min="0" max="4" value="2" required>
+                </div>
+            </div>
 
-            <label for="specialization">Specialization (Optional):</label>
-            <input type="text" id="specialization" name="specialization" 
-                   value="<%= locals.program ? locals.program.specialization : '' %>" 
-                   placeholder="e.g. Computer Science (Leave blank for 'None')">
+            <div class="form-group">
+                <label for="level">Level</label>
+                <select id="level" name="level" required onchange="handleLevelChange()">
+                    <option value="">-- Select Level --</option>
+                    <option value="PG">Post Graduate (PG)</option>
+                    <option value="UG">Under Graduate (UG)</option>
+                </select>
+            </div>
 
-            <label for="level">Level (UG / PG):</label>
-            <select id="level" name="level" required onchange="updateSchemes()">
-                <option value="">Select Level</option>
-                <option value="UG" <%= locals.program && locals.program.level === 'UG' ? 'selected' : '' %>>Undergraduate (UG)</option>
-                <option value="PG" <%= locals.program && locals.program.level === 'PG' ? 'selected' : '' %>>Postgraduate (PG)</option>
-            </select>
+            <div id="pg_options" class="form-group hidden">
+                <label for="scheme_pg">Scheme (for PG)</label>
+                <select id="scheme_pg" name="scheme_pg">
+                    <option value="P">Scheme P</option>
+                    <option value="Q">Scheme Q</option>
+                    <option value="R">Scheme R</option>
+                    <option value="S">Scheme S</option>
+                </select>
+            </div>
 
-            <label for="scheme">Scheme:</label>
-            <select id="scheme" name="scheme" required>
-                <option value="">Select Scheme</option>
-            </select>
+            <div id="ug_options" class="hidden">
+                <div class="form-group">
+                    <label>Discipline Type (for UG)</label>
+                    <div>
+                        <input type="radio" id="inter" name="discipline_type" value="Inter-disciplinary" onchange="handleDisciplineChange()">
+                        <label for="inter" style="display: inline-block; margin-right: 20px;">Inter-disciplinary (Scheme D)</label>
+                        <input type="radio" id="multi" name="discipline_type" value="Multi-disciplinary" onchange="handleDisciplineChange()">
+                        <label for="multi" style="display: inline-block;">Multi-disciplinary (Scheme A/B/C)</label>
+                    </div>
+                </div>
+                <div id="multi_discipline_category_container" class="form-group hidden">
+                    <label for="discipline_category">Discipline Category</label>
+                    <select id="discipline_category" name="discipline_category">
+                        <option value="">-- Select Discipline --</option>
+                        <option value="Arts">Arts</option>
+                        <option value="Life-Science">Life-Science</option>
+                        <option value="Physical-Science">Physical-Science</option>
+                    </select>
+                </div>
+            </div>
 
-            <label for="num_pos">Number of POs (8 to 12):</label>
-            <input type="number" id="num_pos" name="num_pos" required min="8" max="12"
-                   value="<%= locals.program ? locals.program.num_pos : '11' %>">
-
-            <label for="num_peos">Number of PEOs (4 or 5):</label>
-            <input type="number" id="num_peos" name="num_peos" required min="4" max="5"
-                   value="<%= locals.program ? locals.program.num_peos : '4' %>">
-
-            <label for="num_psos">Number of PSOs (0 to 4):</label>
-            <input type="number" id="num_psos" name="num_psos" required min="0" max="4"
-                   value="<%= locals.program ? locals.program.num_psos : '2' %>">
-
-            <button type="submit">Save Program Data</button>
+            <button type="submit" class="btn">Create Programme</button>
         </form>
-        <button type="button" class="back-btn" onclick="window.location.href='/'">Back to Home</button>
     </div>
 
+    <script src="/js/facultyDept.js"></script>
     <script>
-        const existingScheme = "<%= locals.program ? locals.program.scheme : '' %>";
-
-        function updateSchemes() {
+        function handleLevelChange() {
             const level = document.getElementById('level').value;
-            const schemeSelect = document.getElementById('scheme');
-            
-            schemeSelect.innerHTML = '<option value="">Select Scheme</option>';
-            
-            let options = [];
-            if (level === 'UG') {
-                options = ['A', 'B', 'C', 'D'];
-            } else if (level === 'PG') {
-                options = ['P', 'Q', 'R', 'S'];
-            }
-            
-            options.forEach(opt => {
-                const isSelected = existingScheme === opt ? 'selected' : '';
-                schemeSelect.innerHTML += `<option value="${opt}" ${isSelected}>Scheme ${opt}</option>`;
-            });
+            const pgOptions = document.getElementById('pg_options');
+            const ugOptions = document.getElementById('ug_options');
+
+            pgOptions.classList.toggle('hidden', level !== 'PG');
+            ugOptions.classList.toggle('hidden', level !== 'UG');
         }
-        window.onload = updateSchemes;
+
+        function handleDisciplineChange() {
+            const multiRadio = document.getElementById('multi');
+            const categoryContainer = document.getElementById('multi_discipline_category_container');
+            
+            categoryContainer.classList.toggle('hidden', !multiRadio.checked);
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            initFacultyDropdown('faculty', 'department', '', '', 'dept_container');
+        });
     </script>
 </body>
 </html>

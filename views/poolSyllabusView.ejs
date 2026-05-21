@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= poolTitle %></title>
+    <style>
+        body { font-family: 'Arial', serif; line-height: 1.4; color: #000; margin: 0; padding: 20px; }
+        .container { width: 90%; margin: auto; max-width: 1000px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; }
+        th, td { border: 1px solid black; padding: 6px; vertical-align: middle; word-wrap: break-word; font-size: 13px;}
+        .section-title { text-align: center; font-weight: bold; background-color: #f2f2f2; }
+        .center { text-align: center; }
+        .bold { font-weight: bold; }
+        .page-break-before { page-break-before: always; padding-top: 20px; }
+        @media print {
+            body { max-width: 100%; margin: 0; padding: 0; }
+            .container { width: 100%; }
+            tr { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="text-align: center; margin-bottom: 30px; border: 4px double #000; padding: 30px;">
+            <h1 class="bold" style="text-transform: uppercase;"><%= poolTitle %></h1>
+            <h2><%= program.subject_name %></h2>
+            <p><strong>Department:</strong> <%= programDetails.department || program.department || 'N/A' %></p>
+        </div>
+
+        <% function renderTable(courseList) { %>
+                <table>
+                    <thead>
+                        <tr class="section-title">
+                            <th style="width: 15%;">Course Code</th>
+                            <th style="width: 25%;">Nomenclature of the Course</th>
+                            <th>Theory (Th)/ Practical (P)</th>
+                            <th>Credit</th>
+                            <th>Contact hours per week</th>
+                            <th>Internal Marks</th>
+                            <th>End Term Marks</th>
+                            <th>Total Marks</th>
+                            <th>Exam Hours</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% courseList.forEach(course => { %>
+                            <%
+                                let th = parseInt(course.credits_theory) || 0;
+                                let pr = parseInt(course.credits_practical) || 0;
+                                if (th === 0 && pr === 0 && course.credit_scheme) {
+                                    let parts = course.credit_scheme.split('+');
+                                    if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
+                                }
+                            %>
+                            <tr>
+                                <td class="center bold"><%= course.course_code %></td>
+                                <td><%= course.course_name || course.course_title %></td>
+                                <td class="center"><%= th %>T / <%= pr %>P</td>
+                                <td class="center"><%= course.credits_total || 0 %></td>
+                                <td class="center"><%= th %>+0+<%= pr * 2 %>=<%= th + (pr * 2) %></td>
+                                <td class="center"><%= course.marks_internal_total || 0 %></td>
+                                <td class="center"><%= course.marks_endterm_total || 0 %></td>
+                                <td class="center"><%= course.marks_max || 0 %></td>
+                                <td class="center"><%= course.exam_duration || '-' %></td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+        <% } %>
+
+        <!-- Generate Continuous Tables by Group Category -->
+        <% Object.keys(groupedCourses).forEach(key1 => { %>
+            <% if (Array.isArray(groupedCourses[key1])) { %>
+                <% if (groupedCourses[key1].length > 0) { %>
+                    <h2 class="section-title" style="padding: 10px; margin-top: 30px; background-color: #d1ecf1;"><%= key1 %> Courses</h2>
+                    <% renderTable(groupedCourses[key1]); %>
+                <% } %>
+            <% } else { %>
+                <h2 class="section-title" style="padding: 10px; margin-top: 30px; background-color: #333; color: white;">Faculty: <%= key1 %></h2>
+                <% Object.keys(groupedCourses[key1]).forEach(key2 => { %>
+                    <% if (groupedCourses[key1][key2] && groupedCourses[key1][key2].length > 0) { %>
+                        <h3 class="section-title" style="padding: 8px; margin-top: 15px; background-color: #d1ecf1;">Department: <%= key2 %></h3>
+                        <% renderTable(groupedCourses[key1][key2]); %>
+                    <% } %>
+                <% }) %>
+            <% } %>
+        <% }) %>
+
+        <!-- Render the Detailed Syllabi Data matching the tables -->
+        <% allCourses.forEach(data => { %>
+            <div class="page-break-before">
+                <%- include('partials/courseDetails', { 
+                    data: data, 
+                    programme_name_display: programDetails.title || program.subject_name,
+                    semester_display: '-',
+                    program_pos: programDetails.pos ? programDetails.pos.length : null,
+                    program_psos: programDetails.psos ? programDetails.psos.length : null
+                }) %>
+            </div>
+        <% }) %>
+    </div>
+</body>
+</html>
