@@ -1,47 +1,120 @@
-(node:22952) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:23732) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:12024) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:24804) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:8640) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:18848) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:3592) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:21120) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:9672) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:13340) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:9400) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:18068) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:23792) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-ngrok stderr: ERROR:  failed to start tunnel: The endpoint 'https://vice-gaffe-undercoat.ngrok-free.dev' is already online. Either
+ERROR:  authentication failed: Usage of ngrok requires a verified account and authtoken.
+ERROR:  
+ERROR:  Sign up for an account: https://dashboard.ngrok.com/signup
+ERROR:  Install your authtoken: https://dashboard.ngrok.com/get-started/your-authtoken
+ERROR:  
+ERROR:  ERR_NGROK_4018
+ERROR:  https://ngrok.com/docs/errors/err_ngrok_4018
+ERROR:
+ERROR:  authentication failed: Usage of ngrok requires a verified account and authtoken.
+ERROR:  
+ERROR:  Sign up for an account: https://dashboard.ngrok.com/signup
+ERROR:  Install your authtoken: https://dashboard.ngrok.com/get-started/your-authtoken
+ERROR:  
+ERROR:  ERR_NGROK_4018
+ERROR:  https://ngrok.com/docs/errors/err_ngrok_4018
+ERROR:
+ERROR:  authentication failed: Usage of ngrok requires a verified account and authtoken.
+ERROR:  
+ERROR:  Sign up for an account: https://dashboard.ngrok.com/signup
+ERROR:  Install your authtoken: https://dashboard.ngrok.com/get-started/your-authtoken
+ERROR:  
+ERROR:  ERR_NGROK_4018
+ERROR:  https://ngrok.com/docs/errors/err_ngrok_4018
+ERROR:
+ERROR:  authentication failed: Usage of ngrok requires a verified account and authtoken.
+ERROR:  
+ERROR:  Sign up for an account: https://dashboard.ngrok.com/signup
+ERROR:  Install your authtoken: https://dashboard.ngrok.com/get-started/your-authtoken
+ERROR:  
+ERROR:  ERR_NGROK_4018
+ERROR:  https://ngrok.com/docs/errors/err_ngrok_4018
+ERROR:
+ERROR:  authentication failed: Usage of ngrok requires a verified account and authtoken.
+ERROR:  
+ERROR:  Sign up for an account: https://dashboard.ngrok.com/signup
+ERROR:  Install your authtoken: https://dashboard.ngrok.com/get-started/your-authtoken
+ERROR:  
+ERROR:  ERR_NGROK_4018
+ERROR:  https://ngrok.com/docs/errors/err_ngrok_4018
+ERROR:
+ERROR:  authentication failed: Usage of ngrok requires a verified account and authtoken.
+ERROR:  
+ERROR:  Sign up for an account: https://dashboard.ngrok.com/signup
+ERROR:  Install your authtoken: https://dashboard.ngrok.com/get-started/your-authtoken
+ERROR:  
+ERROR:  ERR_NGROK_4018
+ERROR:  https://ngrok.com/docs/errors/err_ngrok_4018
+ERROR:
+ERROR:  authentication failed: Usage of ngrok requires a verified account and authtoken.
+ERROR:  
+ERROR:  Sign up for an account: https://dashboard.ngrok.com/signup
+ERROR:  Install your authtoken: https://dashboard.ngrok.com/get-started/your-authtoken
+ERROR:  
+ERROR:  ERR_NGROK_4018
+ERROR:  https://ngrok.com/docs/errors/err_ngrok_4018
+ERROR:
+ERROR:  authentication failed: Usage of ngrok requires a verified account and authtoken.
+ERROR:  
+ERROR:  Sign up for an account: https://dashboard.ngrok.com/signup
+ERROR:  Install your authtoken: https://dashboard.ngrok.com/get-started/your-authtoken
+ERROR:  
+ERROR:  ERR_NGROK_4018
+ERROR:  https://ngrok.com/docs/errors/err_ngrok_4018
+ERROR:
+ERROR:  failed to start tunnel: The endpoint 'https://vice-gaffe-undercoat.ngrok-free.dev' is already online. Either
 ERROR:  1. stop your existing endpoint first, or
 ERROR:  2. start both endpoints with `--pooling-enabled` to load balance between them.
 ERROR:  
 ERROR:  ERR_NGROK_334
 ERROR:  https://ngrok.com/docs/errors/err_ngrok_334
 ERROR:
-(node:16092) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:17376) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:11056) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:18328) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:8448) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:28580) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
-(node:14580) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to security vulnerabilities, as the arguments are not escaped, only concatenated.
-(Use `node --trace-deprecation ...` to show where the warning was created)
+ERROR:  failed to start tunnel: The endpoint 'https://vice-gaffe-undercoat.ngrok-free.dev' is already online. Either
+ERROR:  1. stop your existing endpoint first, or
+ERROR:  2. start both endpoints with `--pooling-enabled` to load balance between them.
+ERROR:  
+ERROR:  ERR_NGROK_334
+ERROR:  https://ngrok.com/docs/errors/err_ngrok_334
+ERROR:
+ERROR:  failed to start tunnel: The endpoint 'https://vice-gaffe-undercoat.ngrok-free.dev' is already online. Either
+ERROR:  1. stop your existing endpoint first, or
+ERROR:  2. start both endpoints with `--pooling-enabled` to load balance between them.
+ERROR:  
+ERROR:  ERR_NGROK_334
+ERROR:  https://ngrok.com/docs/errors/err_ngrok_334
+ERROR:
+ERROR:  failed to start tunnel: The endpoint 'https://vice-gaffe-undercoat.ngrok-free.dev' is already online. Either
+ERROR:  1. stop your existing endpoint first, or
+ERROR:  2. start both endpoints with `--pooling-enabled` to load balance between them.
+ERROR:  
+ERROR:  ERR_NGROK_334
+ERROR:  https://ngrok.com/docs/errors/err_ngrok_334
+ERROR:
+ERROR:  failed to start tunnel: The endpoint 'https://vice-gaffe-undercoat.ngrok-free.dev' is already online. Either
+ERROR:  1. stop your existing endpoint first, or
+ERROR:  2. start both endpoints with `--pooling-enabled` to load balance between them.
+ERROR:  
+ERROR:  ERR_NGROK_334
+ERROR:  https://ngrok.com/docs/errors/err_ngrok_334
+ERROR:
+ERROR:  failed to start tunnel: The endpoint 'https://vice-gaffe-undercoat.ngrok-free.dev' is already online. Either
+ERROR:  1. stop your existing endpoint first, or
+ERROR:  2. start both endpoints with `--pooling-enabled` to load balance between them.
+ERROR:  
+ERROR:  ERR_NGROK_334
+ERROR:  https://ngrok.com/docs/errors/err_ngrok_334
+ERROR:
+ERROR:  failed to start tunnel: The endpoint 'https://vice-gaffe-undercoat.ngrok-free.dev' is already online. Either
+ERROR:  1. stop your existing endpoint first, or
+ERROR:  2. start both endpoints with `--pooling-enabled` to load balance between them.
+ERROR:  
+ERROR:  ERR_NGROK_334
+ERROR:  https://ngrok.com/docs/errors/err_ngrok_334
+ERROR:
+ERROR:  failed to start tunnel: The endpoint 'https://vice-gaffe-undercoat.ngrok-free.dev' is already online. Either
+ERROR:  1. stop your existing endpoint first, or
+ERROR:  2. start both endpoints with `--pooling-enabled` to load balance between them.
+ERROR:  
+ERROR:  ERR_NGROK_334
+ERROR:  https://ngrok.com/docs/errors/err_ngrok_334
+ERROR:

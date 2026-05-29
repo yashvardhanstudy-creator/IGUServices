@@ -30,7 +30,7 @@
         <table>
             <thead>
                 <tr class="section-title">
-                    <th style="width: 5%;">Semester</th>
+                    <th style="width: 6%;">Semester</th>
                     <th style="width: 8%;">Course Type</th>
                     <th style="width: 11%;">Course Code</th>
                     <th style="width: 17%;">Nomenclature of the Course</th>
@@ -39,7 +39,7 @@
                     <th style="width: 11%;">Contact hours per week<br>(L+T+P=Total)</th>
                     <th style="width: 8%;">Internal Assessment Marks (Th+P=Total)</th>
                     <th style="width: 8%;">End Term Examination Marks (Th+P=Total)</th>
-                    <th style="width: 6%;">Total Marks</th>
+                    <th style="width: 5%;">Total Marks</th>
                     <th style="width: 14%;">Exam Hours Theory, Practical</th>
                 </tr>
             </thead>
@@ -74,7 +74,7 @@
                                             let parts = course.credit_scheme.split('+');
                                             if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
                                         }
-                                        let p = pr * 2; let lt = course.lt_split === "1" && th > 1 ? 1 : 0; let l = th - lt; let tot = l + lt + p;
+                                        let p = pr * 2; let lt = course.lt_split == "1" && th > 1 ? 1 : 0; let l = th - lt; let tot = l + lt + p;
                                         %><%= l %>+<%= lt %>+<%= p %>=<%= tot %><% } 
                                     %>
                                 </td>

@@ -1,29 +1,67 @@
-2026-05-14 13:25:36 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
-2026-05-14 13:25:36 - Started 22200
-2026-05-14 13:47:48 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
-2026-05-14 13:47:48 - Started 12636
-2026-05-14 14:05:23 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
-2026-05-14 14:05:23 - Started 23796
-2026-05-15 10:22:12 - Stopping iguservicestunnel.exe
-2026-05-15 10:22:12 - ProcessKill 23796
-2026-05-15 10:22:12 - Found child process: 4476 Name: conhost.exe
-2026-05-15 10:22:12 - Found child process: 3592 Name: node.exe
-2026-05-15 10:22:12 - Stopping process 4476
-2026-05-15 10:22:12 - Send SIGINT 4476
-2026-05-15 10:22:12 - SIGINT to 4476 failed - Killing as fallback
-2026-05-15 10:22:12 - Found child process: 16360 Name: cmd.exe
-2026-05-15 10:22:12 - Found child process: 14864 Name: conhost.exe
-2026-05-15 10:22:12 - Found child process: 19616 Name: ngrok.exe
-2026-05-15 10:22:12 - Stopping process 14864
-2026-05-15 10:22:12 - Send SIGINT 14864
-2026-05-15 10:22:12 - SIGINT to 14864 failed - Killing as fallback
-2026-05-15 10:22:12 - Stopping process 19616
-2026-05-15 10:22:12 - Send SIGINT 19616
-2026-05-15 10:22:12 - SIGINT to 19616 failed - Killing as fallback
-2026-05-15 10:22:12 - Stopping process 16360
-2026-05-15 10:22:12 - Send SIGINT 16360
-2026-05-15 10:22:12 - SIGINT to 16360 failed - Killing as fallback
-2026-05-15 10:22:13 - Stop exception
+2026-05-25 15:53:38 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-05-25 15:53:38 - Started 3696
+2026-05-25 15:53:56 - Stopping iguservicestunnel.exe
+2026-05-25 15:53:56 - ProcessKill 3696
+2026-05-25 15:53:56 - Found child process: 24872 Name: conhost.exe
+2026-05-25 15:53:56 - Stopping process 24872
+2026-05-25 15:53:56 - Send SIGINT 24872
+2026-05-25 15:53:56 - SIGINT to 24872 failed - Killing as fallback
+2026-05-25 15:53:56 - Stopping process 3696
+2026-05-25 15:53:56 - Send SIGINT 3696
+2026-05-25 15:53:56 - SIGINT to 3696 failed - Killing as fallback
+2026-05-25 15:53:56 - Finished iguservicestunnel.exe
+2026-05-25 15:53:57 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-05-25 15:53:57 - Started 1216
+2026-05-25 15:58:35 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-05-25 15:58:35 - Started 24836
+2026-05-26 11:04:48 - Stopping iguservicestunnel.exe
+2026-05-26 11:04:48 - ProcessKill 24836
+2026-05-26 11:04:48 - Found child process: 14992 Name: conhost.exe
+2026-05-26 11:04:48 - Found child process: 24692 Name: node.exe
+2026-05-26 11:04:48 - Stopping process 14992
+2026-05-26 11:04:48 - Send SIGINT 14992
+2026-05-26 11:04:48 - SIGINT to 14992 failed - Killing as fallback
+2026-05-26 11:04:48 - Found child process: 21052 Name: cmd.exe
+2026-05-26 11:04:48 - Found child process: 4656 Name: conhost.exe
+2026-05-26 11:04:48 - Found child process: 4520 Name: ngrok.exe
+2026-05-26 11:04:48 - Stopping process 4656
+2026-05-26 11:04:48 - Send SIGINT 4656
+2026-05-26 11:04:48 - SIGINT to 4656 failed - Killing as fallback
+2026-05-26 11:04:49 - Stopping process 4520
+2026-05-26 11:04:49 - Send SIGINT 4520
+2026-05-26 11:04:49 - SIGINT to 4520 failed - Killing as fallback
+2026-05-26 11:04:49 - Stopping process 21052
+2026-05-26 11:04:49 - Send SIGINT 21052
+2026-05-26 11:04:49 - SIGINT to 21052 failed - Killing as fallback
+2026-05-26 11:04:49 - Stopping process 24692
+2026-05-26 11:04:49 - Send SIGINT 24692
+2026-05-26 11:04:49 - SIGINT to 24692 failed - Killing as fallback
+2026-05-26 11:04:49 - Stopping process 24836
+2026-05-26 11:04:49 - Send SIGINT 24836
+2026-05-26 11:04:49 - SIGINT to 24836 failed - Killing as fallback
+2026-05-26 11:04:49 - Finished iguservicestunnel.exe
+2026-05-26 11:04:50 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-05-26 11:04:50 - Started 5084
+2026-05-26 11:32:27 - Stopping iguservicestunnel.exe
+2026-05-26 11:32:27 - ProcessKill 5084
+2026-05-26 11:32:27 - Found child process: 28624 Name: conhost.exe
+2026-05-26 11:32:27 - Found child process: 3324 Name: node.exe
+2026-05-26 11:32:27 - Stopping process 28624
+2026-05-26 11:32:27 - Send SIGINT 28624
+2026-05-26 11:32:27 - SIGINT to 28624 failed - Killing as fallback
+2026-05-26 11:32:27 - Found child process: 3300 Name: cmd.exe
+2026-05-26 11:32:27 - Found child process: 3744 Name: conhost.exe
+2026-05-26 11:32:27 - Found child process: 24888 Name: ngrok.exe
+2026-05-26 11:32:27 - Stopping process 3744
+2026-05-26 11:32:28 - Send SIGINT 3744
+2026-05-26 11:32:28 - SIGINT to 3744 failed - Killing as fallback
+2026-05-26 11:32:28 - Stopping process 24888
+2026-05-26 11:32:28 - Send SIGINT 24888
+2026-05-26 11:32:28 - SIGINT to 24888 failed - Killing as fallback
+2026-05-26 11:32:28 - Stopping process 3300
+2026-05-26 11:32:28 - Send SIGINT 3300
+2026-05-26 11:32:28 - SIGINT to 3300 failed - Killing as fallback
+2026-05-26 11:32:28 - Stop exception
 Message:Access is denied
 Stacktrace:   at System.Diagnostics.Process.Kill()
    at winsw.WrapperService.StopProcess(Int32 pid)
@@ -32,35 +70,69 @@ Stacktrace:   at System.Diagnostics.Process.Kill()
    at winsw.WrapperService.StopProcessAndChildren(Int32 pid)
    at winsw.WrapperService.StopIt()
    at winsw.WrapperService.OnStop()
-2026-05-15 17:01:27 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
-2026-05-15 17:01:27 - Started 18552
-2026-05-18 15:57:42 - Stopping iguservicestunnel.exe
-2026-05-18 15:57:42 - ProcessKill 15132
-2026-05-18 15:57:43 - Found child process: 16096 Name: conhost.exe
-2026-05-18 15:57:43 - Found child process: 16092 Name: node.exe
-2026-05-18 15:57:43 - Stopping process 16096
-2026-05-18 15:57:43 - Send SIGINT 16096
-2026-05-18 15:57:43 - SIGINT to 16096 failed - Killing as fallback
-2026-05-18 15:57:43 - Found child process: 23576 Name: cmd.exe
-2026-05-18 15:57:43 - Found child process: 4308 Name: conhost.exe
-2026-05-18 15:57:43 - Found child process: 18316 Name: ngrok.exe
-2026-05-18 15:57:43 - Stopping process 4308
-2026-05-18 15:57:43 - Send SIGINT 4308
-2026-05-18 15:57:43 - SIGINT to 4308 failed - Killing as fallback
-2026-05-18 15:57:43 - Stopping process 18316
-2026-05-18 15:57:43 - Send SIGINT 18316
-2026-05-18 15:57:43 - SIGINT to 18316 failed - Killing as fallback
-2026-05-18 15:57:43 - Stopping process 23576
-2026-05-18 15:57:43 - Send SIGINT 23576
-2026-05-18 15:57:43 - SIGINT to 23576 failed - Killing as fallback
-2026-05-18 15:57:43 - Stop exception
-Message:Access is denied
-Stacktrace:   at System.Diagnostics.Process.Kill()
-   at winsw.WrapperService.StopProcess(Int32 pid)
-   at winsw.WrapperService.StopProcessAndChildren(Int32 pid)
-   at winsw.WrapperService.StopProcessAndChildren(Int32 pid)
+2026-05-26 11:32:28 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-05-26 11:32:28 - Started 27780
+2026-05-26 14:55:26 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-05-26 14:55:26 - Started 25072
+2026-05-26 16:59:16 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-05-26 16:59:16 - Started 8892
+2026-05-26 17:00:44 - Stopping iguservicestunnel.exe
+2026-05-26 17:00:44 - ProcessKill 8892
+2026-05-26 17:00:44 - Shutdown exception
+Message:Class not registered
+
+Stacktrace:   at System.Runtime.InteropServices.Marshal.ThrowExceptionForHRInternal(Int32 errorCode, IntPtr errorInfo)
+   at System.Management.ManagementScope.InitializeGuts(Object o)
+   at System.Management.ManagementScope.Initialize()
+   at System.Management.ManagementObjectSearcher.Initialize()
+   at System.Management.ManagementObjectSearcher.Get()
+   at winsw.WrapperService.GetChildPids(Int32 pid)
    at winsw.WrapperService.StopProcessAndChildren(Int32 pid)
    at winsw.WrapperService.StopIt()
-   at winsw.WrapperService.OnStop()
-2026-05-19 11:21:41 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
-2026-05-19 11:21:41 - Started 3740
+   at winsw.WrapperService.OnShutdown()
+2026-05-26 17:01:27 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-05-26 17:01:28 - Started 8384
+2026-05-26 17:02:03 - Stopping iguservicestunnel.exe
+2026-05-26 17:02:03 - ProcessKill 8384
+2026-05-26 17:02:03 - Shutdown exception
+Message:Class not registered
+
+Stacktrace:   at System.Runtime.InteropServices.Marshal.ThrowExceptionForHRInternal(Int32 errorCode, IntPtr errorInfo)
+   at System.Management.ManagementScope.InitializeGuts(Object o)
+   at System.Management.ManagementScope.Initialize()
+   at System.Management.ManagementObjectSearcher.Initialize()
+   at System.Management.ManagementObjectSearcher.Get()
+   at winsw.WrapperService.GetChildPids(Int32 pid)
+   at winsw.WrapperService.StopProcessAndChildren(Int32 pid)
+   at winsw.WrapperService.StopIt()
+   at winsw.WrapperService.OnShutdown()
+2026-05-26 17:02:44 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-05-26 17:02:45 - Started 9332
+2026-05-27 10:59:27 - Stopping iguservicestunnel.exe
+2026-05-27 10:59:27 - ProcessKill 9332
+2026-05-27 10:59:27 - Found child process: 9772 Name: conhost.exe
+2026-05-27 10:59:27 - Found child process: 10444 Name: node.exe
+2026-05-27 10:59:27 - Stopping process 9772
+2026-05-27 10:59:27 - Send SIGINT 9772
+2026-05-27 10:59:27 - SIGINT to 9772 failed - Killing as fallback
+2026-05-27 10:59:27 - Found child process: 10608 Name: cmd.exe
+2026-05-27 10:59:28 - Found child process: 10620 Name: conhost.exe
+2026-05-27 10:59:28 - Found child process: 10696 Name: ngrok.exe
+2026-05-27 10:59:28 - Stopping process 10620
+2026-05-27 10:59:28 - Send SIGINT 10620
+2026-05-27 10:59:28 - SIGINT to 10620 failed - Killing as fallback
+2026-05-27 10:59:28 - Stopping process 10696
+2026-05-27 10:59:28 - Send SIGINT 10696
+2026-05-27 10:59:28 - SIGINT to 10696 failed - Killing as fallback
+2026-05-27 10:59:28 - Stopping process 10608
+2026-05-27 10:59:28 - Send SIGINT 10608
+2026-05-27 10:59:28 - SIGINT to 10608 failed - Killing as fallback
+2026-05-27 10:59:28 - Stopping process 10444
+2026-05-27 10:59:28 - Send SIGINT 10444
+2026-05-27 10:59:28 - SIGINT to 10444 failed - Killing as fallback
+2026-05-27 10:59:28 - Stopping process 9332
+2026-05-27 10:59:28 - Send SIGINT 9332
+2026-05-27 10:59:28 - SIGINT to 9332 failed - Killing as fallback
+2026-05-27 10:59:28 - Finished iguservicestunnel.exe
+2026-05-27 10:59:29 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-05-27 10:59:29 - Started 14852

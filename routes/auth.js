@@ -2,12 +2,15 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../config/database");
 const { verifyLogin, verifyPrivilageLogin } = require("../constants");
+const bcrypt = require("bcrypt");
 
 router.get("/", (req, res) => {
   if (req.session && req.session.user) {
     res.render("syllabusIndex.ejs", {
       message: `Welcome, ${req.session.user.name}!`,
-      role: req.session.user.role == "admin",
+      role:
+        req.session.user.name === "admin" || req.session.user.name === "dev",
+      department: req.session.user.department,
     });
     console.log("👤 User session found:", req.session.user);
   } else {
@@ -49,23 +52,41 @@ router.post("/editPass", (req, res) => {
   console.log("📥 Received Edit Password Request:", { username });
 
   pool.query(
-    "UPDATE public.auth SET password = $1 WHERE username = $2 AND password = $3",
-    [newPassword, username, password],
-    (err, result) => {
+    "SELECT * FROM public.auth WHERE username = $1",
+    [username],
+    async (err, result) => {
       if (err) {
-        console.error("Error updating password:", err);
-        res.status(500).send("Error updating password");
+        console.error("Error fetching user for password update:", err);
+        return res.status(500).send("Error updating password");
+      }
+      if (result.rows.length === 0) {
+        return res.status(404).send("User not found");
+      }
+
+      const user = result.rows[0];
+      const isMatch = await bcrypt.compare(password, user.password);
+
+      // Fallback for plain-text legacy passwords
+      if (isMatch || password === user.password) {
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        pool.query(
+          "UPDATE public.auth SET password = $1 WHERE username = $2",
+          [hashedNewPassword, username],
+          (updateErr) => {
+            if (updateErr) {
+              console.error("Error updating password:", updateErr);
+              return res.status(500).send("Error updating password");
+            }
+            console.log("✅ Password updated successfully for user:", username);
+            res.redirect("/?message=Password updated successfully!");
+          },
+        );
       } else {
-        if (result.rowCount > 0) {
-          console.log("✅ Password updated successfully for user:", username);
-          res.redirect("/?message=Password updated successfully!");
-        } else {
-          console.log("❌ Invalid old password for user:", username);
-          res.render("editPass.ejs", {
-            message: "Invalid old password. Please try again.",
-            username: req.body.username,
-          });
-        }
+        console.log("❌ Invalid old password for user:", username);
+        res.render("editPass.ejs", {
+          message: "Invalid old password. Please try again.",
+          username: req.body.username,
+        });
       }
     },
   );
@@ -76,32 +97,39 @@ router.post("/login", (req, res) => {
   console.log("📥 Received Login Request:", { username });
 
   pool.query(
-    "select * from public.auth where username = $1 and password = $2",
-    [username, password],
-    (err, result) => {
+    "select * from public.auth where username = $1",
+    [username],
+    async (err, result) => {
       if (err) res.status(500).send("Error during login", err);
       else {
         if (result !== undefined && result.rows.length > 0) {
-          console.log("✅ Login successful for user:", username);
-          req.session.user = {
-            name: req.body.username,
-            role: result.rows[0].role,
-          };
-          res.redirect("/");
-        } else {
-          console.log("❌ Invalid credentials for user:", username);
-          return res.render("login.ejs", {
-            message: "Invalid username or password. Please try again.",
-          });
+          const user = result.rows[0];
+          const isMatch = await bcrypt.compare(password, user.password);
+
+          if (isMatch || password === user.password) {
+            console.log("✅ Login successful for user:", username);
+            req.session.user = {
+              name: user.username,
+              role: user.role,
+              department: user.department,
+            };
+            return res.redirect("/");
+          }
         }
+        console.log("❌ Invalid credentials for user:", username);
+        return res.render("login.ejs", {
+          message: "Invalid username or password. Please try again.",
+        });
       }
     },
   );
 });
 
-router.post("/register", (req, res) => {
-  const { username, password, role } = req.body;
+router.post("/register", async (req, res) => {
+  const { username, password, role, department } = req.body;
   console.log("📥 Received Registration Request:", { username });
+
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   pool.query(
     "select * from public.auth where username = $1",
@@ -115,8 +143,8 @@ router.post("/register", (req, res) => {
         });
       }
       pool.query(
-        "INSERT INTO public.auth (username, password, role) VALUES ($1, $2, $3)",
-        [username, password, role],
+        "INSERT INTO public.auth (username, password, role, department) VALUES ($1, $2, $3, $4)",
+        [username, hashedPassword, role, department || null],
         (err) => {
           if (err)
             return res.status(500).send("Error during registration", err);

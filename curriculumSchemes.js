@@ -228,7 +228,7 @@ const schemeB = [
   // Divider
   {
     isDivider: true,
-    title: "OR",
+    title: "OR (with Research)",
     color: "#fff3cd",
   },
   // Semester 8 - Option B (Project/Dissertation)
@@ -322,7 +322,12 @@ const schemeC = [
       { type: "Internship", credits: 4 },
     ],
   },
-  { isDivider: true, title: " ", color: "#fff3cd" },
+  {
+    isDivider: true,
+    title:
+      "4 credits of summer internship (earned post-semester 2 or 4) will be taken into account in the  5th semester for 3rd-year UG students who did not take an exit option.",
+    color: "#fff3cd",
+  },
   {
     number: 6,
     color: "#fbe5d6",
@@ -368,7 +373,7 @@ const schemeC = [
   // Divider
   {
     isDivider: true,
-    title: "OR",
+    title: "OR (with Research)",
     color: "#fff3cd",
   },
   // Semester 8 - Option B (Project/Dissertation)
@@ -465,7 +470,7 @@ const schemeD = [
   {
     isDivider: true,
     title:
-      "4 credits of internship, earned by a student during summer internship after 2nd Semester or 4th semester, will be taken into account in 5th semester of a student who pursue 3 year UG Programme without taking exit option.",
+      "4 credits of summer internship (earned post-semester 2 or 4) will be taken into account in the  5th semester for 3rd-year UG students who did not take an exit option.",
     color: "#fff3cd",
   },
   { isDivider: true, title: " ", color: "#fff3cd" },
@@ -513,7 +518,7 @@ const schemeD = [
   },
   {
     isDivider: true,
-    title: "OR",
+    title: "OR (with Research)",
     color: "#fff3cd",
   },
   // Semester 8 - Option B (Project/Dissertation)

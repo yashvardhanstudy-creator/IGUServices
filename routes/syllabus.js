@@ -8,6 +8,29 @@ const path = require("path");
 const { verifyLogin } = require("../constants");
 const curriculumSchemes = require("../curriculumSchemes");
 
+let globalBrowser = null;
+async function getBrowser() {
+  if (!globalBrowser || !globalBrowser.isConnected()) {
+    globalBrowser = await puppeteer.launch({
+      headless: true,
+      channel: "chrome",
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+      ],
+    });
+
+    globalBrowser.on("disconnected", () => {
+      console.warn(
+        "⚠️ Puppeteer browser disconnected or crashed. Restarting on next request...",
+      );
+      globalBrowser = null;
+    });
+  }
+  return globalBrowser;
+}
+
 const sharedSchemeMap = {
   "4+0": {
     cred: 4,
@@ -46,7 +69,7 @@ const sharedSchemeMap = {
     end_pr: 20,
     end: 70,
     max: 100,
-    dur: "3 Hours (Theory), 3 Hours (Practical)",
+    dur: "3 Hours(Th), \n3 Hours(P)",
   },
   "2+2": {
     cred: 4,
@@ -59,7 +82,7 @@ const sharedSchemeMap = {
     end_pr: 35,
     end: 70,
     max: 100,
-    dur: "2 Hours (Theory), 3 Hours (Practical)",
+    dur: "2 Hours(Th), \n3 Hours(P)",
   },
   "3+0": {
     cred: 3,
@@ -98,7 +121,7 @@ const sharedSchemeMap = {
     end_pr: 15,
     end: 35,
     max: 50,
-    dur: "2 Hours (Theory), 3 Hours (Practical)",
+    dur: "2 Hours(Th), \n3 Hours(P)",
   },
   "2+1": {
     cred: 3,
@@ -111,7 +134,7 @@ const sharedSchemeMap = {
     end_pr: 20,
     end: 55,
     max: 75,
-    dur: "2 Hours (Theory), 3 Hours (Practical)",
+    dur: "2 Hours(Th), \n3 Hours(P)",
   },
 };
 
@@ -165,18 +188,14 @@ router.get("/download-approval-template", verifyLogin, async (req, res) => {
       </body>
       </html>
     `;
-    const browser = await puppeteer.launch({
-      headless: true,
-      channel: "chrome",
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
+    const browser = await getBrowser();
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "networkidle0" });
     const pdf = await page.pdf({
       format: "A4",
       margin: { top: "20mm", bottom: "20mm", left: "20mm", right: "20mm" },
     });
-    await browser.close();
+    await page.close();
     res.set({
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="Empty_Approval_Template.pdf"`,
@@ -184,6 +203,41 @@ router.get("/download-approval-template", verifyLogin, async (req, res) => {
     res.send(pdf);
   } catch (error) {
     console.error("❌ Error generating template:", error);
+    res.status(500).send("Error generating template.");
+  }
+});
+
+router.get("/download-empty-core-template", verifyLogin, async (req, res) => {
+  try {
+    req.app.render("emptyCoreTemplate.ejs", {}, async (err, html) => {
+      if (err) {
+        console.error("Template Render Error:", err);
+        return res.status(500).send("Error rendering template.");
+      }
+      try {
+        const browser = await getBrowser();
+        const page = await browser.newPage();
+        await page.setContent(html, { waitUntil: "networkidle0" });
+        const pdf = await page.pdf({
+          format: "A4",
+          displayHeaderFooter: true,
+          headerTemplate: `<div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; display: flex; justify-content: flex-end; color: #000; padding: 5px 20px 0 20px;"><span>w.e.f. from 2026-27</span></div>`,
+          footerTemplate: `<div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; text-align: center; color: #000;"><span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span></div>`,
+          margin: { top: "20mm", bottom: "20mm", left: "10mm", right: "10mm" },
+        });
+        await page.close();
+        res.set({
+          "Content-Type": "application/pdf",
+          "Content-Disposition": `attachment; filename="Empty_Core_Courses_Scheme_A_Template.pdf"`,
+        });
+        res.send(pdf);
+      } catch (pdfErr) {
+        console.error("PDF Generation Error:", pdfErr);
+        res.status(500).send("Error generating template PDF.");
+      }
+    });
+  } catch (error) {
+    console.error("❌ Error initiating template download:", error);
     res.status(500).send("Error generating template.");
   }
 });
@@ -202,6 +256,8 @@ async function getFullSyllabusData(program_code) {
       ...c,
       is_db_course: true,
       is_missing: false,
+      lt_split:
+        c.nep_mapping && c.nep_mapping.lt_split ? c.nep_mapping.lt_split : "0",
     }));
 
     return {
@@ -303,13 +359,22 @@ async function getFullSyllabusData(program_code) {
           (c.type.startsWith("DEC") || c.type.startsWith("DSE")) &&
           !c.type.startsWith("DSEC")
         ) {
-          for (let i = 1; i <= 6; i++) {
+          const match = c.type.match(/\.(\d+)$/);
+          if (match) {
             expanded.push({
               ...c,
-              type: c.type + "." + i,
               isElective: true,
-              electiveOpt: i,
+              electiveOpt: parseInt(match[1]),
             });
+          } else {
+            for (let i = 1; i <= 6; i++) {
+              expanded.push({
+                ...c,
+                type: c.type + "." + i,
+                isElective: true,
+                electiveOpt: i,
+              });
+            }
           }
         } else {
           expanded.push(c);
@@ -419,7 +484,7 @@ async function getFullSyllabusData(program_code) {
             : isDissertation
               ? "12"
               : isInternship
-                ? ""
+                ? "4"
                 : draftCell.credits || courseTemplate.credits,
           course_name: isSeminar
             ? "Seminar"
@@ -518,6 +583,7 @@ async function getFullSyllabusData(program_code) {
             course_type: draftCell.type || courseTemplate.type,
             credits_total: draftCell.credits || courseTemplate.credits,
             credit_scheme: draftCell.credit_scheme || "",
+            lt_split: draftCell.lt_split || "0",
             is_db_course: false,
             is_missing: true,
           };
@@ -531,6 +597,26 @@ async function getFullSyllabusData(program_code) {
           is_db_course: false,
           is_missing: true,
         };
+      }
+
+      if (
+        courseObj.is_missing &&
+        (!courseObj.marks_max || courseObj.marks_max == 0)
+      ) {
+        let cCred = parseInt(courseObj.credits_total) || 0;
+        if (cCred === 4) {
+          courseObj.marks_internal_total = 30;
+          courseObj.marks_endterm_total = 70;
+          courseObj.marks_max = 100;
+        } else if (cCred === 3) {
+          courseObj.marks_internal_total = 25;
+          courseObj.marks_endterm_total = 50;
+          courseObj.marks_max = 75;
+        } else if (cCred === 2) {
+          courseObj.marks_internal_total = 15;
+          courseObj.marks_endterm_total = 35;
+          courseObj.marks_max = 50;
+        }
       }
 
       // Combine Course Type for Scheme C Multi-disciplinary Core Courses (e.g., CC-1/MCC-1)
@@ -580,138 +666,31 @@ async function getFullSyllabusData(program_code) {
           courseObj.isLinkedElective = true;
           courseObj.masterSemester = masterSemester;
         } else {
-          // This is another choice within the same base semester group.
-          if (
-            courseObj.is_db_course ||
-            (courseObj.is_custom_row && courseObj.course_code !== "-")
-          ) {
-            electiveCourseGroups[baseElectiveType].push(courseObj);
-          }
+          // ALWAYS add the choice so the PDF table correctly calculates rowspan=6
+          electiveCourseGroups[baseElectiveType].push(courseObj);
         }
 
         if (courseTemplate.electiveOpt === 1) {
           const summaryDraft =
             draftData[`${sem.number}_${index}_summary`] || {};
           let repMarks = {};
-          if (summaryDraft.credit_scheme) {
-            const sMap = {
-              "4+0": {
-                cred: 4,
-                th: 4,
-                pr: 0,
-                int: 30,
-                int_th: 30,
-                int_pr: 30,
-                end: 70,
-                end_th: 70,
-                end_pr: 70,
-                max: 100,
-                dur: "3 Hours",
-              },
-              "0+4": {
-                cred: 4,
-                th: 0,
-                pr: 4,
-                int: 30,
-                int_th: 30,
-                int_pr: 30,
-                end: 70,
-                end_th: 70,
-                end_pr: 70,
-                max: 100,
-                dur: "4 Hours",
-              },
-              "3+1": {
-                cred: 4,
-                th: 3,
-                pr: 1,
-                int: 30,
-                int_th: 30,
-                int_pr: 30,
-                end: 70,
-                end_th: 70,
-                end_pr: 70,
-                max: 100,
-                dur: "3 Hours (Theory), 3 Hours (Practical)",
-              },
-              "2+2": {
-                cred: 4,
-                th: 2,
-                pr: 2,
-                int: 30,
-                int_th: 30,
-                int_pr: 30,
-                end: 70,
-                end_th: 70,
-                end_pr: 70,
-                max: 100,
-                dur: "2 Hours (Theory), 3 Hours (Practical)",
-              },
-              "3+0": {
-                cred: 3,
-                th: 3,
-                pr: 0,
-                int: 25,
-                int_th: 25,
-                int_pr: 25,
-                end: 50,
-                end_th: 50,
-                end_pr: 50,
-                max: 75,
-                dur: "3 Hours",
-              },
-              "2+0": {
-                cred: 2,
-                th: 2,
-                pr: 0,
-                int: 15,
-                int_th: 15,
-                int_pr: 15,
-                end: 35,
-                end_th: 35,
-                end_pr: 35,
-                max: 50,
-                dur: "2 Hours",
-              },
-              "1+1": {
-                cred: 2,
-                th: 1,
-                pr: 1,
-                int: 15,
-                int_th: 15,
-                int_pr: 15,
-                end: 35,
-                end_th: 35,
-                end_pr: 35,
-                max: 50,
-                dur: "2 Hours (Theory), 3 Hours (Practical)",
-              },
-              "2+1": {
-                cred: 3,
-                th: 2,
-                pr: 1,
-                int: 20,
-                int_th: 20,
-                int_pr: 20,
-                end: 55,
-                end_th: 55,
-                end_pr: 55,
-                max: 75,
-                dur: "2 Hours (Theory), 3 Hours (Practical)",
-              },
+          let finalRepScheme =
+            summaryDraft.credit_scheme || courseObj.credit_scheme;
+          if (finalRepScheme && sharedSchemeMap[finalRepScheme]) {
+            repMarks = {
+              marks_internal_theory: sharedSchemeMap[finalRepScheme].int_th,
+              marks_internal_practical: sharedSchemeMap[finalRepScheme].int_pr,
+              marks_internal_total: sharedSchemeMap[finalRepScheme].int,
+              marks_endterm_theory: sharedSchemeMap[finalRepScheme].end_th,
+              marks_endterm_practical: sharedSchemeMap[finalRepScheme].end_pr,
+              marks_endterm_total: sharedSchemeMap[finalRepScheme].end,
+              marks_max: sharedSchemeMap[finalRepScheme].max,
+              exam_duration: sharedSchemeMap[finalRepScheme].dur,
+              credits_theory: sharedSchemeMap[finalRepScheme].th,
+              credits_practical: sharedSchemeMap[finalRepScheme].pr,
+              credit_scheme: finalRepScheme,
+              lt_split: summaryDraft.lt_split || "0",
             };
-            if (sMap[summaryDraft.credit_scheme]) {
-              repMarks = {
-                marks_internal_total: sMap[summaryDraft.credit_scheme].int,
-                marks_endterm_total: sMap[summaryDraft.credit_scheme].end,
-                marks_max: sMap[summaryDraft.credit_scheme].max,
-                exam_duration: sMap[summaryDraft.credit_scheme].dur,
-                credits_theory: sMap[summaryDraft.credit_scheme].th,
-                credits_practical: sMap[summaryDraft.credit_scheme].pr,
-                credit_scheme: summaryDraft.credit_scheme,
-                lt_split: summaryDraft.lt_split || "0",
-              };
-            }
           }
           const representativeRow = {
             ...courseObj,
@@ -735,14 +714,92 @@ async function getFullSyllabusData(program_code) {
       sem.detailed_courses.forEach((course) => {
         if (course.isElectiveGroup && !course.isLinkedElective) {
           const choices = electiveCourseGroups[course.baseElectiveType] || [];
+          const validChoices = choices.filter(
+            (c) => !c.is_missing && c.course_code !== "-",
+          );
           course.course_code =
-            choices.length > 0
-              ? choices.map((c) => c.course_code).join(" / ")
+            validChoices.length > 0
+              ? validChoices.map((c) => c.course_code).join(" / ")
               : "-";
         }
       });
     }
   });
+
+  const deptPoolCourses = {
+    AEC: [],
+    SEC: [],
+    VAC: [],
+    MDC: [],
+    Minor: [],
+    "Minor (Vocational)": [],
+  };
+  let hasDeptPoolCourses = false;
+
+  if (
+    program.level === "UG" &&
+    !isCoreSyllabus &&
+    program_code !== "UNIVERSITY_POOL"
+  ) {
+    const poolCode = `POOL|${programDetails.faculty || program.faculty}|${programDetails.department || program.department}`;
+    const targetTypes = [
+      "AEC",
+      "SEC",
+      "VAC",
+      "MDC",
+      "Minor",
+      "Minor (Vocational)",
+    ];
+    const deptPoolRes = await pool.query(
+      "SELECT * FROM course_syllabus WHERE owning_program_code = $1 AND course_type = ANY($2::text[])",
+      [poolCode, targetTypes],
+    );
+
+    deptPoolRes.rows.forEach((c) => {
+      if (deptPoolCourses[c.course_type]) {
+        let courseObj = { ...c, is_db_course: true, is_missing: false };
+        courseObj.lt_split =
+          c.nep_mapping && c.nep_mapping.lt_split
+            ? c.nep_mapping.lt_split
+            : "0";
+        if (
+          (!courseObj.marks_max || courseObj.marks_max == 0) &&
+          courseObj.credit_scheme &&
+          sharedSchemeMap[courseObj.credit_scheme]
+        ) {
+          courseObj.marks_internal_theory =
+            sharedSchemeMap[courseObj.credit_scheme].int_th;
+          courseObj.marks_internal_practical =
+            sharedSchemeMap[courseObj.credit_scheme].int_pr;
+          courseObj.marks_internal_total =
+            sharedSchemeMap[courseObj.credit_scheme].int;
+          courseObj.marks_endterm_theory =
+            sharedSchemeMap[courseObj.credit_scheme].end_th;
+          courseObj.marks_endterm_practical =
+            sharedSchemeMap[courseObj.credit_scheme].end_pr;
+          courseObj.marks_endterm_total =
+            sharedSchemeMap[courseObj.credit_scheme].end;
+          courseObj.marks_max = sharedSchemeMap[courseObj.credit_scheme].max;
+          courseObj.exam_duration =
+            sharedSchemeMap[courseObj.credit_scheme].dur;
+        }
+        deptPoolCourses[courseObj.course_type].push(courseObj);
+        hasDeptPoolCourses = true;
+      }
+    });
+  }
+
+  let coreData = null;
+  if (
+    program.ug_pg === "UG" &&
+    program.discipline_type === "Multi-disciplinary" &&
+    !isCoreSyllabus &&
+    program_code !== "UNIVERSITY_POOL"
+  ) {
+    try {
+      coreData = await getFullSyllabusData(program_code + "_CORE");
+    } catch (e) {}
+  }
 
   return {
     program,
@@ -756,6 +813,9 @@ async function getFullSyllabusData(program_code) {
     specialization: program.specialization,
     is_core_pdf: isCoreSyllabus,
     electiveCourseGroups,
+    deptPoolCourses,
+    hasDeptPoolCourses,
+    coreData,
   };
 }
 
@@ -783,11 +843,7 @@ router.get("/download-full-syllabus-pdf", verifyLogin, async (req, res) => {
     req.app.render(viewFile, data, async (err, html) => {
       if (err) return res.status(500).send("Error rendering HTML for PDF");
       try {
-        const browser = await puppeteer.launch({
-          headless: true,
-          channel: "chrome",
-          args: ["--no-sandbox", "--disable-setuid-sandbox"],
-        });
+        const browser = await getBrowser();
         const page = await browser.newPage();
         await page.setUserAgent(
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -810,17 +866,17 @@ router.get("/download-full-syllabus-pdf", verifyLogin, async (req, res) => {
           format: "A4",
           printBackground: true,
           displayHeaderFooter: true,
-          headerTemplate: `<div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; text-align: center; color: #000; padding-top: 5px;">Department of ${data.programDetails.department || data.program.department || "N/A"} w.e.f. from 2026-27</div>`,
+          headerTemplate: `<div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; display: flex; justify-content: space-between; color: #000; padding: 5px 20px 0 20px;"><span>Department of ${data.programDetails.department || data.program.department || "N/A"}</span><span>w.e.f. from 2026-27</span></div>`,
           footerTemplate: `
             <div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; text-align: center; color: #000; position: relative;">
-              <span style="position: absolute; left: 20px;">Syllabus - ${data.academic_program}</span>
+              <span style="position: absolute; left: 20px;">Syllabus - ${data.academic_program} - ${data.program.level || data.program.ug_pg || "N/A"}</span>
               <span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span>
               <span style="position: absolute; right: 20px;">IGU Meerpur</span>
             </div>
           `,
-          preferCSSPageSize: true,
+          margin: { top: "20mm", right: "10mm", bottom: "25mm", left: "10mm" },
         });
-        await browser.close();
+        await page.close();
 
         let finalPdfBuffer = pdf;
         // PDF-Lib Magic: Merge the uploaded file securely into the new document!
@@ -913,7 +969,12 @@ router.get("/download-pool-pdf", verifyLogin, async (req, res) => {
       "SELECT * FROM course_syllabus WHERE owning_program_code = $1 AND course_type = ANY($2::text[])",
       [poolCode, targetTypes],
     );
-    const courses = coursesRes.rows;
+    const courses = coursesRes.rows.map((c) => {
+      let courseObj = { ...c, is_db_course: true, is_missing: false };
+      courseObj.lt_split =
+        c.nep_mapping && c.nep_mapping.lt_split ? c.nep_mapping.lt_split : "0";
+      return courseObj;
+    });
 
     if (courses.length === 0)
       return res
@@ -959,11 +1020,7 @@ router.get("/download-pool-pdf", verifyLogin, async (req, res) => {
           return res.status(500).send("Error rendering HTML for PDF");
         }
         try {
-          const browser = await puppeteer.launch({
-            headless: true,
-            channel: "chrome",
-            args: ["--no-sandbox", "--disable-setuid-sandbox"],
-          });
+          const browser = await getBrowser();
           const page = await browser.newPage();
           await page.setUserAgent(
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -986,7 +1043,7 @@ router.get("/download-pool-pdf", verifyLogin, async (req, res) => {
             format: "A4",
             printBackground: true,
             displayHeaderFooter: true,
-            headerTemplate: `<div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; text-align: center; color: #000; padding-top: 5px;">Department of ${programDetails.department || program.department || "N/A"} w.e.f. from 2026-27</div>`,
+            headerTemplate: `<div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; display: flex; justify-content: space-between; color: #000; padding: 5px 20px 0 20px;"><span>Department of ${programDetails.department || program.department || "N/A"}</span><span>w.e.f. from 2026-27</span></div>`,
             footerTemplate: `
               <div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; text-align: center; color: #000; position: relative;">
                 <span style="position: absolute; left: 20px;">${poolTitle}</span>
@@ -995,13 +1052,13 @@ router.get("/download-pool-pdf", verifyLogin, async (req, res) => {
               </div>
             `,
             margin: {
-              top: "20mm",
+              top: "15mm",
               right: "10mm",
-              bottom: "25mm",
+              bottom: "15mm",
               left: "10mm",
             },
           });
-          await browser.close();
+          await page.close();
 
           res.set({
             "Content-Type": "application/pdf",
@@ -1020,6 +1077,150 @@ router.get("/download-pool-pdf", verifyLogin, async (req, res) => {
   }
 });
 
+router.get("/download-dept-pool-pdf", verifyLogin, async (req, res) => {
+  try {
+    const { program_code, category } = req.query;
+    if (!program_code || !category)
+      return res.status(400).send("Missing program code or category");
+
+    const progRes = await pool.query(
+      "SELECT * FROM programs WHERE program_code = $1",
+      [program_code],
+    );
+    if (progRes.rows.length === 0)
+      return res.status(404).send("Program not found.");
+
+    const program = progRes.rows[0];
+    let programDetails = program.program_details;
+    if (typeof programDetails === "string") {
+      try {
+        programDetails = JSON.parse(programDetails);
+      } catch (e) {
+        programDetails = {};
+      }
+    }
+    programDetails = programDetails || {};
+
+    if (!programDetails.department && program.department)
+      programDetails.department = program.department;
+    if (!programDetails.faculty && program.faculty)
+      programDetails.faculty = program.faculty;
+
+    const poolCode = `POOL|${programDetails.faculty}|${programDetails.department}`;
+    const targetTypes =
+      category === "Minor" ? ["Minor", "Minor (Vocational)"] : [category];
+
+    const coursesRes = await pool.query(
+      "SELECT * FROM course_syllabus WHERE owning_program_code = $1 AND course_type = ANY($2::text[])",
+      [poolCode, targetTypes],
+    );
+
+    const courses = coursesRes.rows.map((c) => {
+      let courseObj = { ...c, is_db_course: true, is_missing: false };
+      courseObj.lt_split =
+        c.nep_mapping && c.nep_mapping.lt_split ? c.nep_mapping.lt_split : "0";
+      if (
+        (!courseObj.marks_max || courseObj.marks_max == 0) &&
+        courseObj.credit_scheme &&
+        sharedSchemeMap[courseObj.credit_scheme]
+      ) {
+        courseObj.marks_internal_theory =
+          sharedSchemeMap[courseObj.credit_scheme].int_th;
+        courseObj.marks_internal_practical =
+          sharedSchemeMap[courseObj.credit_scheme].int_pr;
+        courseObj.marks_internal_total =
+          sharedSchemeMap[courseObj.credit_scheme].int;
+        courseObj.marks_endterm_theory =
+          sharedSchemeMap[courseObj.credit_scheme].end_th;
+        courseObj.marks_endterm_practical =
+          sharedSchemeMap[courseObj.credit_scheme].end_pr;
+        courseObj.marks_endterm_total =
+          sharedSchemeMap[courseObj.credit_scheme].end;
+        courseObj.marks_max = sharedSchemeMap[courseObj.credit_scheme].max;
+        courseObj.exam_duration = sharedSchemeMap[courseObj.credit_scheme].dur;
+      }
+      return courseObj;
+    });
+
+    if (courses.length === 0)
+      return res
+        .status(404)
+        .send(
+          `No courses found for this department in the ${category} category.`,
+        );
+
+    const categoryNames = {
+      AEC: "Ability Enhancement Courses(AEC)",
+      SEC: "Skill Enhancement Courses(SEC)",
+      VAC: "Value Added Courses(VAC)",
+      MDC: "Multi-Disciplinary Courses(MDC)",
+    };
+
+    let poolTitle = "";
+    if (category === "Minor") {
+      poolTitle = `Courses offered by the department as Minor/ Minor ( Vocational ) in the University pool for UG Programme`;
+    } else {
+      poolTitle = `Courses offered by the department as ${categoryNames[category]} in the University pool for UG Programme`;
+    }
+
+    req.app.render(
+      "deptPoolSyllabusView.ejs",
+      {
+        baseUrl: `${req.protocol}://${req.get("host")}`,
+        program,
+        programDetails,
+        poolTitle,
+        isMDC: category === "MDC",
+        allCourses: courses,
+      },
+      async (err, html) => {
+        if (err) return res.status(500).send("Error rendering HTML for PDF");
+        try {
+          const browser = await getBrowser();
+          const page = await browser.newPage();
+          await page.setContent(html, { waitUntil: "networkidle2" });
+          await page.evaluate(async () => {
+            const images = document.querySelectorAll("img");
+            await Promise.all(
+              Array.from(images).map((img) => {
+                if (img.complete) return Promise.resolve();
+                return new Promise((resolve) => {
+                  img.onload = resolve;
+                  img.onerror = resolve;
+                });
+              }),
+            );
+          });
+          const pdf = await page.pdf({
+            format: "A4",
+            printBackground: true,
+            displayHeaderFooter: true,
+            headerTemplate: `<div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; display: flex; justify-content: space-between; color: #000; padding: 5px 20px 0 20px;"><span>Department of ${programDetails.department || program.department || "N/A"}</span><span>w.e.f. from 2026-27</span></div>`,
+            footerTemplate: `<div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; text-align: center; color: #000; position: relative;"><span style="position: absolute; left: 20px;">${category} Pool</span><span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span><span style="position: absolute; right: 20px;">IGU Meerpur</span></div>`,
+            margin: {
+              top: "15mm",
+              right: "10mm",
+              bottom: "15mm",
+              left: "10mm",
+            },
+          });
+          await page.close();
+          res.set({
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename="${(programDetails.department || program.department).replace(/[^a-zA-Z0-9]/g, "_")}_${category}_Pool.pdf"`,
+          });
+          res.send(pdf);
+        } catch (pdfErr) {
+          console.error("❌ PDF Generation Error:", pdfErr);
+          res.status(500).send("Error generating PDF document.");
+        }
+      },
+    );
+  } catch (error) {
+    res.status(500).send("Error generating dept pool syllabus PDF");
+  }
+});
+
 router.get("/download-master-pool-pdf", verifyLogin, async (req, res) => {
   try {
     const { category } = req.query;
@@ -1029,7 +1230,12 @@ router.get("/download-master-pool-pdf", verifyLogin, async (req, res) => {
       "SELECT * FROM course_syllabus WHERE course_type = $1 AND (owning_program_code LIKE 'POOL%' OR owning_program_code IS NULL OR owning_program_code = 'From University Pool') ORDER BY owning_program_code ASC, course_code ASC",
       [category],
     );
-    const courses = coursesRes.rows;
+    const courses = coursesRes.rows.map((c) => {
+      let courseObj = { ...c, is_db_course: true, is_missing: false };
+      courseObj.lt_split =
+        c.nep_mapping && c.nep_mapping.lt_split ? c.nep_mapping.lt_split : "0";
+      return courseObj;
+    });
 
     if (courses.length === 0)
       return res
@@ -1090,11 +1296,7 @@ router.get("/download-master-pool-pdf", verifyLogin, async (req, res) => {
           return res.status(500).send("Error rendering HTML for PDF");
         }
         try {
-          const browser = await puppeteer.launch({
-            headless: true,
-            channel: "chrome",
-            args: ["--no-sandbox", "--disable-setuid-sandbox"],
-          });
+          const browser = await getBrowser();
           const page = await browser.newPage();
           await page.setUserAgent(
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -1105,7 +1307,7 @@ router.get("/download-master-pool-pdf", verifyLogin, async (req, res) => {
             format: "A4",
             printBackground: true,
             displayHeaderFooter: true,
-            headerTemplate: `<div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; text-align: center; color: #000; padding-top: 5px;">Multiple Departments w.e.f. from 2026-27</div>`,
+            headerTemplate: `<div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; display: flex; justify-content: space-between; color: #000; padding: 5px 20px 0 20px;"><span>Multiple Departments</span><span>w.e.f. from 2026-27</span></div>`,
             footerTemplate: `
               <div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; text-align: center; color: #000; position: relative;">
                 <span style="position: absolute; left: 20px;">${poolTitle}</span>
@@ -1114,13 +1316,13 @@ router.get("/download-master-pool-pdf", verifyLogin, async (req, res) => {
               </div>
             `,
             margin: {
-              top: "20mm",
+              top: "15mm",
               right: "10mm",
-              bottom: "25mm",
+              bottom: "15mm",
               left: "10mm",
             },
           });
-          await browser.close();
+          await page.close();
 
           res.set({
             "Content-Type": "application/pdf",
@@ -1173,21 +1375,17 @@ router.get("/download-pdf/:courseCode", verifyLogin, async (req, res) => {
     req.app.render("courseView.ejs", { data: course }, async (err, html) => {
       if (err) return res.status(500).send("Render Error");
       try {
-        const browser = await puppeteer.launch({
-          headless: true,
-          channel: "chrome",
-          args: ["--no-sandbox"],
-        });
+        const browser = await getBrowser();
         const page = await browser.newPage();
         await page.setContent(html, { waitUntil: "networkidle0" });
         const pdf = await page.pdf({
           format: "A4",
           displayHeaderFooter: true,
-          headerTemplate: `<div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; text-align: center; color: #000; padding-top: 5px;">Department of ${deptName} w.e.f. from 2026-27</div>`,
+          headerTemplate: `<div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; display: flex; justify-content: space-between; color: #000; padding: 5px 20px 0 20px;"><span>Department of ${deptName}</span><span>w.e.f. from 2026-27</span></div>`,
           footerTemplate: "<span></span>",
-          margin: { top: "20mm", bottom: "20mm" },
+          margin: { top: "15mm", bottom: "15mm", left: "10mm", right: "10mm" },
         });
-        await browser.close();
+        await page.close();
         res.set({
           "Content-Type": "application/pdf",
           "Content-Disposition": `attachment; filename="${courseCode}.pdf"`,

@@ -111,7 +111,34 @@ router.post(
         peo,
         po,
         pso,
+        scheme_total_semesters,
+        scheme_total_marks,
+        scheme_total_credits,
+        scheme_framework,
+        scheme_name_override,
       } = req.body;
+
+      // Row-Level Security Check
+      if (
+        req.session.user &&
+        req.session.user.name !== "admin" &&
+        req.session.user.name !== "dev"
+      ) {
+        const checkRes = await pool.query(
+          "SELECT department FROM programs WHERE program_code = $1",
+          [program_code],
+        );
+        if (
+          checkRes.rows.length > 0 &&
+          checkRes.rows[0].department !== req.session.user.department
+        ) {
+          return res
+            .status(403)
+            .send(
+              "Unauthorized: You can only modify programs belonging to your department.",
+            );
+        }
+      }
 
       let approval_pdf = req.body.existing_approval_pdf || "";
       if (req.file) {
@@ -120,7 +147,10 @@ router.post(
 
       const programDetails = {
         title: title || "",
-        program_code: printed_program_code || program_code || "",
+        program_code:
+          typeof printed_program_code !== "undefined"
+            ? printed_program_code.trim()
+            : program_code || "",
         academic_year: academic_year || "",
         department: department || "",
         faculty: faculty || "",
@@ -140,6 +170,11 @@ router.post(
         psos: Array.isArray(pso)
           ? pso.filter((item) => item && item.trim() !== "")
           : [],
+        scheme_total_semesters: scheme_total_semesters || "",
+        scheme_total_marks: scheme_total_marks || "",
+        scheme_total_credits: scheme_total_credits || "",
+        scheme_framework: scheme_framework || "",
+        scheme_name_override: scheme_name_override || "",
       };
 
       await pool.query(
@@ -182,13 +217,23 @@ router.post(
         else if (discipline_type === "Multi-disciplinary") scheme = "C";
       }
 
-      const program_code = `${department.substring(0, 4).toUpperCase().replace(/\s/g, "")}-${Date.now()}`;
+      let finalDept = department || "";
+      if (
+        req.session.user &&
+        req.session.user.name !== "admin" &&
+        req.session.user.name !== "dev" &&
+        req.session.user.department
+      ) {
+        finalDept = req.session.user.department; // Force the department to match the logged-in user
+      }
+
+      const program_code = `${(finalDept || "PROG").substring(0, 4).toUpperCase().replace(/\s/g, "")}-${Date.now()}`;
       const defaultDetails = JSON.stringify({});
       const insertQuery = `INSERT INTO programs (program_code, subject_name, specialization, level, scheme, num_pos, num_peos, num_psos, program_details, faculty, department, ug_pg, discipline_type, discipline_category) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) ON CONFLICT (program_code) DO NOTHING`;
 
       await pool.query(insertQuery, [
         program_code,
-        department,
+        finalDept,
         "",
         level,
         scheme,
@@ -197,7 +242,7 @@ router.post(
         parseInt(num_psos) >= 0 ? parseInt(num_psos) : 2,
         defaultDetails,
         faculty || "",
-        department || "",
+        finalDept || "",
         level || "",
         discipline_type || null,
         discipline_category || null,
@@ -215,7 +260,12 @@ router.get("/programs-list", verifyPrivilageLogin, async (req, res) => {
     const result = await pool.query(
       "SELECT * FROM programs WHERE program_code NOT LIKE '%_CORE' ORDER BY subject_name ASC, specialization ASC",
     );
-    res.render("programsList.ejs", { programs: result.rows });
+    res.render("programsList.ejs", {
+      programs: result.rows,
+      isAdmin:
+        req.session.user.name === "admin" || req.session.user.name === "dev",
+      userDept: req.session.user.department,
+    });
   } catch (error) {
     console.error("❌ Error fetching programs list:", error);
     res.status(500).send("Error fetching programs list.");
@@ -226,6 +276,28 @@ router.post("/delete-program", verifyPrivilageLogin, async (req, res) => {
   try {
     const { program_code } = req.body;
     if (program_code) {
+      // Row-Level Security Check
+      if (
+        req.session.user &&
+        req.session.user.name !== "admin" &&
+        req.session.user.name !== "dev"
+      ) {
+        const checkRes = await pool.query(
+          "SELECT department FROM programs WHERE program_code = $1",
+          [program_code],
+        );
+        if (
+          checkRes.rows.length > 0 &&
+          checkRes.rows[0].department !== req.session.user.department
+        ) {
+          return res
+            .status(403)
+            .send(
+              "Unauthorized: You can only delete programs belonging to your department.",
+            );
+        }
+      }
+
       await pool.query("DELETE FROM programs WHERE program_code = $1", [
         program_code,
       ]);
@@ -338,7 +410,7 @@ router.get("/curriculum", verifyPrivilageLogin, async (req, res) => {
     let savedCoursesMap = {};
     if (usedCodes.size > 0) {
       const coursesRes = await pool.query(
-        "SELECT course_code, course_name, credit_scheme, credits_theory, credits_practical, credits_total, marks_internal_total, marks_endterm_total, marks_max, exam_duration FROM course_syllabus WHERE course_code = ANY($1::text[])",
+        "SELECT course_code, course_name, credit_scheme, credits_theory, credits_practical, credits_total, marks_internal_total, marks_endterm_total, marks_max, exam_duration, nep_mapping FROM course_syllabus WHERE course_code = ANY($1::text[])",
         [Array.from(usedCodes)],
       );
       coursesRes.rows.forEach((c) => {
@@ -380,6 +452,28 @@ router.post(
           .status(400)
           .json({ success: false, error: "Missing program code" });
 
+      // Row-Level Security Check
+      if (
+        req.session.user &&
+        req.session.user.name !== "admin" &&
+        req.session.user.name !== "dev"
+      ) {
+        const checkRes = await pool.query(
+          "SELECT department FROM programs WHERE program_code = $1",
+          [program_code],
+        );
+        if (
+          checkRes.rows.length > 0 &&
+          checkRes.rows[0].department !== req.session.user.department
+        ) {
+          return res.status(403).json({
+            success: false,
+            error:
+              "Unauthorized: You can only modify curricula for your department.",
+          });
+        }
+      }
+
       await pool.query(insertCurriculumDraftQuery, [
         program_code,
         JSON.stringify(draft_data),
@@ -404,8 +498,14 @@ router.post(
               ],
             );
           } else {
-            const dbScheme = existingCourse.rows[0].credit_scheme;
-            if ((!dbScheme || dbScheme.trim() === "") && item.credit_scheme) {
+            const dbCourse = existingCourse.rows[0];
+            // If the draft has a scheme, and it's different from the one in the DB,
+            // or if the DB has no scheme, update it.
+            if (
+              item.credit_scheme &&
+              (item.credit_scheme !== dbCourse.credit_scheme ||
+                !dbCourse.credit_scheme)
+            ) {
               await pool.query(
                 "UPDATE course_syllabus SET credit_scheme = $1 WHERE course_code = $2",
                 [item.credit_scheme, item.code],

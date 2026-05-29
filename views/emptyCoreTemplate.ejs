@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Empty Core Syllabus Template</title>
+    <style>
+        body { font-family: 'Times New Roman', serif; padding: 20px; color: #000; }
+        h2 { text-align: center; margin-bottom: 30px; font-size: 16px; font-weight: bold; text-transform: uppercase; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 40px; font-size: 12px; }
+        th, td { border: 1px solid black; padding: 10px; text-align: center; }
+        th { background-color: #f2f2f2; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>Courses offered by the department as Core Courses in Multi-disciplinary UG Program (Scheme A)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 8%;">Semester</th>
+                <th style="width: 8%;">Course Type</th>
+                <th style="width: 12%;">Course Code</th>
+                <th style="width: 28%;">Nomenclature of the Course</th>
+                <th style="width: 8%;">Credits</th>
+                <th style="width: 8%;">Contact Hours</th>
+                <th style="width: 8%;">Internal Marks</th>
+                <th style="width: 8%;">End Term Marks</th>
+                <th style="width: 8%;">Max. Marks</th>
+                <th style="width: 12%;">Exam Duration</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(let i = 1; i <= 6; i++) { %>
+            <tr>
+                <td><%= i %><%= i === 1 ? 'st' : i === 2 ? 'nd' : i === 3 ? 'rd' : 'th' %></td>
+                <td>CC-<%= i %></td>
+                <td style="height: 35px;"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+</body>
+</html>

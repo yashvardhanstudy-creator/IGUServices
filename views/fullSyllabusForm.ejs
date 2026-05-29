@@ -39,6 +39,9 @@
                 <li><strong>Full Syllabus:</strong> Click "Fill Details & View Main Syllabus" to add program approvals, vision/mission statements, and generate the complete PDF document.</li>
                 <li><strong>Internal Program Code:</strong>The Generated Internal Program Code is not the Actual Program Code designated by the University.</li>
                 <li><strong>Master Catalogs:</strong> To print lists of University Electives grouped by Faculty and Department, select the catalogs under the "All University Pool Courses" section.</li>
+                <div style="text-align: center; margin: 20px 0 0 0;">
+                    <a href="/download-empty-core-template" class="btn" target="_blank">📄 Download Empty Core Courses (Scheme A) Template</a>
+                </div>
             </ul>
         </div>
 
@@ -60,8 +63,11 @@
                             <div style="width: 100%; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px;">
                                 <% if (!opt.program_code.endsWith('_CORE')) { %>
                                     <div style="font-size: 13px; color: #666; margin-right: auto; padding-top: 5px;">⤷ Department Contributions:</div>
-                                    <a href="/download-pool-pdf?program_code=<%= encodeURIComponent(opt.program_code) %>&pool_type=aec_sec_vac_mdc" class="btn" style="background: #17a2b8; font-size: 13px; padding: 6px 12px;">📄 AEC/SEC/VAC/MDC Pool</a>
-                                    <a href="/download-pool-pdf?program_code=<%= encodeURIComponent(opt.program_code) %>&pool_type=minor" class="btn" style="background: #6f42c1; font-size: 13px; padding: 6px 12px;">📄 Minor/Minor(V) Pool</a>
+                                    <a href="/download-dept-pool-pdf?program_code=<%= encodeURIComponent(opt.program_code) %>&category=AEC" class="btn" style="background: #17a2b8; font-size: 13px; padding: 6px 12px;">📄 AEC</a>
+                                    <a href="/download-dept-pool-pdf?program_code=<%= encodeURIComponent(opt.program_code) %>&category=SEC" class="btn" style="background: #17a2b8; font-size: 13px; padding: 6px 12px;">📄 SEC</a>
+                                    <a href="/download-dept-pool-pdf?program_code=<%= encodeURIComponent(opt.program_code) %>&category=VAC" class="btn" style="background: #17a2b8; font-size: 13px; padding: 6px 12px;">📄 VAC</a>
+                                    <a href="/download-dept-pool-pdf?program_code=<%= encodeURIComponent(opt.program_code) %>&category=MDC" class="btn" style="background: #17a2b8; font-size: 13px; padding: 6px 12px;">📄 MDC</a>
+                                    <a href="/download-dept-pool-pdf?program_code=<%= encodeURIComponent(opt.program_code) %>&category=Minor" class="btn" style="background: #6f42c1; font-size: 13px; padding: 6px 12px;">📄 Minor/ Minor (V)</a>
                                 <% } %>
                                 <% if (opt.discipline_type === 'Multi-disciplinary' && !opt.program_code.endsWith('_CORE')) { %>
                                     <a href="/download-full-syllabus-pdf?program_code=<%= encodeURIComponent(opt.program_code + '_CORE') %>" onclick="downloadPdf(this, 'Core PDF')" class="btn" style="background: #28a745; font-size: 13px; padding: 6px 12px; margin-left: auto;">📄 Download Core Syllabus (Scheme A)</a>

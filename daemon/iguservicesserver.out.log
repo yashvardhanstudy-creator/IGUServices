@@ -270,3 +270,412 @@
 👤 User session found: { name: 'admin', role: 'admin' }
 👤 User session found: { name: 'admin', role: 'admin' }
 👤 User session found: { name: 'admin', role: 'admin' }
+🚀 Server running on http://0.0.0.0:3005
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+🚀 Server running on http://localhost:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'programs' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+✅ Table 'auth' ensured to exist.
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'auth' ensured to exist.
+✅ Table 'programs' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'auth' ensured to exist.
+✅ Table 'programs' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+✅ User logged out successfully.
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+✅ User logged out successfully.
+👤 User session found: { name: 'admin', role: 'admin' }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+✅ User logged out successfully.
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'programs' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+✅ Table 'auth' ensured to exist.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'programs' ensured to exist.
+✅ Table 'auth' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'curriculum_drafts' ensured to exist.
+✅ Table 'auth' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Table 'programs' ensured to exist.
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'programs' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Table 'auth' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'auth' ensured to exist.
+✅ Table 'programs' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Edit Password Request: { username: 'admin' }
+✅ Password updated successfully for user: admin
+👤 User session found: { name: 'admin', role: 'admin' }
+📥 Received Registration Request: { username: 'test1' }
+✅ Registration successful for user: test1
+👤 User session found: { name: 'admin', role: 'admin' }
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'programs' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Table 'auth' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'test1' }
+✅ Registration successful for user: test1
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'test1' }
+✅ Login successful for user: test1
+👤 User session found: { name: 'test1', role: 'admin', department: null }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Edit Password Request: { username: 'admin' }
+✅ Password updated successfully for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'teacher' }
+✅ Login successful for user: teacher
+👤 User session found: { name: 'teacher', role: 'user', department: null }
+👤 User session found: { name: 'teacher', role: 'user', department: null }
+👤 User session found: { name: 'teacher', role: 'user', department: null }
+👤 User session found: { name: 'teacher', role: 'user', department: null }
+👤 User session found: { name: 'teacher', role: 'user', department: null }
+👤 User session found: { name: 'teacher', role: 'user', department: null }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'auth' ensured to exist.
+✅ Table 'programs' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'programs' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Table 'auth' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'Admin ' }
+❌ Invalid credentials for user: Admin 
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }

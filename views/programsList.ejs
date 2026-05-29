@@ -78,9 +78,8 @@
         <table>
             <thead>
                 <tr>
-                    <th>Internal Programme Code</th>
-                    <th>Subject Name</th>
-                    <th>Specialization</th>
+                    <th>Internal Programme ID</th>
+                    <th>Department Name</th>
                     <th>Level</th>
                     <th>Scheme</th>
                     <th>POs/PEOs/PSOs</th>
@@ -92,16 +91,19 @@
                     <tr>
                         <td><strong><%= p.program_code %></strong></td>
                         <td><%= p.subject_name %></td>
-                        <td><%= p.specialization || 'General' %></td>
                         <td><%= p.level %></td>
                         <td>Scheme <%= p.scheme %></td>
                         <td><%= p.num_pos %> / <%= p.num_peos %> / <%= p.num_psos %></td>
                         <td style="white-space: nowrap;">
-                            <a class="btn" href="/curriculum?program_code=<%= encodeURIComponent(p.program_code) %>&scheme=<%= encodeURIComponent(p.scheme) %>">Edit</a>
-                            <form action="/delete-program" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this program? Its curriculum draft will also be permanently deleted.');">
-                                <input type="hidden" name="program_code" value="<%= p.program_code %>">
-                                <button type="submit" class="btn" style="background-color: #dc3545; color: white; border: none; cursor: pointer; margin-left: 5px;">Delete</button>
-                            </form>
+                            <% if (locals.isAdmin || (locals.userDept && p.department === locals.userDept)) { %>
+                                <a class="btn" href="/curriculum?program_code=<%= encodeURIComponent(p.program_code) %>&scheme=<%= encodeURIComponent(p.scheme) %>">Edit</a>
+                                <form action="/delete-program" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this program? Its curriculum draft will also be permanently deleted.');">
+                                    <input type="hidden" name="program_code" value="<%= p.program_code %>">
+                                    <button type="submit" class="btn" style="background-color: #dc3545; color: white; border: none; cursor: pointer; margin-left: 5px;">Delete</button>
+                                </form>
+                            <% } else { %>
+                                <span style="color: #6c757d; font-style: italic;">🔒 Locked</span>
+                            <% } %>
                         </td>
                     </tr>
                 <% }) %>

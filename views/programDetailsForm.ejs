@@ -35,7 +35,7 @@
                 <input type="text" id="title" name="title" value="<%= programDetails.title || '' %>">
                 <div class="form-group">
                     <label for="printed_program_code">Program Code (For Printing)</label>
-                    <input type="text" id="printed_program_code" name="printed_program_code" value="<%= programDetails.program_code || '' %>" placeholder="e.g. BTECH-CS-01" required>
+                    <input type="text" id="printed_program_code" name="printed_program_code" value="<%= programDetails.program_code || '' %>" placeholder="e.g. BTECH-CS-01 (Leave blank to hide)">
                 </div>
                 <label for="academic_year">Effective from Academic Session</label>
                 <input type="text" id="academic_year" name="academic_year" placeholder="e.g., 2024-25" value="<%= programDetails.academic_year || '' %>">
@@ -84,6 +84,24 @@
 
                 <label for="eligibility_exam">ELIGIBILITY FOR EXAMINATION</label>
                 <textarea id="eligibility_exam" name="eligibility_exam"><%= programDetails.eligibility_exam || '' %></textarea>
+            </div>
+            
+            <div class="form-section">
+                <h3>Scheme of Examination Override (Optional)</h3>
+                <p style="font-size: 14px; color: #555;">The system auto-calculates these values. Only fill these inputs if you want to force specific text in the printed Scheme of Examination table.</p>
+                <table style="border: none; margin-top: 0;">
+                    <tr>
+                        <td style="border: none; padding: 5px;"><label>Total number of Semesters</label><input type="text" name="scheme_total_semesters" value="<%= programDetails.scheme_total_semesters || '' %>" placeholder="Auto-calculated if blank"></td>
+                        <td style="border: none; padding: 5px;"><label>Total Marks</label><input type="text" name="scheme_total_marks" value="<%= programDetails.scheme_total_marks || '' %>" placeholder="Auto-calculated if blank"></td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; padding: 5px;"><label>Total Credit</label><input type="text" name="scheme_total_credits" value="<%= programDetails.scheme_total_credits || '' %>" placeholder="Auto-calculated if blank"></td>
+                        <td style="border: none; padding: 5px;"><label>Framework</label><input type="text" name="scheme_framework" value="<%= programDetails.scheme_framework || '' %>" placeholder="Auto-calculated if blank"></td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; padding: 5px;" colspan="2"><label>Scheme Name</label><input type="text" name="scheme_name_override" value="<%= programDetails.scheme_name_override || '' %>" placeholder="e.g. Scheme A"></td>
+                    </tr>
+                </table>
             </div>
 
             <div class="form-section">

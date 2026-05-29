@@ -146,7 +146,18 @@
     <div class="container">
         <img src="https://d2xe8shibzpjog.cloudfront.net/logo/igu_logo.png" alt="IGU" style="height: 80px; width: auto;margin-bottom: 20px;">
         <h1>Syllabus & Course Management</h1>
-        <p style="color: #555; margin-bottom: 20px; font-weight: bold;"><%= locals.message || "" %></p>
+        <div style="color: #555; margin-bottom: 20px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 10px;">
+            <span><%= locals.message || "" %></span>
+            <% if (locals.department) { %>
+                <span style="background: #e8f4f8; color: #0056b3; padding: 4px 10px; border-radius: 12px; font-size: 13px; border: 1px solid #b8daff; display: inline-flex; align-items: center; gap: 4px;">
+                    🏛️ <%= locals.department %>
+                </span>
+            <% } else if (locals.role) { %>
+                <span style="background: #f8d7da; color: #721c24; padding: 4px 10px; border-radius: 12px; font-size: 13px; border: 1px solid #f5c6cb; display: inline-flex; align-items: center; gap: 4px;">
+                    🛡️ Super Admin
+                </span>
+            <% } %>
+        </div>
         <% if (locals.query && locals.query.message) { %>
             <div class="success-message"><%= locals.query.message %></div>
         <% } %>
@@ -184,18 +195,19 @@
                     <span style="font-size: 13px; color: #666;">👉 Click <strong>"New Programme"</strong> (<code>/program-specialization-form</code>)</span>
                 </li>
                 <li style="margin-bottom: 12px;"><strong>Step 2 (Admin):</strong> Build the Curriculum Framework and assign Credit Schemes.<br>
-                    <span style="font-size: 13px; color: #666;">👉 Click <strong>"Edit Programme/Specialization"</strong> ➔ <strong>"Edit"</strong>. Assigning a Code & Scheme automatically generates empty "shell" courses!</span>
+                    <span style="font-size: 13px; color: #666;">👉 Click <strong>"Edit Programme"</strong> ➔ <strong>"Edit"</strong>. Assigning a Code & Scheme automatically generates empty "shell" courses!</span>
                 </li>
                 <li style="margin-bottom: 12px;"><strong>Step 3 (Teachers/Admins):</strong> Fill out Course Data or create Pool Courses.<br>
                     <span style="font-size: 13px; color: #666;">👉 To Edit Shells: Click <strong>"View, Edit, or Download Existing Course Syllabi"</strong> ➔ <strong>"Edit"</strong>.<br>
                     👉 To Create Pool Courses: Click <strong>"Create a New University Pool Course"</strong> to build global electives from scratch.</span>
                 </li>
-                <li style="margin-bottom: 12px;"><strong>Step 4 (Admin):</strong> Define Programme Details & Mapping Parameters (POs/PEOs/PSOs).<br>
-                    <span style="font-size: 13px; color: #666;">👉 Click <strong>"Generate Full Syllabus Print Document"</strong> ➔ <strong>"Fill Details & View"</strong> (<code>/generate-full-syllabus</code> ➔ <code>/program-details-form</code>)</span>
+            <li style="margin-bottom: 12px;"><strong>Step 4 (Admin):</strong> Define Programme Details, Mappings, & Upload Approvals.<br>
+                <span style="font-size: 13px; color: #666;">👉 Click <strong>"Generate Full Syllabus Print Document"</strong> ➔ <strong>"Fill Details & View"</strong>.<br>
+                👉 <a href="/download-approval-template" target="_blank" style="color: #0056b3; text-decoration: underline; font-weight: bold;">Download the Empty Approval Template</a>, get it signed/scanned, and upload it on the details page!</span>
                 </li>
                 <li><strong>Step 5 (Admin):</strong> Generate the Final Syllabus Document.<br>
                     <span style="font-size: 13px; color: #666;">👉 Click <strong>"Generate Full Syllabus Print Document"</strong> ➔ <strong>"Fill Details & View"</strong> ➔ <strong>"Save Details & Generate Syllabus"</strong></span><br>
-                    <strong style="color: #d9534f;">Rule:</strong> The entire curriculum and all its courses must be fully completed before printing is permitted.
+                <strong style="color: #d9534f;">Rule:</strong> The entire curriculum must be fully completed, and the scanned Details of Approval PDF must be uploaded before final printing is permitted.
                 </li>
             </ol>
         </div>

@@ -5,17 +5,23 @@
     <link rel="shortcut icon" href="https://igu1.ucanapply.com/images/webicon.png" type="image/png">
     <title>Syllabus - <%= (!specialization || specialization === 'None') ? academic_program : specialization %></title>
     <style>
-        body { font-family: 'Arial', serif; line-height: 1.4; color: #000; margin: 0; padding: 20px; }
+        body { font-family: Arial, sans-serif; line-height: 1.4; color: #000; margin: 0; padding: 20px; }
         .container { width: 90%; margin: auto; max-width: 1000px; }
         
         table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; }
-        th, td { border: 1px solid black; padding: 2px; vertical-align: top; word-wrap: break-word; }
+        th, td { border: 1px solid black; padding: 6px; vertical-align: top; word-wrap: break-word; text-align: left; }
+        th { text-align: center; }
         .section-title { text-align: center; font-weight: bold; background-color: #f2f2f2; }
         .justified-text { text-align: justify; text-justify: inter-word; }
-        .center { text-align: center; }
+        .center { text-align: center !important; }
         .bold { font-weight: bold; }
         .page-break-before { page-break-before: always; padding-top: 20px; }
         .no-border-table, .no-border-table td { border: none; }
+
+        /* Denser spacing strictly for curriculum tables and course pages */
+        .dense-layout { font-size: 12px; line-height: 1.25; }
+        .dense-layout th, .dense-layout td { padding: 2px; }
+        .dense-table th, .dense-table td { padding: 2px; }
 
         .cover-page {
             min-height: 90vh;
@@ -51,7 +57,7 @@
         .cover-page-wrapper {
             box-sizing: border-box;
         }
-        }
+        
     </style>
 </head>
 <body>
@@ -63,24 +69,32 @@
 
         <!-- Page 1: Cover Page -->
         <div class="cover-page-wrapper">
-        <div class="cover-page">
+        <div class="cover-page" style="border: 8px double #00005f; padding: 30px; background-color: #fafafa; box-sizing: border-box;">
             <div class="center">
-                <p class="bold">INDIRA GANDHI UNIVERSITY, MEERPUR, REWARI</p>
-                <p>(A State University Established under Haryana Act No.29 of 2013)</p>
-                <p>(Recognized u/s 12B & 2f of UGC Act, 1956)</p>
+                <p class="bold" style="font-size: 2.4em; margin: 0 0 5px 0; color: #1a1a87; font-family: 'Times New Roman', Times, serif; text-transform: uppercase; letter-spacing: 1px;">Indira Gandhi University</p>
+                <p class="bold" style="font-size: 1.6em; margin: 0 0 10px 0; color: #333;">Meerpur-Rewari, Haryana (122502)</p>
+                <p style="margin: 0 0 5px 0; font-size: 1.1em; font-style: italic; color: #555;">(A State University Established under Haryana Act No.29 of 2013)</p>
+                <p style="margin: 0; font-size: 1.1em; font-style: italic; color: #555;">(Recognized u/s 12B & 2f of UGC Act, 1956)</p>
             </div>
-            <img src="https://himachal365.s3.ap-south-1.amazonaws.com/68/igu-logo.jpg" alt="IGU Logo" style="max-height: 150px; margin: 20px 0;">
+            
             <div class="center">
-                <p class="bold">Syllabus and Scheme of Examination</p>
-                 <p>in accordance with National Education Policy-2020</p>
-                <p>for</p>
-                <p class="bold"><%= (program.level && program.level.toUpperCase() === 'UG') ? 'Under' : 'Post' %> Graduate Programme</p>
-                <p>in</p>
+                <img src="https://himachal365.s3.ap-south-1.amazonaws.com/68/igu-logo.jpg" alt="IGU Logo" style="max-height: 200px; margin: 20px 0; padding: 10px; background: transparent;">
+            </div>
+            
+            <div class="center" style="margin-bottom: 10px;">
+                <p class="bold" style="font-size: 1.6em; margin: 0 0 5px 0; color: #222; text-transform: uppercase;">Syllabi and Scheme of Examination</p>
+                <p style="font-size: 1.1em; margin: 0 0 5px 0; font-style: italic; color: #555;">in accordance with National Education Policy-2020</p>
+                <p style="font-size: 1.1em; margin: 0 0 15px 0; font-style: italic; color: #555;">for</p>
+                <p class="bold" style="font-size: 1.4em; margin: 0 0 2px 0; color: #333;"><%= (program.level && program.level.toUpperCase() === 'UG') ? 'Under' : 'Post' %>graduate Programme</p>
+                <p style="font-size: 1.1em; margin: 0 0 2px 0; font-style: italic; color: #555;">in</p>
                 <%
                     let titleDisplay = programDetails.title || academic_program;
                     if (program.level === 'UG') {
                         if (program.discipline_type === 'Multi-disciplinary' && program.discipline_category && program.department) {
-                            titleDisplay = `${program.discipline_category} with major in ${program.department}`;
+                            // Show only the portion after a dash ("-") in discipline_category
+                            let discCat = program.discipline_category || '';
+                            let discAfter = discCat.includes('-') ? discCat.split('-').slice(1).join('-').trim() : discCat;
+                            titleDisplay = `${discAfter} with Major in ${program.department}`;
                         } else if (program.discipline_type === 'Inter-disciplinary' && program.department) {
                             titleDisplay = `${program.department}`;
                         } else {
@@ -88,20 +102,26 @@
                         }
                     }
                 %>
-                <p class="bold" style="font-size: 1.2em;"><%= titleDisplay %></p>
-                <p>Programme Code: <%= programDetails.program_code || 'N/A' %></p>
-                <p>Effective from Academic Session <%= programDetails.academic_year || 'N/A' %></p>
-                <br>
-                <p>Department of <%= programDetails.department || 'N/A' %></p>
-                <p>Faculty of <%= programDetails.faculty || 'N/A' %></p>
+                <p class="bold" style="font-size: 1.4em; margin: 0; color: #1a1a87; padding: 5px 15px; display: inline-block;"><%= titleDisplay %></p>
             </div>
-            <div class="center">
-                <p class="bold">Indira Gandhi University</p>
-                <p>Meerpur-Rewari (122502)</p>
-                <p>Haryana, India</p>
+            
+            <div class="center" style="margin: 0 0 20px 0; font-size: 1em; color: #444;">
+                <% if (programDetails.program_code && programDetails.program_code.trim() !== '') { %>
+                    <p style="margin: 0 0 5px 0;"><span class="bold">Programme Code:</span> <%= programDetails.program_code %></p>
+                <% } %>
+                <p style="margin: 0;"><span class="bold">(Effective from Academic Session:</span> <%= programDetails.academic_year || 'N/A' %>)</p>
+            </div>
+            
+            <div class="center bold" style="font-size: 1.2em; color: #1a1a87; margin-bottom: 15px;">
+                <p style="margin: 0 0 5px 0;">DEPARTMENT OF <%= programDetails.department ? programDetails.department.toUpperCase() : 'N/A' %></p>
+                <p style="margin: 0;">FACULTY OF <%= programDetails.faculty ? programDetails.faculty.toUpperCase() : 'N/A' %></p>
+            </div>
+            
+            <div class="center" style="font-size: 1.1em; color: #333;">
+                <a href="https://www.igu.ac.in" target="_blank" style="color: #17a2b8; text-decoration: underline;">www.igu.ac.in</a>
             </div>
         </div>
-        </div>
+        </div> 
 
         <% if (program.program_code !== 'UNIVERSITY_POOL') { %>
         <!-- Page 2: Approvals -->
@@ -127,7 +147,7 @@
             <h3 class="bold">VISION</h3>
             <p class="justified-text">To be a globally renowned university, recognized for excellence in teaching, innovative research and welfare of the society, imbibing the spirit of “<i>Vasudhaiv kutumbkam</i>”.</p>
             <h3 class="bold">MISSION</h3>
-            <ul style="padding-left: 20px;">
+            <ul class="justified-text" style="padding-left: 20px;">
                 <li>To introduce and implement innovation in teaching and learning process matching up the global standards to strengthen academic delivery through curriculum design, teaching pedagogy and usage of ICT.</li>
                 <li>To develop a mechanism that attracts talented, qualified and experienced faculty from across the globe for pursuing their academic and research careers at the University.</li>
                 <li>To offer academic programmes at UG, PG, Doctoral, Post-Doctoral levels which are learner-centric, industry focused and adhere to outcome based international models.</li>
@@ -192,25 +212,29 @@
             <h2 class="center">Scheme of Examination for <%= (program.level && program.level.toUpperCase() === 'UG') ? 'Under' : 'Post' %>graduate Programme</h2>
             <table class="no-border-table">
                 <tr><td style="width: 40%;" class="bold">Subject</td><td><%= programDetails.title || academic_program %></td></tr>
-                <tr><td class="bold">Total number of Semesters</td><td><%= totalSemesters %></td></tr>
-                <tr><td class="bold">Total Marks</td><td><%= totalProgramMarks %></td></tr>
-                <tr><td class="bold">Total Credit</td><td><%= totalProgramCredits %></td></tr>
-                <% if (program.level.toUpperCase() !== 'UG') { %>
-                <tr><td class="bold">Framework</td><td>2</td></tr>
+                <tr><td class="bold">Total number of Semesters</td><td><%= programDetails.scheme_total_semesters || totalSemesters %></td></tr>
+                <tr><td class="bold">Total Marks</td><td><%= programDetails.scheme_total_marks || totalProgramMarks %></td></tr>
+                <tr><td class="bold">Total Credit</td><td><%= programDetails.scheme_total_credits || totalProgramCredits %></td></tr>
+                <% if (program.level.toUpperCase() !== 'UG' || programDetails.scheme_framework) { %>
+                <tr><td class="bold">Framework</td><td><%= programDetails.scheme_framework || '2' %></td></tr>
                 <% } %>
-                <tr><td class="bold">Scheme</td><td><%= program.scheme %></td></tr>
+                <tr><td class="bold">Scheme</td><td><%= programDetails.scheme_name_override || program.scheme %></td></tr>
             </table>
         
         </div>
         <!-- Page 7: Curriculum -->
         <div class="landscape-section page-break-before">
-            <h2 class="center">Curriculum Framework</h2>
-            <table style="font-size: 11px;">
+            <h2 class="center">Curriculum Framework - <%= program.level || program.ug_pg %> - <%= programDetails.scheme_name_override || program.scheme %></h2>
+            <p style="font-size: 11px; font-style: italic; text-align: left;">
+            <em>*L: Lecture, T: Tutorial, P: Practical, Th: Theory</em>
+            </p>
+
+            <table class="dense-table" style="font-size: 11px;">
                 <thead>
                     <tr class="section-title">
-                        <th style="width: 5%;">Semester</th>
+                        <th style="width: 6%;">Semester</th>
                         <th style="width: 8%;">Course Type</th>
-                        <th style="width: 11%;">Course Code</th>
+                        <th style="width: 10%;">Course Code</th>
                         <th style="width: 17%;">Nomenclature of the Course</th>
                         <th style="width: 8%;">Theory (Th)/ Practical (P)</th>
                         <th style="width: 4%;">Credit</th>
@@ -222,11 +246,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% semesters.forEach(sem => { %>
+                    <% semesters.forEach((sem, sIndex) => { %>
                         <% if (sem.isDivider || sem.isYearlyDivider) { %>
                             <% if (sem.isDivider) { %>
                                 <tr style="text-align: center; font-weight: bold;">
-                                    <td colspan="11" style="padding: 5px; font-size: 16px; letter-spacing: 2px;"><%= sem.title %></td>
+                                    <td colspan="11" style="padding: 5px; font-size: 14px;"><%= sem.title %></td>
                                 </tr>
                             <% } else if (sem.isYearlyDivider) { %>
                                 <% if (sem.text && sem.text.trim() !== '') { %>
@@ -234,103 +258,249 @@
                                         <td colspan="11" style="padding: 10px; font-size: 14px;"><%= sem.text %></td>
                                     </tr>
                                 <% } %>
+                                <% if (sIndex < semesters.length - 1) { %>
+                                    </tbody>
+                                </table>
+                                </div>
+                                <div class="landscape-section page-break-before">
+                                <h2 class="center">Curriculum Framework - <%= program.level || program.ug_pg %> - <%= programDetails.scheme_name_override || program.scheme %></h2>
+                                <table class="dense-table" style="font-size: 11px;">
+                                    <thead>
+                                        <tr class="section-title">
+                                            <th style="width: 6%;">Semester</th>
+                                            <th style="width: 8%;">Course Type</th>
+                                            <th style="width: 10%;">Course Code</th>
+                                            <th style="width: 17%;">Nomenclature of the Course</th>
+                                            <th style="width: 8%;">Theory (Th)/ Practical (P)</th>
+                                            <th style="width: 4%;">Credit</th>
+                                            <th style="width: 11%;">Contact hours per week<br>(L+T+P=Total)</th>
+                                            <th style="width: 8%;">Internal Assessment Marks (Th+P=Total)</th>
+                                            <th style="width: 8%;">End Term Examination Marks (Th+P=Total)</th>
+                                            <th style="width: 6%;">Total Marks</th>
+                                            <th style="width: 14%;">Exam Hours Theory, Practical</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                <% } %>
                             <% } %>
                         <% } else { %>
                             <%
+                                let semRowCount = 1;
+                                sem.detailed_courses.forEach(c => {
+                                    if (c.isElectiveGroup && !c.isLinkedElective) {
+                                        const choices = electiveCourseGroups[c.baseElectiveType] || [];
+                                        const validChoices = choices.filter(ch => !ch.is_missing && ch.course_code !== '-');
+                                        semRowCount += Math.max(1, validChoices.length);
+                                    } else {
+                                        semRowCount++;
+                                    }
+                                });
+
                                 let semTotalCredits = 0;
                                 let semTotalHours = 0;
                                 let semTotalInternal = 0;
                                 let semTotalEndTerm = 0;
                                 let semTotalMaxMarks = 0;
+                                let hasPoolInSem = false;
+                                
                                 sem.detailed_courses.forEach((course, index) => { 
-                                    if (!course.isDec || course.decOpt === 1) {
-                                        semTotalCredits += parseInt(course.credits_total) || 0;
-                                        semTotalHours += parseInt((course.credits_theory || 0) + ((course.credits_practical || 0) * 2)) || 0;
-                                        semTotalInternal += parseInt(course.marks_internal_total) || 0;
-                                        semTotalEndTerm += parseInt(course.marks_endterm_total) || 0;
-                                        semTotalMaxMarks += parseInt(course.marks_max) || 0;
-                                    }
                                     const courseType = course.curriculum_display_type || course.course_type || '';
                                     const isPoolGroup1 = ['VAC', 'SEC', 'AEC', 'MDC'].some(p => courseType.startsWith(p));
                                     const isExceptionMinor = program.scheme && program.scheme.trim().toUpperCase() === 'D' && /^(CC-M1|CC-M2|CC-M3)$/.test(courseType);
                                     const isPoolGroup2 = ['CC-M', 'CC-HM'].some(p => courseType.startsWith(p)) && !(isExceptionMinor && !course.is_missing && course.course_code !== '-');
+                                    
+                                    if (isPoolGroup1 || isPoolGroup2) {
+                                        hasPoolInSem = true;
+                                    }
+                                    
+                                    let cCred = parseInt(course.credits_total) || 0;
+                                    semTotalCredits += cCred;
+                                    
+                                    let rowHours = 0;
+                                    if (course.is_custom_row) {
+                                        if (course.hrs) {
+                                            let parts = String(course.hrs).split('=');
+                                            if (parts.length > 1) {
+                                                rowHours = parseInt(parts[1]) || 0;
+                                            } else {
+                                                rowHours = parseInt(course.hrs) || 0;
+                                            }
+                                        }
+                                    } else {
+                                        let th = parseInt(course.credits_theory) || 0;
+                                        let pr = parseInt(course.credits_practical) || 0;
+                                        if (th === 0 && pr === 0 && course.credit_scheme) {
+                                            let parts = course.credit_scheme.split('+');
+                                            if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
+                                        }
+                                        rowHours = (th === 0 && pr === 0) ? cCred : (th + (pr * 2));
+                                    }
+                                    semTotalHours += rowHours;
+                                    
+                                    semTotalInternal += parseInt(course.marks_internal_total) || 0;
+                                    semTotalEndTerm += parseInt(course.marks_endterm_total) || 0;
+                                    semTotalMaxMarks += parseInt(course.marks_max) || 0;
+                                    
+                                    const isElectiveWithChoices = course.isElectiveGroup && !course.isLinkedElective;
+                                    const allChoices = isElectiveWithChoices ? (electiveCourseGroups[course.baseElectiveType] || []) : [];
+                                    const choices = allChoices.filter(ch => !ch.is_missing && ch.course_code !== '-');
+                                    const rowSpanCount = isElectiveWithChoices ? Math.max(1, choices.length) : 1;
                             %>
                                 <tr>
                                     <% if (index === 0) { %>
-                                        <td rowspan="<%= sem.detailed_courses.length + 1 %>" class="center bold" style="vertical-align: middle;"><%= sem.number %></td>
+                                        <td rowspan="<%= semRowCount %>" class="center bold" style="vertical-align: middle;"><%= String(sem.number).replace(/\D/g, '') || sem.number %></td>
                                     <% } %>
                                     <% if (isPoolGroup1) { %>
                                         <td><%= courseType %></td>
-                                        <td colspan="9" class="center" style="font-style: italic;">from available pool of <%= (courseType).slice(0, -2)%></td>
+                                        <td colspan="3"></td>
+                                        <td class="center" style="vertical-align: middle;"><%= course.credits_total || 0 %></td>
+                                        <td colspan="5" class="center" style="font-style: italic;">from available pool of <%= (courseType).slice(0, -2)%></td>
                                     <% } else if (isPoolGroup2) { %>
                                         <td><%= courseType %></td>
-                                        <td colspan="9" class="center" style="font-style: italic;">from available pool of Minor/Minor(Vocational)</td>
-                                    <% } else { %>
-                                        <td>
-                                        <% if (course.isElectiveGroup) { %>
+                                        <td colspan="3"></td>
+                                        <td class="center" style="vertical-align: middle;"><%= course.credits_total || 0 %></td>
+                                        <td colspan="5" class="center" style="font-style: italic;">from available pool of Minor/ Minor (Vocational)</td>
+                                    <% } else if (course.isElectiveGroup) { %>
+                                        <td rowspan="<%= rowSpanCount %>" class="center" style="vertical-align: middle;">
                                             <%= course.baseElectiveType %>
-                                        <% } else if (!course.is_db_course) { %>
+                                            <% if (!course.isLinkedElective) { %><br><span style="font-size:11px; font-style:italic;">(pick any one)</span><% } %>
+                                        </td>
+                                        <% if (!course.isLinkedElective && choices.length > 0) { %>
+                                            <td class="center" style="vertical-align: middle;">
+                                                <a href="#course-<%= choices[0].course_code %>"><b><%= choices[0].course_code %></b></a>
+                                            </td>
+                                            <td <%- choices[0].is_missing ? 'style="color: red;"' : '' %>>
+                                                <%= choices[0].course_name=='Unassigned Slot' ? ' ' : choices[0].course_name %>
+                                                <% if (choices[0].is_db_course && (!choices[0].owning_program_code || choices[0].owning_program_code === 'From University Pool')) { %>
+                                                    <div style="font-size: 0.85em; font-style: italic; margin-top: 3px; color: #555;">(University Pool)</div>
+                                                <% } %>
+                                            </td>
+                                        <% } else { %>
+                                            <td><%= course.course_code %></td>
+                                            <td <%- course.is_missing ? 'style="color: red;"' : '' %>>
+                                                <%= course.course_name=='Unassigned Slot' ? ' ' : course.course_name %>
+                                                <% if (course.isLinkedElective) { %>
+                                                    <div style="font-size: 0.85em; font-style: italic; margin-top: 3px; color: #555;">(Choices defined in Semester <%= course.masterSemester %>)</div>
+                                                <% } %>
+                                            </td>
+                                        <% } %>
+                                        <td class="center" style="vertical-align: middle;" rowspan="<%= rowSpanCount %>">
+                                            <% 
+                                                if (course.is_custom_row) {
+                                                    %><%= course.tp %><%
+                                                } else if ((!course.is_db_course || course.is_missing) && !course.credit_scheme) { 
+                                                    %> <%
+                                                } else {
+                                                    let th = parseInt(course.credits_theory) || 0;
+                                                    let pr = parseInt(course.credits_practical) || 0;
+                                                    if (course.credit_scheme) {
+                                                        let parts = course.credit_scheme.split('+');
+                                                        if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
+                                                    }
+                                                    %><%= th %>T / <%= pr %>P<%
+                                                }
+                                            %>
+                                        </td>
+                                        <td class="center" style="vertical-align: middle;" rowspan="<%= rowSpanCount %>"><%= course.is_custom_row ? course.credits_total : ((course.is_missing && !course.credit_scheme) ? ' ' : (course.credits_total || 0)) %></td>
+                                        <td class="center" style="vertical-align: middle;" rowspan="<%= rowSpanCount %>">
+                                            <% 
+                                                if (course.is_custom_row) {
+                                                    %><%= course.hrs %><%
+                                                } else if ((!course.is_db_course || course.is_missing) && !course.credit_scheme) { 
+                                                    %> <%
+                                                } else {
+                                                    let th = parseInt(course.credits_theory) || 0;
+                                                    let pr = parseInt(course.credits_practical) || 0;
+                                                    if (course.credit_scheme) {
+                                                        let parts = course.credit_scheme.split('+');
+                                                        if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
+                                                    }
+                                                    let p = pr * 2;
+                                                    let lt = course.lt_split == "1" && th > 1 ? 1 : 0;
+                                                    let l = th - lt;
+                                                    let tot = l + lt + p;
+                                                    %><%= l %>+<%= lt %>+<%= p %>=<%= tot %><%
+                                                }
+                                            %>
+                                        </td>
+                                        <td class="center" style="vertical-align: middle;" rowspan="<%= rowSpanCount %>"><%= course.is_custom_row ? (course.marks_internal_total || '') : ((course.is_missing && !course.credit_scheme) ? ' ' : `${course.marks_internal_theory || 0}+${course.marks_internal_practical || 0}=${course.marks_internal_total || 0}`) %></td>
+                                        <td class="center" style="vertical-align: middle;" rowspan="<%= rowSpanCount %>"><%= course.is_custom_row ? (course.marks_endterm_total || '') : ((course.is_missing && !course.credit_scheme) ? ' ' : `${course.marks_endterm_theory || 0}+${course.marks_endterm_practical || 0}=${course.marks_endterm_total || 0}`) %></td>
+                                        <td class="center" style="vertical-align: middle;" rowspan="<%= rowSpanCount %>"><%= (course.is_missing && !course.credit_scheme) ? ' ' : (course.marks_max || 0) %></td>
+                                        <td class="center" style="vertical-align: middle;" rowspan="<%= rowSpanCount %>"><%= (course.is_missing && !course.credit_scheme) ? ' ' : (course.exam_duration || '-') %></td>
+                                    <% } else { %>
+                                        <td class="center" style="vertical-align: middle;">
+                                            <% if (!course.is_db_course) { %>
                                                 <%= course.curriculum_display_type || course.course_type || 'N/A' %>
                                             <% } else { %>
                                                 <a href="#course-<%= course.course_code %>"><%= course.curriculum_display_type || course.course_type || 'N/A' %></a>
                                             <% } %>
                                             <% if ((course.curriculum_display_type || course.course_type) === 'OEC' || (course.curriculum_display_type || course.course_type) === 'MDC') { %><br><span style="font-size:11px; font-style:italic;">(*offered for the other departments)</span><% } %>
-                                            <% if (course.isElectiveGroup && !course.isLinkedElective) { %><br><span style="font-size:11px; font-style:italic;">(pick any)</span><% } %>
                                         </td>
                                         <td><%= course.course_code %></td>
                                         <td <%- course.is_missing ? 'style="color: red;"' : '' %>>
                                             <%= course.course_name=='Unassigned Slot' ? ' ' : course.course_name %>
-                                            <% if (course.isLinkedElective) { %>
-                                                <div style="font-size: 0.85em; font-style: italic; margin-top: 3px; color: #555;">(Choices defined in Semester <%= course.masterSemester %>)</div>
-                                            <% } else if (!course.is_missing && course.is_db_course && (!course.owning_program_code || course.owning_program_code === 'From University Pool')) { %>
-                                                <div style="font-size: 0.85em; font-style: italic; margin-top: 3px; color: #555;">(University Pool)</div>
-                                            <% } %>
+                                            <% if (!course.is_missing && course.is_db_course && (!course.owning_program_code || course.owning_program_code === 'From University Pool')) { %>
+                                                    <div style="font-size: 0.85em; font-style: italic; margin-top: 3px; color: #555;">(University Pool)</div>
+                                                <% } %>
+                                            </td>
+                                        <td class="center" style="vertical-align: middle;">
+                                            <% 
+                                                if (course.is_custom_row) {
+                                                    %><%= course.tp %><%
+                                                } else if ((!course.is_db_course || course.is_missing) && !course.credit_scheme) { 
+                                                    %> <%
+                                                } else {
+                                                    let th = parseInt(course.credits_theory) || 0;
+                                                    let pr = parseInt(course.credits_practical) || 0;
+                                                    if (course.credit_scheme) {
+                                                        let parts = course.credit_scheme.split('+');
+                                                        if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
+                                                    }
+                                                    %><%= th %>T / <%= pr %>P<%
+                                                }
+                                            %>
                                         </td>
+                                        <td class="center" style="vertical-align: middle;"><%= course.is_custom_row ? course.credits_total : ((course.is_missing && !course.credit_scheme) ? ' ' : (course.credits_total || 0)) %></td>
                                         <td class="center" style="vertical-align: middle;">
-                                                <% 
-                                                    if (course.is_custom_row) {
-                                                        %><%= course.tp %><%
-                                                    } else if (!course.is_db_course || course.is_missing) { 
-                                                        %> <%
-                                                    } else {
-                                                        let th = parseInt(course.credits_theory) || 0;
-                                                        let pr = parseInt(course.credits_practical) || 0;
-                                                        if (th === 0 && pr === 0 && course.credit_scheme) {
-                                                            let parts = course.credit_scheme.split('+');
-                                                            if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
-                                                        }
-                                                        %><%= th %>T / <%= pr %>P<%
+                                            <% 
+                                                if (course.is_custom_row) {
+                                                    %><%= course.hrs %><%
+                                                } else if ((!course.is_db_course || course.is_missing) && !course.credit_scheme) { 
+                                                    %> <%
+                                                } else {
+                                                    let th = parseInt(course.credits_theory) || 0;
+                                                    let pr = parseInt(course.credits_practical) || 0;
+                                                    if (course.credit_scheme) {
+                                                        let parts = course.credit_scheme.split('+');
+                                                        if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
                                                     }
-                                                %>
-                                            </td>
-                                        <td class="center" style="vertical-align: middle;"><%= course.is_custom_row ? course.credits_total : (course.is_missing ? ' ' : (course.credits_total || 0)) %></td>
-                                        <td class="center" style="vertical-align: middle;">
-                                                <% 
-                                                    if (course.is_custom_row) {
-                                                        %><%= course.hrs %><%
-                                                    } else if (!course.is_db_course || course.is_missing) { 
-                                                        %> <%
-                                                    } else {
-                                                        let th = parseInt(course.credits_theory) || 0;
-                                                        let pr = parseInt(course.credits_practical) || 0;
-                                                        if (th === 0 && pr === 0 && course.credit_scheme) {
-                                                            let parts = course.credit_scheme.split('+');
-                                                            if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
-                                                        }
-                                                        let p = pr * 2;
-                                                        let lt = course.lt_split === "1" && th > 1 ? 1 : 0;
-                                                        let l = th - lt;
-                                                        let tot = l + lt + p;
-                                                        %><%= l %>+<%= lt %>+<%= p %>=<%= tot %><%
-                                                    }
-                                                %>
-                                            </td>
-                                        <td class="center" style="vertical-align: middle;"><%= course.is_custom_row ? (course.marks_internal_total || '') : ((!course.is_db_course || course.is_missing) ? ' ' : `${course.marks_internal_theory || 0}+${course.marks_internal_practical || 0}=${course.marks_internal_total || 0}`) %></td>
-                                        <td class="center" style="vertical-align: middle;"><%= course.is_custom_row ? (course.marks_endterm_total || '') : ((!course.is_db_course || course.is_missing) ? ' ' : `${course.marks_endterm_theory || 0}+${course.marks_endterm_practical || 0}=${course.marks_endterm_total || 0}`) %></td>
-                                        <td class="center" style="vertical-align: middle;"><%= course.is_custom_row ? (course.marks_max || '') : ((!course.is_db_course || course.is_missing) ? ' ' : (course.marks_max || 0)) %></td>
-                                        <td class="center" style="vertical-align: middle;"><%= course.is_custom_row ? (course.exam_duration || '') : ((!course.is_db_course || course.is_missing) ? ' ' : (course.exam_duration || '-')) %></td>
+                                                    let p = pr * 2;
+                                                    let lt = course.lt_split == "1" && th > 1 ? 1 : 0;
+                                                    let l = th - lt;
+                                                    let tot = l + lt + p;
+                                                    %><%= l %>+<%= lt %>+<%= p %>=<%= tot %><%
+                                                }
+                                            %>
+                                        </td>
+                                        <td class="center" style="vertical-align: middle;"><%= course.is_custom_row ? (course.marks_internal_total || '') : ((course.is_missing && !course.credit_scheme) ? ' ' : `${course.marks_internal_theory || 0}+${course.marks_internal_practical || 0}=${course.marks_internal_total || 0}`) %></td>
+                                        <td class="center" style="vertical-align: middle;"><%= course.is_custom_row ? (course.marks_endterm_total || '') : ((course.is_missing && !course.credit_scheme) ? ' ' : `${course.marks_endterm_theory || 0}+${course.marks_endterm_practical || 0}=${course.marks_endterm_total || 0}`) %></td>
+                                        <td class="center" style="vertical-align: middle;"><%= (course.is_missing && !course.credit_scheme) ? ' ' : (course.marks_max || 0) %></td>
+                                        <td class="center" style="vertical-align: middle;"><%= (course.is_missing && !course.credit_scheme) ? ' ' : (course.exam_duration || '-') %></td>
                                     <% } %>
                                 </tr>
+                                <% if (isElectiveWithChoices && choices.length > 1) { %>
+                                    <% for (let i = 1; i < choices.length; i++) { %>
+                                        <tr>
+                                            <td class="center"><a href="#course-<%= choices[i].course_code %>"><b><%= choices[i].course_code %></b></a></td>
+                                            <td <%- choices[i].is_missing ? 'style="color: red;"' : '' %>>
+                                                <%= choices[i].course_name=='Unassigned Slot' ? ' ' : choices[i].course_name %>
+                                                <% if (choices[i].is_db_course && (!choices[i].owning_program_code || choices[i].owning_program_code === 'From University Pool')) { %>
+                                                    <div style="font-size: 0.85em; font-style: italic; margin-top: 3px; color: #555;">(University Pool)</div>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                    <% } %>
+                                <% } %>
                             <% }) %>
                             <tr class="bold" style="background-color: #f2f2f2;">
                                 <td>Total</td>
@@ -338,7 +508,7 @@
                                 <td></td>
                                 <td></td>
                                 <td class="center"><%= semTotalCredits %></td>
-                                <td class="center"><%= semTotalHours %></td>
+                                <td class="center"><%= semTotalHours %><%= hasPoolInSem ? '+' : '' %></td>
                                 <td class="center"><%= semTotalInternal %></td>
                                 <td class="center"><%= semTotalEndTerm %></td>
                                 <td class="center"><%= semTotalMaxMarks %></td>
@@ -349,33 +519,163 @@
                 </tbody>
             </table>
         </div>
-        <p><i>*L: Lecture, T: Tutorial, P: Practical</i></p>
+        
+        <% if (locals.coreData && locals.coreData.semesters) { %>
+            <div class="landscape-section page-break-before">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 class="bold" style="text-transform: uppercase; margin: 0;">INDIRA GANDHI UNIVERSITY, MEERPUR</h2>
+                    <h3 style="margin: 5px 0;">Department of <%= programDetails.department || program.department || 'N/A' %></h3>
+                    <h4 style="font-weight: normal; margin: 5px 0;">Courses offered by the department as Core Courses in Multi-disciplinary UG Program (Scheme A)</h4>
+                </div>
 
-        <% if (Object.keys(electiveCourseGroups).length > 0) { %>
-            <% for (const baseElectiveType in electiveCourseGroups) { %>
-                <% const choices = electiveCourseGroups[baseElectiveType]; %>
-                <% if (choices.length > 0) { %>
+                <table class="dense-table" style="font-size: 11px;">
+                    <thead>
+                        <tr class="section-title">
+                            <th style="width: 6%;">Semester</th>
+                            <th style="width: 8%;">Course Type</th>
+                            <th style="width: 10%;">Course Code</th>
+                            <th style="width: 17%;">Nomenclature of the Course</th>
+                            <th style="width: 8%;">Theory (Th)/ Practical (P)</th>
+                            <th style="width: 4%;">Credit</th>
+                            <th style="width: 11%;">Contact hours per week<br>(L+T+P=Total)</th>
+                            <th style="width: 8%;">Internal Assessment Marks (Th+P=Total)</th>
+                            <th style="width: 8%;">End Term Examination Marks (Th+P=Total)</th>
+                            <th style="width: 6%;">Total Marks</th>
+                            <th style="width: 14%;">Exam Hours Theory, Practical</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% coreData.semesters.forEach(sem => { %>
+                            <% if (!sem.isDivider && !sem.isYearlyDivider) { %>
+                                <% sem.detailed_courses.forEach((course, index) => { 
+                                    if (!course.isDec || course.decOpt === 1) { 
+                                %>
+                                    <tr>
+                                        <% if (index === 0) { %>
+                                            <td rowspan="<%= sem.detailed_courses.length %>" class="center bold" style="vertical-align: middle;"><%= String(sem.number).replace(/\D/g, '') || sem.number %></td>
+                                        <% } %>
+                                        <td class="center" style="vertical-align: middle;"><%= course.course_type || 'N/A' %></td>
+                                        <td><%= course.course_code %></td>
+                                        <td <%- course.is_missing ? 'style="color: red;"' : '' %>>
+                                            <%= course.course_name=='Unassigned Slot' ? ' ' : course.course_name %>
+                                        </td>
+                                        <td class="center" style="vertical-align: middle;">
+                                            <% if (course.is_custom_row) { %><%= course.tp %><% } else if ((!course.is_db_course || course.is_missing) && !course.credit_scheme) { %> <% } else {
+                                                let th = parseInt(course.credits_theory) || 0; let pr = parseInt(course.credits_practical) || 0;
+                                                if (course.credit_scheme) {
+                                                    let parts = course.credit_scheme.split('+');
+                                                    if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
+                                                }
+                                                %><%= th %>T / <%= pr %>P<% } 
+                                            %>
+                                        </td>
+                                        <td class="center" style="vertical-align: middle;"><%= course.is_custom_row ? course.credits_total : ((course.is_missing && !course.credit_scheme) ? ' ' : (course.credits_total || 0)) %></td>
+                                        <td class="center" style="vertical-align: middle;">
+                                            <% if (course.is_custom_row) { %><%= course.hrs %><% } else if ((!course.is_db_course || course.is_missing) && !course.credit_scheme) { %> <% } else {
+                                                let th = parseInt(course.credits_theory) || 0; let pr = parseInt(course.credits_practical) || 0;
+                                                if (course.credit_scheme) {
+                                                    let parts = course.credit_scheme.split('+');
+                                                    if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
+                                                }
+                                                let p = pr * 2; let lt = course.lt_split == "1" && th > 1 ? 1 : 0; let l = th - lt; let tot = l + lt + p;
+                                                %><%= l %>+<%= lt %>+<%= p %>=<%= tot %><% } 
+                                            %>
+                                        </td>
+                                        <td class="center" style="vertical-align: middle;"><%= course.is_custom_row ? (course.marks_internal_total || '') : ((course.is_missing && !course.credit_scheme) ? ' ' : `${course.marks_internal_theory || 0}+${course.marks_internal_practical || 0}=${course.marks_internal_total || 0}`) %></td>
+                                        <td class="center" style="vertical-align: middle;"><%= course.is_custom_row ? (course.marks_endterm_total || '') : ((course.is_missing && !course.credit_scheme) ? ' ' : `${course.marks_endterm_theory || 0}+${course.marks_endterm_practical || 0}=${course.marks_endterm_total || 0}`) %></td>
+                                        <td class="center" style="vertical-align: middle;"><%= (course.is_missing && !course.credit_scheme) ? ' ' : (course.marks_max || 0) %></td>
+                                        <td class="center" style="vertical-align: middle;"><%= (course.is_missing && !course.credit_scheme) ? ' ' : (course.exam_duration || '-') %></td>
+                                    </tr>
+                                <% } }) %>
+                            <% } %>
+                        <% }) %>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="11" style="border: none; padding-top: 5px; font-size: 11px; font-style: italic; text-align: left;">
+                                *L: Lecture, T: Tutorial, P: Practical
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        <% } %>
+
+        <% if (locals.hasDeptPoolCourses) { %>
+            <% const categoryNames = {
+                'AEC': 'Ability Enhancement Courses(AEC)',
+                'SEC': 'Skill Enhancement Courses(SEC)',
+                'VAC': 'Value Added Courses(VAC)',
+                'MDC': 'Multi-Disciplinary Courses(MDC)',
+                'Minor': 'Minor/ Minor ( Vocational )'
+            }; %>
+            <% ['AEC', 'SEC', 'VAC', 'MDC', 'Minor'].forEach(cat => { %>
+                <% 
+                    let catCourses = [];
+                    if (cat === 'Minor') {
+                        catCourses = (deptPoolCourses['Minor'] || []).concat(deptPoolCourses['Minor (Vocational)'] || []);
+                    } else {
+                        catCourses = deptPoolCourses[cat] || [];
+                    }
+                %>
+                <% if (catCourses.length > 0) { %>
                     <div class="landscape-section page-break-before">
-                        <h3 class="center" style="margin-top: 20px;">Choices for <%= baseElectiveType %></h3>
-                        <table style="font-size: 12px; width: 80%; margin-left: auto; margin-right: auto;">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h2 class="bold" style="text-transform: uppercase; margin: 0;">INDIRA GANDHI UNIVERSITY, MEERPUR</h2>
+                            <h3 style="margin: 5px 0;">Department of <%= programDetails.department || program.department || 'N/A' %></h3>
+                            <h4 style="font-weight: normal; margin: 5px 0;">Courses offered by the department as <%= categoryNames[cat] %> in the University pool for UG Programme</h4>
+                            <% if (cat === 'MDC') { %>
+                                <p style="font-style: italic; margin-top: 10px; margin-bottom: 0;">*Offered for the Other Departments</p>
+                            <% } %>
+                        </div>
+                        
+                        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; font-size: 11px;">
                             <thead>
                                 <tr class="section-title">
-                                    <th style="width: 30%;">Course Code</th>
-                                    <th style="width: 70%;">Nomenclature of the Course</th>
+                                    <th style="width: 11%; padding: 6px;">Course Code</th>
+                                    <th style="width: 25%; padding: 6px;">Nomenclature of the Course</th>
+                                    <th style="width: 8%; padding: 6px;">Semester</th>
+                                    <th style="padding: 6px;">Theory (Th)/ Practical (P)</th>
+                                    <th style="padding: 6px;">Credit</th>
+                                    <th style="padding: 6px;">Contact hours per week</th>
+                                    <th style="padding: 6px;">Internal Marks</th>
+                                    <th style="padding: 6px;">End Term Marks</th>
+                                    <th style="padding: 6px;">Total Marks</th>
+                                    <th style="padding: 6px;">Exam Hours</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <% choices.forEach(course => { %>
+                                <% catCourses.forEach(course => { %>
+                                    <%
+                                        let th = parseInt(course.credits_theory) || 0;
+                                        let pr = parseInt(course.credits_practical) || 0;
+                                        if (th === 0 && pr === 0 && course.credit_scheme) {
+                                            let parts = course.credit_scheme.split('+');
+                                            if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
+                                        }
+                                        let displayInt = course.marks_max ? `${course.marks_internal_theory || 0}+${course.marks_internal_practical || 0}=${course.marks_internal_total || 0}` : (course.marks_internal_total || 0);
+                                        let displayEnd = course.marks_max ? `${course.marks_endterm_theory || 0}+${course.marks_endterm_practical || 0}=${course.marks_endterm_total || 0}` : (course.marks_endterm_total || 0);
+                                        let lt = course.lt_split == "1" && th > 1 ? 1 : 0;
+                                        let l = th - lt;
+                                    %>
                                     <tr>
-                                        <td class="center"><a href="#course-<%= course.course_code %>"><b><%= course.course_code %></b></a></td>
-                                        <td><%= course.course_name=='Unassigned Slot' ? ' ' : course.course_name %></td>
+                                        <td class="center bold" style="padding: 6px;"><%= course.course_code %></td>
+                                        <td style="padding: 6px;"><%= course.course_name || course.course_title %></td>
+                                        <td class="center" style="padding: 6px;"><%= (course.nep_mapping && course.nep_mapping.course_semester) ? course.nep_mapping.course_semester : '-' %></td>
+                                        <td class="center" style="padding: 6px;"><%= th %>T / <%= pr %>P</td>
+                                        <td class="center" style="padding: 6px;"><%= course.credits_total || 0 %></td>
+                                        <td class="center" style="padding: 6px;"><%= l %>+<%= lt %>+<%= pr * 2 %>=<%= l + lt + (pr * 2) %></td>
+                                        <td class="center" style="padding: 6px;"><%= displayInt %></td>
+                                        <td class="center" style="padding: 6px;"><%= displayEnd %></td>
+                                        <td class="center" style="padding: 6px;"><%= course.marks_max || 0 %></td>
+                                        <td class="center" style="padding: 6px;"><%= course.exam_duration || '-' %></td>
                                     </tr>
                                 <% }) %>
                             </tbody>
                         </table>
                     </div>
                 <% } %>
-            <% } %>
+            <% }) %>
         <% } %>
 
         <% } else { %>
@@ -388,6 +688,7 @@
         </div>
         <% } %>
         <!-- Subsequent Pages: Detailed Course Syllabi -->
+        <div class="dense-layout">
         <% allCourses.forEach(data => { %>
             <% if (!data.is_missing) { %>
                 <% 
@@ -397,23 +698,52 @@
                         if(!s.isDivider && s.detailed_courses) {
                             s.detailed_courses.forEach(dc => {
                                 if(dc.course_code === data.course_code) {
-                                    courseSem.push(s.semester);
+                                    courseSem.push(s.number);
                                 }
                             });
                         }
                     });
+                    let finalSemDisplay = courseSem.length > 0 ? `Semester ${courseSem.join(', ')}` : (data.nep_mapping && data.nep_mapping.course_semester ? data.nep_mapping.course_semester : '-');
                 %>
                 <div class="page-break-before" id="course-<%= data.course_code %>">
                     <%- include('partials/courseDetails', { 
                         data: data, 
                         programme_name_display: (!specialization || specialization === 'None') ? academic_program : `${academic_program} (${specialization})`, 
-                        semester_display: `Semester ${courseSem.join(', ')}`,
+                        semester_display: finalSemDisplay,
                         program_pos: programDetails.pos ? programDetails.pos.length : null,
                         program_psos: programDetails.psos ? programDetails.psos.length : null
                     }) %>
                 </div>
             <% } %>
         <% }) %>
+
+        <% if (locals.hasDeptPoolCourses) { %>
+            <% ['AEC', 'SEC', 'VAC', 'MDC', 'Minor'].forEach(cat => { %>
+                <% 
+                    let catCourses = [];
+                    if (cat === 'Minor') {
+                        catCourses = (deptPoolCourses['Minor'] || []).concat(deptPoolCourses['Minor (Vocational)'] || []);
+                    } else {
+                        catCourses = deptPoolCourses[cat] || [];
+                    }
+                %>
+                <% if (catCourses.length > 0) { %>
+                    
+                    <% catCourses.forEach(data => { %>
+                        <div class="page-break-before" id="course-<%= data.course_code %>">
+                            <%- include('partials/courseDetails', { 
+                                data: data, 
+                                programme_name_display: programDetails.title || program.subject_name,
+                                semester_display: (data.nep_mapping && data.nep_mapping.course_semester) ? data.nep_mapping.course_semester : '-',
+                                program_pos: programDetails.pos ? programDetails.pos.length : null,
+                                program_psos: programDetails.psos ? programDetails.psos.length : null
+                            }) %>
+                        </div>
+                    <% }) %>
+                <% } %>
+            <% }) %>
+        <% } %>
+        </div>
     </div>
 
     <script>

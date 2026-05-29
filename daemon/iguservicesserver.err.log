@@ -70,3 +70,195 @@ For (2), check out our guide on configuring puppeteer at https://pptr.dev/guides
     at getFullSyllabusData (C:\IGUServices\index.js:965:11)
     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
     at async C:\IGUServices\index.js:1178:18
+Error creating user table: error: the database system is starting up
+    at parseErrorMessage (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:305:11)
+    at Parser.handlePacket (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:143:27)
+    at Parser.parse (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:37:38)
+    at Socket.<anonymous> (C:\IGUServices\node_modules\pg-protocol\dist\index.js:11:42)
+    at Socket.emit (node:events:508:20)
+    at addChunk (node:internal/streams/readable:564:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:515:3)
+    at Readable.push (node:internal/streams/readable:395:5)
+    at TCP.onStreamRead (node:internal/stream_base_commons:189:23) {
+  length: 105,
+  severity: 'FATAL',
+  code: '57P03',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'backend_startup.c',
+  line: '309',
+  routine: 'BackendInitialize'
+}
+Database connection failed: error: the database system is starting up
+    at parseErrorMessage (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:305:11)
+    at Parser.handlePacket (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:143:27)
+    at Parser.parse (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:37:38)
+    at Socket.<anonymous> (C:\IGUServices\node_modules\pg-protocol\dist\index.js:11:42)
+    at Socket.emit (node:events:508:20)
+    at addChunk (node:internal/streams/readable:564:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:515:3)
+    at Readable.push (node:internal/streams/readable:395:5)
+    at TCP.onStreamRead (node:internal/stream_base_commons:189:23) {
+  length: 105,
+  severity: 'FATAL',
+  code: '57P03',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'backend_startup.c',
+  line: '309',
+  routine: 'BackendInitialize'
+}
+Error creating programs table: error: the database system is starting up
+    at parseErrorMessage (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:305:11)
+    at Parser.handlePacket (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:143:27)
+    at Parser.parse (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:37:38)
+    at Socket.<anonymous> (C:\IGUServices\node_modules\pg-protocol\dist\index.js:11:42)
+    at Socket.emit (node:events:508:20)
+    at addChunk (node:internal/streams/readable:564:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:515:3)
+    at Readable.push (node:internal/streams/readable:395:5)
+    at TCP.onStreamRead (node:internal/stream_base_commons:189:23) {
+  length: 105,
+  severity: 'FATAL',
+  code: '57P03',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'backend_startup.c',
+  line: '309',
+  routine: 'BackendInitialize'
+}
+Error creating course table: error: the database system is starting up
+    at parseErrorMessage (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:305:11)
+    at Parser.handlePacket (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:143:27)
+    at Parser.parse (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:37:38)
+    at Socket.<anonymous> (C:\IGUServices\node_modules\pg-protocol\dist\index.js:11:42)
+    at Socket.emit (node:events:508:20)
+    at addChunk (node:internal/streams/readable:564:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:515:3)
+    at Readable.push (node:internal/streams/readable:395:5)
+    at TCP.onStreamRead (node:internal/stream_base_commons:189:23) {
+  length: 105,
+  severity: 'FATAL',
+  code: '57P03',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'backend_startup.c',
+  line: '309',
+  routine: 'BackendInitialize'
+}
+Error creating curriculum_drafts table: error: the database system is starting up
+    at parseErrorMessage (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:305:11)
+    at Parser.handlePacket (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:143:27)
+    at Parser.parse (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:37:38)
+    at Socket.<anonymous> (C:\IGUServices\node_modules\pg-protocol\dist\index.js:11:42)
+    at Socket.emit (node:events:508:20)
+    at addChunk (node:internal/streams/readable:564:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:515:3)
+    at Readable.push (node:internal/streams/readable:395:5)
+    at TCP.onStreamRead (node:internal/stream_base_commons:189:23) {
+  length: 105,
+  severity: 'FATAL',
+  code: '57P03',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'backend_startup.c',
+  line: '309',
+  routine: 'BackendInitialize'
+}
+❌ PDF Generation Error: TimeoutError: Navigation timeout of 30000 ms exceeded
+    at new Deferred (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\util\Deferred.js:59:34)
+    at Deferred.create (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\util\Deferred.js:21:16)
+    at new LifecycleWatcher (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\cdp\LifecycleWatcher.js:69:60)
+    at CdpFrame.setContent (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\cdp\Frame.js:235:29)
+    at async CdpPage.setContent (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\api\Page.js:582:13)
+    at async C:\IGUServices\routes\syllabus.js:788:9
+❌ Error generating template: TimeoutError: Navigation timeout of 30000 ms exceeded
+    at new Deferred (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\util\Deferred.js:59:34)
+    at Deferred.create (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\util\Deferred.js:21:16)
+    at new LifecycleWatcher (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\cdp\LifecycleWatcher.js:69:60)
+    at CdpFrame.setContent (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\cdp\Frame.js:235:29)
+    at async CdpPage.setContent (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\api\Page.js:582:13)
+    at async C:\IGUServices\routes\syllabus.js:174:5
+🔥 Global Error Caught: TypeError: C:\IGUServices\views\fullSyllabusView.ejs:351
+    349|                                 <tr>
+    350|                                     <% if (index === 0) { %>
+ >> 351|                                         <td rowspan="<%= semRowCount %>" class="center bold" style="vertical-align: middle;"><%= sem.number.match(/\d+/) %></td>
+    352|                                     <% } %>
+    353|                                     <% if (isPoolGroup1) { %>
+    354|                                         <td><%= courseType %></td>
+
+sem.number.match is not a function
+    at eval ("C:\\IGUServices\\views\\fullSyllabusView.ejs":275:37)
+    at Array.forEach (<anonymous>)
+    at eval ("C:\\IGUServices\\views\\fullSyllabusView.ejs":224:54)
+    at Array.forEach (<anonymous>)
+    at eval ("C:\\IGUServices\\views\\fullSyllabusView.ejs":164:18)
+    at fullSyllabusView (C:\IGUServices\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\IGUServices\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\IGUServices\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\IGUServices\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\IGUServices\node_modules\express\lib\application.js:657:10)
+🔥 Global Error Caught: TypeError: C:\IGUServices\views\fullSyllabusView.ejs:351
+    349|                                 <tr>
+    350|                                     <% if (index === 0) { %>
+ >> 351|                                         <td rowspan="<%= semRowCount %>" class="center bold" style="vertical-align: middle;"><%= sem.number.match(/\d+/)?.[0] %></td>
+    352|                                     <% } %>
+    353|                                     <% if (isPoolGroup1) { %>
+    354|                                         <td><%= courseType %></td>
+
+sem.number.match is not a function
+    at eval ("C:\\IGUServices\\views\\fullSyllabusView.ejs":275:37)
+    at Array.forEach (<anonymous>)
+    at eval ("C:\\IGUServices\\views\\fullSyllabusView.ejs":224:54)
+    at Array.forEach (<anonymous>)
+    at eval ("C:\\IGUServices\\views\\fullSyllabusView.ejs":164:18)
+    at fullSyllabusView (C:\IGUServices\node_modules\ejs\lib\ejs.js:703:17)
+    at tryHandleCache (C:\IGUServices\node_modules\ejs\lib\ejs.js:274:36)
+    at exports.renderFile [as engine] (C:\IGUServices\node_modules\ejs\lib\ejs.js:491:10)
+    at View.render (C:\IGUServices\node_modules\express\lib\view.js:135:8)
+    at tryRender (C:\IGUServices\node_modules\express\lib\application.js:657:10)

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= poolTitle %></title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.25; font-size: 12px; color: #000; margin: 0; padding: 10px; }
+        .container { width: 90%; margin: auto; max-width: 1000px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; }
+        th, td { border: 1px solid black; padding: 2px; vertical-align: middle; word-wrap: break-word; font-size: 12px; text-align: left; }
+        th { text-align: center; }
+        .section-title { text-align: center; font-weight: bold; background-color: #f2f2f2; }
+        .center { text-align: center !important; }
+        .bold { font-weight: bold; }
+        .page-break-before { page-break-before: always; padding-top: 20px; }
+        @media print {
+            body { max-width: 100%; margin: 0; padding: 0; }
+            .container { width: 100%; }
+            tr { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 class="bold" style="text-transform: uppercase; margin: 0;">INDIRA GANDHI UNIVERSITY, MEERPUR</h2>
+            <h3 style="margin: 5px 0;">Department of <%= programDetails.department || program.department || 'N/A' %></h3>
+            <h4 style="font-weight: normal; margin: 5px 0;"><%= poolTitle %></h4>
+            <% if (locals.isMDC) { %>
+                <p style="font-style: italic; margin-top: 10px; margin-bottom: 0;">*Offered for the Other Departments</p>
+            <% } %>
+        </div>
+
+        <table>
+            <thead>
+                <tr class="section-title">
+                    <th style="width: 12%;">Course Code</th>
+                    <th style="width: 25%;">Nomenclature of the Course</th>
+                    <th style="width: 8%;">Semester</th>
+                    <th>Theory (Th)/ Practical (P)</th>
+                    <th>Credit</th>
+                    <th>Contact hours per week</th>
+                    <th>Internal Marks</th>
+                    <th>End Term Marks</th>
+                    <th>Total Marks</th>
+                    <th>Exam Hours</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% allCourses.forEach(course => { %>
+                    <%
+                        let th = parseInt(course.credits_theory) || 0;
+                        let pr = parseInt(course.credits_practical) || 0;
+                        if (th === 0 && pr === 0 && course.credit_scheme) {
+                            let parts = course.credit_scheme.split('+');
+                            if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
+                        }
+                        let displayInt = course.marks_max ? `${course.marks_internal_theory || 0}+${course.marks_internal_practical || 0}=${course.marks_internal_total || 0}` : (course.marks_internal_total || 0);
+                        let displayEnd = course.marks_max ? `${course.marks_endterm_theory || 0}+${course.marks_endterm_practical || 0}=${course.marks_endterm_total || 0}` : (course.marks_endterm_total || 0);
+                        let lt = course.lt_split == "1" && th > 1 ? 1 : 0;
+                        let l = th - lt;
+                    %>
+                    <tr>
+                        <td class="center bold"><%= course.course_code %></td>
+                        <td><%= course.course_name || course.course_title %></td>
+                        <td class="center"><%= (course.nep_mapping && course.nep_mapping.course_semester) ? course.nep_mapping.course_semester : '-' %></td>
+                        <td class="center"><%= th %>T / <%= pr %>P</td>
+                        <td class="center"><%= course.credits_total || 0 %></td>
+                        <td class="center"><%= l %>+<%= lt %>+<%= pr * 2 %>=<%= l + lt + (pr * 2) %></td>
+                        <td class="center"><%= displayInt %></td>
+                        <td class="center"><%= displayEnd %></td>
+                        <td class="center"><%= course.marks_max || 0 %></td>
+                        <td class="center"><%= course.exam_duration || '-' %></td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+
+        <% allCourses.forEach(data => { %>
+            <div class="page-break-before">
+                <%- include('partials/courseDetails', { 
+                    data: data, 
+                    programme_name_display: programDetails.title || program.subject_name,
+                    semester_display: (data.nep_mapping && data.nep_mapping.course_semester) ? data.nep_mapping.course_semester : '-',
+                    program_pos: programDetails.pos ? programDetails.pos.length : null,
+                    program_psos: programDetails.psos ? programDetails.psos.length : null
+                }) %>
+            </div>
+        <% }) %>
+    </div>
+</body>
+</html>

@@ -14,7 +14,7 @@ const schemes = {
     theoryUnits: 4,
     instructions: {
       theory:
-        "The paper setter shall prepare 9 questions selecting two questions from each unit with consideration <br> given to the Course Learning Outcomes. Among these, question number 1 will be compulsory, <br> comprising 7 short answer type questions carrying two marks each (total 14 marks) and covering the <br> entire syllabus. The remaining questions will be carrying 14 marks each. Examinees will be required to <br> attempt five questions: the compulsory question no. 1 and 1 question from the each of the four units. ",
+        "The paper setter shall prepare 9 questions selecting two questions from each unit with consideration given to the Course Learning Outcomes. Among these, question number 1 will be compulsory, comprising 7 short answer type questions carrying two marks each (total 14 marks) and covering the entire syllabus. The remaining questions will be carrying 14 marks each. Examinees will be required to attempt five questions: the compulsory question no. 1 and 1 question from the each of the four units.",
       practical: "",
     },
     evaluation: {
@@ -51,7 +51,7 @@ const schemes = {
     instructions: {
       theory: "",
       practical:
-        "Write-up and execution of the practical will be conducted as per the nature of the practical by <br> the external examiner, with consideration given to the Course Learning Outcomes. The <br> maximum marks for the write-up and execution of the practical will be <b>40</b>.",
+        "Write-up and execution of the practical will be conducted as per the nature of the practical by the external examiner, with consideration given to the Course Learning Outcomes. The maximum marks for the write-up and execution of the practical will be <b>40</b>.",
     },
     evaluation: {
       internal_th_total: 0,
@@ -88,9 +88,9 @@ const schemes = {
     theoryUnits: 3,
     instructions: {
       theory:
-        "The paper setter shall prepare 7 questions selecting two questions from each of the three units <br> with consideration given to the Course Learning Outcomes. Among these, question number 1 <br> will be compulsory comprising 4 short answer type questions carrying two marks each <br> (total 08 marks) and covering the entire syllabus. The remaining questions will be carrying 14 <br> marks each. Examinees will be required to attempt four questions: the compulsory question no. 1 <br> and 1 question from the each of the three units.",
+        "The paper setter shall prepare 7 questions selecting two questions from each of the three units with consideration given to the Course Learning Outcomes. Among these, question number 1 will be compulsory comprising 4 short answer type questions carrying two marks each (total 08 marks) and covering the entire syllabus. The remaining questions will be carrying 14 marks each. Examinees will be required to attempt four questions: the compulsory question no. 1 and 1 question from the each of the three units.",
       practical:
-        "Write-up and execution of the practical will be conducted as per the nature of the practical by <br> the external examiner, with consideration given to the Course Learning Outcomes. The <br> maximum marks for the write-up and execution of the practical will be 10.",
+        "Write-up and execution of the practical will be conducted as per the nature of the practical by the external examiner, with consideration given to the Course Learning Outcomes. The maximum marks for the write-up and execution of the practical will be 10.",
     },
     evaluation: {
       internal_th_total: 20,
@@ -125,9 +125,9 @@ const schemes = {
     theoryUnits: 2,
     instructions: {
       theory:
-        "The paper setter shall prepare 5 questions selecting two questions from each of the two units <br> with consideration given to the Course Learning Outcomes. Among these, question number 1 <br> will be compulsory question comprising 7 short answer type questions carrying one mark each <br> (total 07 marks) and covering the entire syllabus. The remaining questions will be carrying 14 <br> marks each. Examinees will be required to attempt three questions: the compulsory question no. <br> 1 and 1 question from the each of the two units. ",
+        "The paper setter shall prepare 5 questions selecting two questions from each of the two units with consideration given to the Course Learning Outcomes. Among these, question number 1 will be compulsory question comprising 7 short answer type questions carrying one mark each (total 07 marks) and covering the entire syllabus. The remaining questions will be carrying 14 marks each. Examinees will be required to attempt three questions: the compulsory question no. 1 and 1 question from the each of the two units.",
       practical:
-        "Write-up and execution of the practical will be conducted as per the nature of the practical by <br> the external examiner, with consideration given to the Course Learning Outcomes. The <br> maximum marks for the write-up and execution of the practical will be 20.",
+        "Write-up and execution of the practical will be conducted as per the nature of the practical by the external examiner, with consideration given to the Course Learning Outcomes. The maximum marks for the write-up and execution of the practical will be 20.",
     },
     evaluation: {
       internal_th_total: 15,
@@ -164,7 +164,7 @@ const schemes = {
     theoryUnits: 3,
     instructions: {
       theory:
-        "The paper setter shall prepare 7 questions selecting two questions from each of the three units with <br> consideration given to the Course Learning Outcomes. Among these, question number 1 will be <br> compulsory comprising 4 short answer type questions carrying two marks each (total 08 <br> marks) and covering the entire syllabus. The remaining questions will be carrying 14 marks each. <br> Examinees will be required to attempt four questions: the compulsory question no. 1 and 1 question <br> from the each of the three units.",
+        "The paper setter shall prepare 7 questions selecting two questions from each of the three units with consideration given to the Course Learning Outcomes. Among these, question number 1 will be compulsory comprising 4 short answer type questions carrying two marks each (total 08 marks) and covering the entire syllabus. The remaining questions will be carrying 14 marks each. Examinees will be required to attempt four questions: the compulsory question no. 1 and 1 question from the each of the three units.",
       practical: "",
     },
     evaluation: {
@@ -236,9 +236,9 @@ const schemes = {
     theoryUnits: 1,
     instructions: {
       theory:
-        "The paper setter shall prepare 4 questions from unit 01 with consideration given to the Course <br> Learning Outcomes. Among these, question number 1 will be compulsory comprising 6 <br> short answer type questions carrying one mark each (total 06 marks). The remaining questions <br> will be carrying 07 marks each. Examinees will be required to attempt three questions: the <br> compulsory question no. 1 and 02 questions from other 03 questions.",
+        "The paper setter shall prepare 4 questions from unit 01 with consideration given to the Course Learning Outcomes. Among these, question number 1 will be compulsory comprising 6 short answer type questions carrying one mark each (total 06 marks). The remaining questions will be carrying 07 marks each. Examinees will be required to attempt three questions: the compulsory question no. 1 and 02 questions from other 03 questions.",
       practical:
-        "Write-up and execution of the practical will be conducted as per the nature of the practical by <br> the external examiner, with consideration given to the Course Learning Outcomes. The <br> maximum marks for the write-up and execution of the practical will be 5",
+        "Write-up and execution of the practical will be conducted as per the nature of the practical by the external examiner, with consideration given to the Course Learning Outcomes. The maximum marks for the write-up and execution of the practical will be 5.",
     },
     evaluation: {
       internal_th_total: 10,
@@ -273,9 +273,9 @@ const schemes = {
     theoryUnits: 2,
     instructions: {
       theory:
-        "The paper setter shall prepare 5 questions selecting two questions from each of the two <br> units with consideration given to the Course Learning Outcomes. Among these, question <br> number 1 will be compulsory comprising 7 short answer type questions carrying <br> one mark each (total 07 marks) and covering the entire syllabus. The remaining questions <br> will be carrying 14 marks each. Examinees will be required to attempt three questions: the <br> compulsory question no. 1 and 1 question from the each of the two units.",
+        "The paper setter shall prepare 5 questions selecting two questions from each of the two units with consideration given to the Course Learning Outcomes. Among these, question number 1 will be compulsory comprising 7 short answer type questions carrying one mark each (total 07 marks) and covering the entire syllabus. The remaining questions will be carrying 14 marks each. Examinees will be required to attempt three questions: the compulsory question no. 1 and 1 question from the each of the two units.",
       practical:
-        "Write-up and execution of the practical will be conducted as per the nature of the <br> practical by the external examiner, with consideration given to the Course Learning <br> Outcomes. The maximum marks for the write-up and execution of the practical will be <br> 10.",
+        "Write-up and execution of the practical will be conducted as per the nature of the practical by the external examiner, with consideration given to the Course Learning Outcomes. The maximum marks for the write-up and execution of the practical will be 10.",
     },
     evaluation: {
       internal_th_total: 15,
@@ -303,6 +303,16 @@ function autofillForm() {
 
   const scheme = schemes[selectedSchemeKey];
 
+  const ltSplitContainer = document.getElementById("lt_split_container");
+  if (ltSplitContainer) {
+    if (scheme.credits.theory > 1) {
+      ltSplitContainer.style.display = "block";
+    } else {
+      ltSplitContainer.style.display = "none";
+      document.getElementById("lt_split").value = "0";
+    }
+  }
+
   // Autofill Credit and Marks table
   document.getElementById("credits_theory").value = scheme.credits.theory;
   document.getElementById("credits_practical").value = scheme.credits.practical;
@@ -328,7 +338,7 @@ function autofillForm() {
   if (scheme.credits.theory > 0 && scheme.credits.practical > 0) {
     nature = "Theory + Practical";
   } else if (scheme.credits.theory > 0 && scheme.credits.practical === 0) {
-    nature = "Theory(Theory + Tutorial)";
+    nature = "Theory (Theory + Tutorial)";
   } else if (scheme.credits.theory === 0 && scheme.credits.practical > 0) {
     nature = "Practical";
   }
@@ -415,6 +425,7 @@ function autofillForm() {
     practicalContactHours,
     selectedSchemeKey,
   );
+  if (typeof syncUnitCLOCheckboxes === "function") syncUnitCLOCheckboxes();
 
   // Autofill Evaluation Table
   document.getElementById("eval_internal_total").innerText =
@@ -496,11 +507,16 @@ function generateUnits(
             <td>
                 <div style="margin-bottom: 5px;">
                     <button type="button" onmousedown="event.preventDefault(); document.execCommand('bold', false, null)" style="padding: 2px 6px; font-weight: bold; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 3px;" title="Bold">B</button>
+                    <button type="button" onmousedown="event.preventDefault(); document.execCommand('italic', false, null)" style="padding: 2px 6px; font-weight: bold; font-style: italic; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 3px;" title="Italic">I</button>
+                    <button type="button" onmousedown="event.preventDefault(); document.execCommand('underline', false, null)" style="padding: 2px 6px; font-weight: bold; text-decoration: underline; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 3px;" title="Underline">U</button>
                 </div>
                 <div contenteditable="true" style="border: 1px solid #ccc; padding: 6px; min-height: 60px; border-radius: 4px; background-color: #fff; outline: none;" oninput="document.getElementById('hidden_topic_${unitIndex}').value = this.innerHTML" placeholder="Enter topics for Unit ${i}"></div>
                 <input type="hidden" name="unitContents[]" id="hidden_topic_${unitIndex}">
             </td>
-            <td><input type="text" name="unitCLOs[]"  style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; text-align: center;"></td>
+            <td style="vertical-align: middle;">
+                <input type="hidden" name="unitCLOs[]" id="hidden_clo_${unitIndex}" value="">
+                <div class="clo-checkbox-container" style="display: flex; flex-wrap: wrap; gap: 5px; justify-content: center;"></div>
+            </td>
             <td><input type="number" name="unitHours[]" class="${inputClass}" placeholder="Hours" required min="1" oninput="validateContactHours()"></td>
         `;
     container.appendChild(row);
@@ -515,11 +531,16 @@ function generateUnits(
             <td>
                 <div style="margin-bottom: 5px;">
                     <button type="button" onmousedown="event.preventDefault(); document.execCommand('bold', false, null)" style="padding: 2px 6px; font-weight: bold; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 3px;" title="Bold">B</button>
+                    <button type="button" onmousedown="event.preventDefault(); document.execCommand('italic', false, null)" style="padding: 2px 6px; font-weight: bold; font-style: italic; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 3px;" title="Italic">I</button>
+                    <button type="button" onmousedown="event.preventDefault(); document.execCommand('underline', false, null)" style="padding: 2px 6px; font-weight: bold; text-decoration: underline; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 3px;" title="Underline">U</button>
                 </div>
                 <div contenteditable="true" style="border: 1px solid #ccc; padding: 6px; min-height: 60px; border-radius: 4px; background-color: #fff; outline: none;" oninput="document.getElementById('hidden_topic_${unitIndex}').value = this.innerHTML" placeholder="Enter practical components"></div>
                 <input type="hidden" name="unitContents[]" id="hidden_topic_${unitIndex}">
             </td>
-            <td><input type="text" name="unitCLOs[]"  style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; text-align: center;"></td>
+            <td style="vertical-align: middle;">
+                <input type="hidden" name="unitCLOs[]" id="hidden_clo_${unitIndex}" value="">
+                <div class="clo-checkbox-container" style="display: flex; flex-wrap: wrap; gap: 5px; justify-content: center;"></div>
+            </td>
             <td><input type="number" name="unitHours[]" class="contact-hour-practical" value="${maxPractical}" readonly></td>
         `;
     container.appendChild(row);
@@ -574,16 +595,16 @@ function validateContactHours() {
 }
 
 function generateMappingTable() {
-  const closInput = document.getElementById("clos");
-  if (!closInput) return;
+  const cloInputs = document.querySelectorAll(
+    'textarea[name="courseOutcomes[]"]',
+  );
+  let closList = [];
+  if (cloInputs && cloInputs.length > 0) {
+    closList = Array.from(cloInputs)
+      .map((el) => el.value.trim())
+      .filter((val) => val !== "");
+  }
 
-  const closText = closInput.value;
-
-  // Use regex to safely split by newline, handling all OS line break types (\r\n, \n, or \r)
-  const closList = closText
-    .split(/\r?\n|\r/)
-    .map((c) => c.trim())
-    .filter((c) => c !== "");
   const tbody = document.getElementById("mappingBody");
   if (!tbody) return;
 
@@ -693,16 +714,63 @@ function generateMappingTable() {
 document.addEventListener("DOMContentLoaded", () => {
   const numPOsInput = document.getElementById("numPOs");
   const numPSOsInput = document.getElementById("numPSOs");
-  const closInput = document.getElementById("clos");
+  const cloContainer = document.getElementById("clo_container");
   const courseCodeInput = document.querySelector('input[name="courseCode"]');
 
-  // Ensure input events trigger table regeneration if typing occurs
-  if (closInput) closInput.addEventListener("input", generateMappingTable);
+  if (cloContainer) {
+    cloContainer.addEventListener("input", generateMappingTable);
+  }
   if (numPOsInput) numPOsInput.addEventListener("input", generateMappingTable);
   if (numPSOsInput)
     numPSOsInput.addEventListener("input", generateMappingTable);
   if (courseCodeInput)
     courseCodeInput.addEventListener("input", generateMappingTable);
+
+  const schemeSelect = document.getElementById("creditScheme");
+  const poolHiddenForLT = document.querySelector(
+    'input[name="is_pool_course"]',
+  );
+  const isPoolForLT = poolHiddenForLT && poolHiddenForLT.value === "true";
+
+  if (
+    schemeSelect &&
+    !document.getElementById("lt_split_container") &&
+    isPoolForLT
+  ) {
+    const container = document.createElement("div");
+    container.id = "lt_split_container";
+    container.style.marginTop = "15px";
+    container.style.display = "none";
+    container.innerHTML = `
+      <label style="font-weight:bold; color:#333;">Contact Hours Split (L+T+P):</label>
+      <select name="lt_split" id="lt_split" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; margin-top:5px; background-color:#fff;">
+          <option value="0">All Theory (No Tutorial)</option>
+          <option value="1">Include 1 Tutorial Credit</option>
+      </select>
+    `;
+    schemeSelect.parentNode.appendChild(container);
+
+    const courseCodeInputForAPI = document.querySelector(
+      'input[name="courseCode"]',
+    );
+    if (courseCodeInputForAPI && courseCodeInputForAPI.value.trim() !== "") {
+      fetch(
+        "/api/course/" + encodeURIComponent(courseCodeInputForAPI.value.trim()),
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          if (
+            data.exists &&
+            data.course.nep_mapping &&
+            data.course.nep_mapping.lt_split
+          ) {
+            const ltSelect = document.getElementById("lt_split");
+            if (ltSelect) ltSelect.value = data.course.nep_mapping.lt_split;
+          }
+        })
+        .catch(console.error);
+    }
+  }
 
   function enforceLocking() {
     if (!numPOsInput || !numPSOsInput) return;
@@ -783,3 +851,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
   generateMappingTable();
 });
+
+window.syncUnitCLOCheckboxes = function () {
+  const cloCount = document.querySelectorAll(
+    'textarea[name="courseOutcomes[]"]',
+  ).length;
+  const containers = document.querySelectorAll(".clo-checkbox-container");
+
+  containers.forEach((container) => {
+    const hiddenInput = container.previousElementSibling;
+    let selectedValues = hiddenInput.value
+      .split(",")
+      .map((s) => s.trim())
+      .filter((s) => s);
+    selectedValues = selectedValues.filter((val) => parseInt(val) <= cloCount);
+    hiddenInput.value = selectedValues.join(", ");
+
+    let html = "";
+    for (let i = 1; i <= cloCount; i++) {
+      const isChecked = selectedValues.includes(i.toString()) ? "checked" : "";
+      html += `<label style="display: inline-flex; align-items: center; cursor: pointer; font-size: 13px; background: #f8f9fa; padding: 2px 6px; border: 1px solid #ddd; border-radius: 4px;"><input type="checkbox" value="${i}" ${isChecked} onchange="updateHiddenCLO(this)" style="margin-right: 4px; cursor: pointer;"> ${i}</label>`;
+    }
+    container.innerHTML = html;
+  });
+};
+
+window.updateHiddenCLO = function (checkbox) {
+  const container = checkbox.closest(".clo-checkbox-container");
+  const checkedBoxes = container.querySelectorAll(
+    'input[type="checkbox"]:checked',
+  );
+  container.previousElementSibling.value = Array.from(checkedBoxes)
+    .map((cb) => cb.value)
+    .join(", ");
+};

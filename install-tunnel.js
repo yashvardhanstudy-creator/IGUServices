@@ -1,12 +1,10 @@
 var Service = require("node-windows").Service;
 var path = require("path");
 
-// Create a new service object
 var svc = new Service({
   name: "IGUServices Tunnel",
-  description:
-    "Ngrok CLI tunnel for exposing IGU Syllabus Data Management globally",
-  script: path.join(__dirname, "tunnel.js"), // This points to your tunnel.js wrapper
+  description: "Ngrok Tunnel for IGU Syllabus Data Management",
+  script: path.join(__dirname, "tunnel.js"),
   wait: 5,
   grow: 0.25,
   maxRetries: 10,
@@ -14,13 +12,15 @@ var svc = new Service({
   abortOnError: false,
 });
 
-// Listen for the "install" event, which indicates the
-// process is available as a service.
 svc.on("install", function () {
-  console.log("✅ Service installed successfully!");
   svc.start();
-  console.log("🚀 Service started in the background.");
+  console.log(
+    "✅ Service 'IGUServices Tunnel' installed and started successfully.",
+  );
 });
 
-// Install the script as a service
+svc.on("alreadyinstalled", function () {
+  console.log("⚠️ Service 'IGUServices Tunnel' is already installed.");
+});
+
 svc.install();

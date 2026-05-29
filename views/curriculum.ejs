@@ -61,12 +61,12 @@ const isCoreProgram = query.program_code && query.program_code.endsWith('_CORE')
 const schemesDataEJS = {
     "4+0": { cred: 4, th: 4, pr: 0, int: "30+0=30", end: "70+0=70", max: 100, dur: "3 Hours" },
     "0+4": { cred: 4, th: 0, pr: 4, int: "0+30=30", end: "0+70=70", max: 100, dur: "4 Hours" },
-    "3+1": { cred: 4, th: 3, pr: 1, int: "20+10=30", end: "50+20=70", max: 100, dur: "3 Hours (Theory), 3 Hours (Practical)" },
-    "2+2": { cred: 4, th: 2, pr: 2, int: "15+15=30", end: "35+35=70", max: 100, dur: "2 Hours (Theory), 3 Hours (Practical)" },
+    "3+1": { cred: 4, th: 3, pr: 1, int: "20+10=30", end: "50+20=70", max: 100, dur: "3 Hours(Th), \n3 Hours(P)" },
+    "2+2": { cred: 4, th: 2, pr: 2, int: "15+15=30", end: "35+35=70", max: 100, dur: "2 Hours(Th), \n3 Hours(P)" },
     "3+0": { cred: 3, th: 3, pr: 0, int: "25+0=25", end: "50+0=50", max: 75, dur: "3 Hours" },
     "2+0": { cred: 2, th: 2, pr: 0, int: "15+0=15", end: "35+0=35", max: 50, dur: "2 Hours" },
-    "1+1": { cred: 2, th: 1, pr: 1, int: "10+5=15", end: "20+15=35", max: 50, dur: "2 Hours (Theory), 3 Hours (Practical)" },
-    "2+1": { cred: 3, th: 2, pr: 1, int: "15+5=20", end: "35+20=55", max: 75, dur: "2 Hours (Theory), 3 Hours (Practical)" }
+    "1+1": { cred: 2, th: 1, pr: 1, int: "10+5=15", end: "20+15=35", max: 50, dur: "2 Hours(Th), \n3 Hours(P)" },
+    "2+1": { cred: 3, th: 2, pr: 1, int: "15+5=20", end: "35+20=55", max: 75, dur: "2 Hours(Th), \n3 Hours(P)" }
 };
 %>
 <% 
@@ -123,7 +123,7 @@ const schemesDataEJS = {
             <li><strong>Scheme Overrides:</strong> ⚠️ Changing the scheme of an already saved course will permanently reset it. Doing this will wipe the teacher's data!</li>
             <li><strong>Elective Choices:</strong> The framework automatically provides maximum of 6 rows for any Elective slots so students have choices. Select scheme for the main elective row, then fill the elective table!</li>
             <% if (schemeName && schemeName.includes('Scheme D')) { %>
-                <li><strong>Minor Exceptions (Scheme D):</strong> CC-M1, CC-M2, and CC-M3 can be set to fixed courses. If left empty, they will default to "from available pool of Minor/Minor(Vocational)" in the generated syllabus.</li>
+                <li><strong>Minor Exceptions (Scheme D):</strong> CC-M1, CC-M2, and CC-M3 can be set to fixed courses. If left empty, they will default to "from available pool of Minor/ Minor (Vocational)" in the generated syllabus.</li>
             <% } %>
         </ul>
     </div>
@@ -184,30 +184,35 @@ const schemesDataEJS = {
                     </tr>
                 <% } else { %>
                     <% 
-                       const renderedCoursesCount = sem.courses.filter(c => !c.isElective || c.electiveOpt === 1).length;
+                       const renderedCoursesCount = sem.courses.length;
                        const rowspanCount = renderedCoursesCount + 1; 
                        let isFirstRenderedRow = true;
                     %>
                     <% sem.courses.forEach((course, index) => { %>
                         <% if (course.isElective) { %>
-                            <% if (course.electiveOpt === 1) { %>
-                                <% const baseElectiveType = course.type.split('.')[0]; %>
-                                <% const choices = electiveGroups[baseElectiveType] ? electiveGroups[baseElectiveType].courses : []; %>
-                                <% const cellKey = sem.number + '_' + index; %>
-                                <% const summaryDraft = draftData[cellKey + '_summary'] || {}; %>
-                                <% const cellDraft = draftData[cellKey] || {}; %>
-                                <% const savedCourse = cellDraft.code ? savedCoursesMap[cellDraft.code] : null; %>
-                                <% const isSaved = !!savedCourse; %>
-                                <tr style="background-color: <%= isSaved ? '#d4edda' : sem.color %>;" data-cell-key="<%= cellKey %>" class="elective-summary-row">
-                                    <% if (isFirstRenderedRow) { %>
-                                        <td rowspan="<%= rowspanCount %>" class="center" style="background-color: <%= sem.color %>;"><strong><%= sem.number %></strong></td>
-                                        <% isFirstRenderedRow = false; %>
-                                    <% } %>
-                                    <td><span style="color: #0056b3; font-weight: bold;" id="type_<%= cellKey %>" data-type="<%= baseElectiveType %>" data-credits="<%= course.credits %>"><%= baseElectiveType %></span><br><span style="font-size:11px; font-style:italic;">(pick any)</span></td>
-                                    <td id="code_<%= cellKey %>" class="elective-code-summary" data-base-type="<%= baseElectiveType %>"></td>
-                                    <td><input type="text" value="Any One from the Choices Given Below" readonly style="width: 100%; border: none; padding: 4px; box-sizing: border-box; background-color: transparent; text-align: left; font-style: italic;"></td>
-                                    <td class="center" id="td_tp_<%= cellKey %>" style="vertical-align: middle;">
-                                        <% const currentScheme = summaryDraft.credit_scheme || ''; %>
+                            <% const baseElectiveType = course.type.split('.')[0]; %>
+                            <% const cellKey = sem.number + '_' + index; %>
+                            <% const cellDraft = draftData[cellKey] || {}; %>
+                            <% const savedCourse = cellDraft.code ? savedCoursesMap[cellDraft.code] : null; %>
+                            <% const isSaved = !!savedCourse; %>
+                            <% const summaryDraft = draftData[cellKey + '_summary'] || {}; %> 
+
+                            <tr style="background-color: <%= isSaved ? '#d4edda' : sem.color %>;" data-cell-key="<%= cellKey %>" <%= course.electiveOpt === 1 ? 'class="elective-summary-row"' : '' %>>
+                                <% if (isFirstRenderedRow) { %>
+                                    <td rowspan="<%= rowspanCount %>" class="center" style="background-color: <%= sem.color %>;"><strong><%= sem.number %></strong></td>
+                                    <% isFirstRenderedRow = false; %>
+                                <% } %>
+                                
+                                <% if (course.electiveOpt === 1) { %>
+                                    <td rowspan="6"><span style="color: #0056b3; font-weight: bold;" id="type_<%= cellKey %>" data-type="<%= baseElectiveType %>" data-credits="<%= course.credits %>"><%= baseElectiveType %></span><br><span style="font-size:11px; font-style:italic;">(pick any one)</span></td>
+                                <% } %>
+
+                                <td><input type="text" id="code_<%= cellKey %>" data-type="<%= course.type %>" data-credits="<%= course.credits %>" placeholder="Code" value="<%= cellDraft.code || '' %>" style="width: 100%; border: none; background: transparent; text-align: center; outline: 1px solid #ccc;" onchange="checkCourseCode(this, '<%= cellKey %>', '<%= course.credits %>', '<%= sem.number %>', '<%= sem.color %>')"></td>
+                                <td><input type="text" id="nom_<%= cellKey %>" placeholder="Enter Nomenclature" value="<%= savedCourse ? savedCourse.course_name : (cellDraft.nom || '') %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: <%= isSaved ? '#e9ecef' : 'transparent' %>;" oninput="debounceSaveDraft()" <%= isSaved ? 'readonly' : '' %>></td>
+                                
+                                <% if (course.electiveOpt === 1) { %>
+                                    <td class="center" id="td_tp_<%= cellKey %>" style="vertical-align: middle;" rowspan="6">
+                                        <% const currentScheme = summaryDraft.credit_scheme || (savedCourse && savedCourse.credit_scheme) || ''; %>
                                         <% const displayCredits = course.credits; %>
                                         <select id="scheme_<%= cellKey %>" onchange="handleSchemeChange(this, '<%= cellKey %>')" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: <%= isCoreProgram ? '#e9ecef' : 'transparent' %>;" <%= isCoreProgram ? 'disabled' : '' %>>
                                             <option value="">Scheme</option>
@@ -235,24 +240,22 @@ const schemesDataEJS = {
                                             displayDur = schemesDataEJS[currentScheme].dur;
                                         }
                                     %>
-                                    <td class="center" id="td_cred_<%= cellKey %>" style="vertical-align: middle;"><%= displayCred %></td>
-                                    <td class="center" id="td_hrs_<%= cellKey %>" style="vertical-align: middle;">
+                                    <td class="center" id="td_cred_<%= cellKey %>" style="vertical-align: middle;" rowspan="6"><%= displayCred %></td>
+                                    <td class="center" id="td_hrs_<%= cellKey %>" style="vertical-align: middle;" rowspan="6">
                                         <% if (currentScheme && schemesDataEJS[currentScheme]) { %>
                                             <script>
-                                                // Defer rendering so the DOM element exists
                                                 document.addEventListener('DOMContentLoaded', () => {
-                                                    renderHrsCell('<%= cellKey %>', <%= schemesDataEJS[currentScheme].th %>, <%= schemesDataEJS[currentScheme].pr %>, false, '<%= summaryDraft.lt_split || "0" %>');
+                                                    renderHrsCell('<%= cellKey %>', <%= schemesDataEJS[currentScheme].th %>, <%= schemesDataEJS[currentScheme].pr %>, false, '<%= summaryDraft.lt_split || (savedCourse && savedCourse.nep_mapping ? savedCourse.nep_mapping.lt_split : "0") %>');
                                                 });
                                             </script>
                                         <% } %>
                                     </td>
-                                    <td class="center" id="td_int_<%= cellKey %>" style="vertical-align: middle;"><%= displayInt %></td>
-                                    <td class="center" id="td_end_<%= cellKey %>" style="vertical-align: middle;"><%= displayEnd %></td>
-                                    <td class="center" id="td_max_<%= cellKey %>" style="vertical-align: middle;"><%= displayMax %></td>
-                                    <td class="center" id="td_dur_<%= cellKey %>" style="vertical-align: middle;"><%= displayDur %></td>
-                                </tr>
-                            <% } %>
-                            <% // Do not render elective choices (electiveOpt > 1) in the main table %>
+                                    <td class="center" id="td_int_<%= cellKey %>" style="vertical-align: middle;" rowspan="6"><%= displayInt %></td>
+                                    <td class="center" id="td_end_<%= cellKey %>" style="vertical-align: middle;" rowspan="6"><%= displayEnd %></td>
+                                    <td class="center" id="td_max_<%= cellKey %>" style="vertical-align: middle;" rowspan="6"><%= displayMax %></td>
+                                    <td class="center" id="td_dur_<%= cellKey %>" style="vertical-align: middle;" rowspan="6"><%= displayDur %></td>
+                                <% } %>
+                            </tr>
                         <% } else { %>
 
                             <% const cellKey = sem.number + '_' + index; %>
@@ -302,7 +305,7 @@ const schemesDataEJS = {
                                 <td>
                                     <span style="color: #0056b3; font-weight: bold;" id="type_<%= cellKey %>" data-type="<%= course.type %>"><%= course.type %></span>
                                 </td>
-                                <td colspan="2" class="center" style="font-style: italic; color: #555;">from available pool of Minor/Minor(Vocational)</td>
+                                <td colspan="2" class="center" style="font-style: italic; color: #555;">from available pool of Minor/ Minor (Vocational)</td>
                                 <td></td>
                                 <td class="center"><%= course.credits %></td>
                                 <td></td>
@@ -314,10 +317,10 @@ const schemesDataEJS = {
                                 <td>
                                     <span style="color: #6f42c1; font-weight: bold;" id="type_<%= cellKey %>" data-type="<%= course.type %>"><%= course.type %></span>
                                 </td>
-                                <td><input type="text" id="code_<%= cellKey %>" placeholder="Code (Opt)" value="<%= cellDraft.code || '' %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; text-align: center; background-color: <%= isCoreProgram ? '#e9ecef' : 'transparent' %>;" oninput="debounceSaveDraft()" <%= isCoreProgram ? 'readonly' : '' %>></td>
+                                <td><input type="text" id="code_<%= cellKey %>" data-type="<%= course.type %>" placeholder="Code (Opt)" value="<%= cellDraft.code || '' %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; text-align: center; background-color: <%= isCoreProgram ? '#e9ecef' : 'transparent' %>;" oninput="debounceSaveDraft()" <%= isCoreProgram ? 'readonly' : '' %>></td>
                                 <td><input type="text" id="nom_<%= cellKey %>" value="*Internship" readonly style="width: 100%; border: none; padding: 4px; box-sizing: border-box; background-color: transparent; text-align: left; font-weight: bold;"></td>
                                 <td class="center"><input type="text" id="tp_<%= cellKey %>" value="" readonly style="width: 100%; border: none; padding: 4px; box-sizing: border-box; text-align: center; background-color: transparent;"></td>
-                                <td class="center"><input type="text" id="cred_<%= cellKey %>" value="" readonly style="width: 100%; border: none; padding: 4px; box-sizing: border-box; text-align: center; background-color: transparent;"></td>
+                                <td class="center"><input type="text" id="cred_<%= cellKey %>" value="4" readonly style="width: 100%; border: none; padding: 4px; box-sizing: border-box; text-align: center; background-color: transparent;"></td>
                                 <td class="center"><input type="text" id="hrs_<%= cellKey %>" value="" readonly style="width: 100%; border: none; padding: 4px; box-sizing: border-box; text-align: center; background-color: transparent;"></td>
                                 <td class="center"><input type="text" id="int_<%= cellKey %>" value="" readonly style="width: 100%; border: none; padding: 4px; box-sizing: border-box; text-align: center; background-color: transparent;"></td>
                                 <td class="center"><input type="text" id="end_<%= cellKey %>" value="" readonly style="width: 100%; border: none; padding: 4px; box-sizing: border-box; text-align: center; background-color: transparent;"></td>
@@ -327,7 +330,7 @@ const schemesDataEJS = {
                                 <td>
                                     <span style="color: #6f42c1; font-weight: bold;" id="type_<%= cellKey %>" data-type="<%= course.type %>"><%= course.type %></span>
                                 </td>
-                                <td><input type="text" id="code_<%= cellKey %>" placeholder="Code (Opt)" value="<%= cellDraft.code || '' %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; text-align: center; background-color: <%= isCoreProgram ? '#e9ecef' : 'transparent' %>;" oninput="debounceSaveDraft()" <%= isCoreProgram ? 'readonly' : '' %>></td> 
+                                <td><input type="text" id="code_<%= cellKey %>" data-type="<%= course.type %>" placeholder="Code (Opt)" value="<%= cellDraft.code || '' %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; text-align: center; background-color: <%= isCoreProgram ? '#e9ecef' : 'transparent' %>;" oninput="debounceSaveDraft()" <%= isCoreProgram ? 'readonly' : '' %>></td> 
                                 <td><input type="text" id="nom_<%= cellKey %>" value="Seminar" readonly style="width: 100%; border: none; padding: 4px; box-sizing: border-box; background-color: transparent; text-align: left; font-weight: bold;"></td> 
                                 <td class="center"><input type="text" id="tp_<%= cellKey %>" value="2T / 0P" readonly style="width: 100%; border: none; padding: 4px; box-sizing: border-box; text-align: center; background-color: transparent;"></td>
                                 <td class="center"><input type="text" id="cred_<%= cellKey %>" value="2" readonly style="width: 100%; border: none; padding: 4px; box-sizing: border-box; text-align: center; background-color: transparent;"></td>
@@ -340,7 +343,7 @@ const schemesDataEJS = {
                                 <td>
                                     <span style="color: #6f42c1; font-weight: bold;" id="type_<%= cellKey %>" data-type="<%= course.type %>"><%= course.type %></span>
                                 </td>
-                                <td><input type="text" id="code_<%= cellKey %>" placeholder="Code (Opt)" value="<%= cellDraft.code || '' %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; text-align: center; background-color: <%= isCoreProgram ? '#e9ecef' : 'transparent' %>;" oninput="debounceSaveDraft()" <%= isCoreProgram ? 'readonly' : '' %>></td> 
+                                <td><input type="text" id="code_<%= cellKey %>" data-type="<%= course.type %>" placeholder="Code (Opt)" value="<%= cellDraft.code || '' %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; text-align: center; background-color: <%= isCoreProgram ? '#e9ecef' : 'transparent' %>;" oninput="debounceSaveDraft()" <%= isCoreProgram ? 'readonly' : '' %>></td> 
                                 <td><input type="text" id="nom_<%= cellKey %>" value="Dissertation" readonly style="width: 100%; border: none; padding: 4px; box-sizing: border-box; background-color: transparent; text-align: left; font-weight: bold;"></td> 
                                 <td class="center"><input type="text" id="tp_<%= cellKey %>" value="0T / 12P" readonly style="width: 100%; border: none; padding: 4px; box-sizing: border-box; text-align: center; background-color: transparent;"></td>
                                 <td class="center"><input type="text" id="cred_<%= cellKey %>" value="12" readonly style="width: 100%; border: none; padding: 4px; box-sizing: border-box; text-align: center; background-color: transparent;"></td>
@@ -410,14 +413,15 @@ const schemesDataEJS = {
                                                 }
                                             }
                                             if (hasCreds) {
-                                                let lt_split = cellDraft.lt_split || "0";
+                                                let savedLtSplit = isSaved && savedCourse && savedCourse.nep_mapping && savedCourse.nep_mapping.lt_split ? savedCourse.nep_mapping.lt_split : null;
+                                                let lt_split = cellDraft.lt_split || savedLtSplit || "0";
                                                 let p = pr * 2;
                                                 let tot = th + p;
                                                 if (th > 1) {
                                                     %>
                                                     <select id="ltsplit_<%= cellKey %>" onchange="debounceSaveDraft()" style="background-color: <%= isSaved || isCoreProgram || isCommonPgCourse ? '#e9ecef' : 'transparent' %>; border: 1px solid #ccc; padding: 2px;" <%= isCoreProgram || isCommonPgCourse ? 'disabled' : '' %>>
-                                                        <option value="0" <%= lt_split === "0" ? "selected" : "" %>><%= th %>+0+<%= p %>=<%= tot %></option>
-                                                        <option value="1" <%= lt_split === "1" ? "selected" : "" %>><%= th-1 %>+1+<%= p %>=<%= tot %></option>
+                                                        <option value="0" <%= lt_split == "0" ? "selected" : "" %>><%= th %>+0+<%= p %>=<%= tot %></option>
+                                                        <option value="1" <%= lt_split == "1" ? "selected" : "" %>><%= th-1 %>+1+<%= p %>=<%= tot %></option>
                                                     </select>
                                                     <%
                                                 } else {
@@ -447,63 +451,19 @@ const schemesDataEJS = {
         </tbody>
     </table>
 
-    <% if (Object.keys(electiveGroups).length > 0) { %>
-        <h2 style="margin-top: 50px;">Elective Choices</h2>
-        <p style="text-align: center; font-style: italic; color: #666; margin-top: -10px; margin-bottom: 20px;">Note: A minimum of 2 courses should be provided per elective table.</p>
-        <% for (const baseElectiveType in electiveGroups) { %>
-            <% const group = electiveGroups[baseElectiveType]; %>
-            <h3 style="text-align: left; border: none; margin-top: 30px;">Choices for: <%= baseElectiveType %></h3>
-            <table>
-                <thead>
-                    <tr class="header-row" style="background-color: #f2f2f2;">
-                        <th style="width: 15%;">Course Type</th>
-                        <th style="width: 25%;">Course Code</th>
-                        <th style="width: 60%;">Nomenclature of the Course</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% group.courses.forEach(course => { %>
-                        <% const cellKey = group.semester.number + '_' + course.index; %>
-                        <% const cellDraft = draftData[cellKey] || {}; %>
-                        <% const savedCourse = cellDraft.code ? savedCoursesMap[cellDraft.code] : null; %>
-                        <% const isSaved = !!savedCourse; %>
-                        <tr style="background-color: <%= isSaved ? '#d4edda' : group.semester.color %>;" data-base-type="<%= baseElectiveType %>">
-                            <td><span style="color: <%= isSaved ? '#155724' : '#0056b3' %>; font-weight: bold;" id="type_<%= cellKey %>" data-type="<%= course.type %>"><%= course.type %> <%= isSaved ? '✅' : '' %></span></td>
-                            <td><input type="text" id="code_<%= cellKey %>" data-type="<%= course.type %>" data-credits="<%= course.credits %>" placeholder="Code" value="<%= cellDraft.code || '' %>" style="width: 100%; border: none; background: transparent; text-align: center; outline: 1px solid #ccc;" onchange="checkCourseCode(this, '<%= cellKey %>', '<%= course.credits %>', '<%= group.semester.number %>', '<%= group.semester.color %>')"></td>
-                            <td><input type="text" id="nom_<%= cellKey %>" placeholder="Enter Nomenclature" value="<%= savedCourse ? savedCourse.course_name : (cellDraft.nom || '') %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: <%= isSaved ? '#e9ecef' : 'transparent' %>;" oninput="debounceSaveDraft()" <%= isSaved ? 'readonly' : '' %>></td>
-                        </tr>
-                    <% }) %>
-                </tbody>
-            </table>
-        <% } %>
-    <% } %>
-
     <script>
         const linkGroups = <%- JSON.stringify(linkGroups) %>;
         const draftData = <%- JSON.stringify(draftData) %>;
         const schemesData = {
             "4+0": { cred: 4, th: 4, pr: 0, int: "30+0=30", end: "70+0=70", max: 100, dur: "3 Hours" },
             "0+4": { cred: 4, th: 0, pr: 4, int: "0+30=30", end: "0+70=70", max: 100, dur: "4 Hours" },
-            "3+1": { cred: 4, th: 3, pr: 1, int: "20+10=30", end: "50+20=70", max: 100, dur: "3 Hours (Theory), 3 Hours (Practical)" },
-            "2+2": { cred: 4, th: 2, pr: 2, int: "15+15=30", end: "35+35=70", max: 100, dur: "2 Hours (Theory), 3 Hours (Practical)" },
+            "3+1": { cred: 4, th: 3, pr: 1, int: "20+10=30", end: "50+20=70", max: 100, dur: "3 Hours(Th), \n3 Hours(P)" },
+            "2+2": { cred: 4, th: 2, pr: 2, int: "15+15=30", end: "35+35=70", max: 100, dur: "2 Hours(Th), \n3 Hours(P)" },
             "3+0": { cred: 3, th: 3, pr: 0, int: "25+0=25", end: "50+0=50", max: 75, dur: "3 Hours" },
             "2+0": { cred: 2, th: 2, pr: 0, int: "15+0=15", end: "35+0=35", max: 50, dur: "2 Hours" },
-            "1+1": { cred: 2, th: 1, pr: 1, int: "10+5=15", end: "20+15=35", max: 50, dur: "2 Hours (Theory), 3 Hours (Practical)" },
-            "2+1": { cred: 3, th: 2, pr: 1, int: "15+5=20", end: "35+20=55", max: 75, dur: "2 Hours (Theory), 3 Hours (Practical)" }
+            "1+1": { cred: 2, th: 1, pr: 1, int: "10+5=15", end: "20+15=35", max: 50, dur: "2 Hours(Th), \n3 Hours(P)" },
+            "2+1": { cred: 3, th: 2, pr: 1, int: "15+5=20", end: "35+20=55", max: 75, dur: "2 Hours(Th), \n3 Hours(P)" }
         };
-
-        function updateElectiveSummaryCodes() {
-            document.querySelectorAll('.elective-code-summary').forEach(summaryCell => {
-                const baseType = summaryCell.dataset.baseType;
-                const choiceRows = document.querySelectorAll(`tr[data-base-type="${baseType}"]`);
-                const codes = [];
-                choiceRows.forEach(row => {
-                    const codeInput = row.querySelector('input[id^="code_"]');
-                    if (codeInput && codeInput.value) codes.push(codeInput.value);
-                });
-                summaryCell.textContent = codes.join(' / ');
-            });
-        }
 
         document.addEventListener('DOMContentLoaded', () => {
             // Initial sync for any pre-loaded linked rows
@@ -517,7 +477,6 @@ const schemesDataEJS = {
                     }
                 }
             }
-            updateElectiveSummaryCodes();
         });
 
         function getSlaveKeys(masterKey) {
@@ -566,13 +525,13 @@ const schemesDataEJS = {
             const bg = isSaved ? '#e9ecef' : 'transparent';
             
             const oldSelect = document.getElementById('ltsplit_' + cellKey);
-            const oldVal = initialLtSplit !== null ? initialLtSplit : (oldSelect ? oldSelect.value : "0");
+            const oldVal = initialLtSplit !== null ? String(initialLtSplit) : (oldSelect ? String(oldSelect.value) : "0");
 
             if (th > 1) {
                 td.innerHTML = `
                     <select id="ltsplit_${cellKey}" onchange="debounceSaveDraft()" style="background-color: ${bg}; border: 1px solid #ccc; padding: 2px;">
-                        <option value="0" ${oldVal === "0" ? "selected" : ""}>${th}+0+${p}=${totalHrs}</option>
-                        <option value="1" ${oldVal === "1" ? "selected" : ""}>${th-1}+1+${p}=${totalHrs}</option>
+                        <option value="0" ${oldVal == "0" ? "selected" : ""}>${th}+0+${p}=${totalHrs}</option>
+                        <option value="1" ${oldVal == "1" ? "selected" : ""}>${th-1}+1+${p}=${totalHrs}</option>
                     </select>
                 `;
             } else {
@@ -602,14 +561,6 @@ const schemesDataEJS = {
         async function handleSchemeChange(selectEl, cellKey) {
             const newScheme = selectEl.value;
             const dbScheme = selectEl.getAttribute('data-dbscheme');
-            const summaryRow = document.querySelector(`tr[data-cell-key="${cellKey}"].elective-summary-row`);
-            
-            if (summaryRow) {
-                updateSchemeValues(cellKey, newScheme);
-                syncSlaveRows(cellKey);
-                debounceSaveDraft();
-                return;
-            }
             // For electives, the code input is in the choices table, not the summary row
             const codeInput = document.getElementById('code_' + cellKey);
             const courseCode = codeInput ? codeInput.value.trim() : '';
@@ -627,7 +578,6 @@ const schemesDataEJS = {
                     const nomInput = row.querySelector('input[id^="nom_"]');
                     const typeSpan = document.getElementById('type_' + cellKey);
                     const urlParams = new URLSearchParams(window.location.search);
-                    
                     const codeInputForCredits = document.getElementById('code_' + cellKey);
                     const creditsTotal = codeInputForCredits ? (codeInputForCredits.getAttribute('data-credits') || "0") : "0";
 
@@ -638,7 +588,7 @@ const schemesDataEJS = {
                             courseCode, 
                             creditScheme: newScheme, 
                             courseName: nomInput ? nomInput.value.trim() : '', 
-                            courseType: typeSpan ? typeSpan.getAttribute('data-type') : '', 
+                            courseType: codeInputForCredits ? codeInputForCredits.getAttribute('data-type') : '', 
                             creditsTotal: creditsTotal, 
                             programCode: urlParams.get('program_code') 
                         })
@@ -669,18 +619,18 @@ const schemesDataEJS = {
             const nomInput = document.getElementById('nom_' + cellKey);
             const typeSpan = document.getElementById('type_' + cellKey);
             const row = input.closest('tr');
-            const baseType = row.dataset.baseType;
-            const courseType = typeSpan.getAttribute('data-type');
+            const courseType = input.getAttribute('data-type') || "";
 
             // Logic to clear the row if code is removed
             if (!code) {
                 nomInput.readOnly = false;
                 nomInput.style.backgroundColor = 'transparent';
-                typeSpan.style.color = '#0056b3';
-                typeSpan.innerHTML = courseType;
+                if (typeSpan) {
+                    typeSpan.style.color = '#0056b3';
+                    typeSpan.innerHTML = courseType.split('.')[0];
+                }
                 row.style.backgroundColor = originalColor; 
 
-                if (baseType) updateElectiveSummaryCodes();
                 debounceSaveDraft();
                 syncSlaveRows(cellKey, true); // Clear slave rows
                 return;
@@ -697,25 +647,26 @@ const schemesDataEJS = {
                     nomInput.readOnly = true;
                     nomInput.style.backgroundColor = '#e9ecef';
 
-                    typeSpan.style.color = '#155724';
-                    typeSpan.innerHTML = courseType + ' ✅';
+                    if (typeSpan) {
+                        typeSpan.style.color = '#155724';
+                        typeSpan.innerHTML = courseType.split('.')[0] + ' ✅';
+                    }
                     row.style.backgroundColor = '#d4edda';
 
-                    if (baseType) updateElectiveSummaryCodes();
                     debounceSaveDraft();
                     syncSlaveRows(cellKey);
                 } else {
                     nomInput.readOnly = false;
                     nomInput.style.backgroundColor = 'transparent';
-                    typeSpan.style.color = '#0056b3';
-                    typeSpan.innerHTML = courseType;
+                    if (typeSpan) {
+                        typeSpan.style.color = '#0056b3';
+                        typeSpan.innerHTML = courseType.split('.')[0];
+                    }
                     row.style.backgroundColor = originalColor;
-                    if (baseType) updateElectiveSummaryCodes();
                     debounceSaveDraft();
                 }
             } catch (err) {
                 console.error("Error checking course code:", err);
-                if (baseType) updateElectiveSummaryCodes();
                 debounceSaveDraft();
             }
         }
@@ -736,17 +687,16 @@ const schemesDataEJS = {
             const rows = document.querySelectorAll('#mainCurriculumTable tbody tr:not(.total-row):not(.divider-row)');
             
             rows.forEach(row => {
-                const typeSpan = row.querySelector('span[id^="type_"]');
+                const codeInput = row.querySelector('input[id^="code_"]');
                 const slaveInput = row.querySelector('input[disabled], select[disabled]');
                 const isCommonPgRow = row.classList.contains('common-pg-row');
 
-                // If it's a slave row from a linked group, do not save its data.
                 if (slaveInput && !isCommonPgRow) {
                     return;
                 }
-                if (typeSpan) { 
-                    const key = typeSpan.id.replace('type_', '');
-                    const type = typeSpan.getAttribute('data-type');
+                if (codeInput) { 
+                    const key = codeInput.id.replace('code_', '');
+                    const type = codeInput.getAttribute('data-type') || "";
                     const isCustomRow = /^(Internship|Intership)$/i.test(type);
                     const isSeminarRow = /^SEMINAR$/i.test(type);
                     const isDissertationRow = /^(PROJECT(?:\s*WORK)?\/DISSERTATION|DISSERTATION)$/i.test(type);
@@ -766,54 +716,44 @@ const schemesDataEJS = {
                             draft_data[key] = { is_custom_row: true, type, code, nom, tp, credits, hrs, int, end, max, dur };
                         }
                     } else {
-                        const codeInput = row.querySelector('#code_' + key);
                         const nomInput = row.querySelector('#nom_' + key);
                         let schemeSelect = row.querySelector('#scheme_' + key);
                         let ltSplitSelect = row.querySelector('#ltsplit_' + key);
 
                         if (row.classList.contains('elective-summary-row')) {
-                            // This is an elective summary row
                             const credit_scheme = schemeSelect ? schemeSelect.value : "";
-                            const lt_split = ltSplitSelect ? ltSplitSelect.value : "0";
-                            const credits = typeSpan.getAttribute('data-credits') || "0"; // Safely get credits from the DOM
-                            draft_data[key + '_summary'] = { type, credits, credit_scheme, lt_split };
-                        } else if (codeInput && nomInput) {
-                            // This is a normal or choice row
+                            const lt_split = ltSplitSelect ? String(ltSplitSelect.value) : "0";
+                            const credits = codeInput.getAttribute('data-credits') || "0";
+                            draft_data[key + '_summary'] = { type: type.split('.')[0], credits, credit_scheme, lt_split };
+                        }
+                        
+                        if (codeInput && nomInput) {
                             const code = codeInput.value.trim();
                             const nom = nomInput.value.trim();
                             const credits = codeInput.getAttribute('data-credits');
                             const credit_scheme = schemeSelect ? schemeSelect.value : "";
-                            const lt_split = ltSplitSelect ? ltSplitSelect.value : "0";
-                            if (code || nom || credit_scheme) {
-                                draft_data[key] = { code, nom, type, credits, credit_scheme, lt_split };
+                            const lt_split = ltSplitSelect ? String(ltSplitSelect.value) : "0";
+                            
+                            let final_scheme = credit_scheme;
+                            let final_lt = lt_split;
+                            if (!row.classList.contains('elective-summary-row') && type.includes('.')) {
+                                let prevRow = row.previousElementSibling;
+                                while (prevRow && !prevRow.classList.contains('elective-summary-row')) {
+                                    prevRow = prevRow.previousElementSibling;
+                                }
+                                if (prevRow) {
+                                    const sSelect = prevRow.querySelector('select[id^="scheme_"]');
+                                    const lSelect = prevRow.querySelector('select[id^="ltsplit_"]');
+                                    if (sSelect) final_scheme = sSelect.value;
+                                    if (lSelect) final_lt = lSelect.value;
+                                }
+                            }
+
+                            if (code || nom || final_scheme) {
+                                draft_data[key] = { code, nom, type: type, credits, credit_scheme: final_scheme, lt_split: final_lt };
                             }
                         }
                     }
-                }
-            });
-            
-            // Re-add logic to save elective choice tables
-            const electiveChoiceRows = document.querySelectorAll('tr[data-base-type]');
-            electiveChoiceRows.forEach(row => {
-                const codeInput = row.querySelector('input[id^="code_"]');
-                if (codeInput) {
-                    const key = codeInput.id.replace('code_', '');
-                    const code = codeInput.value.trim();
-                    const nom = row.querySelector('#nom_' + key).value.trim();
-
-                    const baseType = row.dataset.baseType;
-                    const summarySpan = document.querySelector(`tr.elective-summary-row span[data-type="${baseType}"]`);
-                    let credit_scheme = "";
-                    let lt_split = "0";
-                    if (summarySpan) {
-                        const summaryRow = summarySpan.closest('tr');
-                        const schemeSelect = summaryRow.querySelector('select[id^="scheme_"]');
-                        const ltSelect = summaryRow.querySelector('select[id^="ltsplit_"]');
-                        if (schemeSelect) credit_scheme = schemeSelect.value;
-                        if (ltSelect) lt_split = ltSelect.value;
-                    }
-
-                    if (code || nom) draft_data[key] = { code, nom, type: codeInput.dataset.type, credits: codeInput.dataset.credits, credit_scheme, lt_split };
                 }
             });
 

@@ -1,7 +1,7 @@
 <service>
 	<id>iguservicestunnel.exe</id>
 	<name>IGUServices Tunnel</name>
-	<description>Ngrok CLI tunnel for exposing IGU Syllabus Data Management globally</description>
+	<description>Ngrok Tunnel for IGU Syllabus Data Management</description>
 	<executable>C:\nvm4w\nodejs\node.exe</executable>
 	<argument>--harmony</argument>
 	<argument>C:\IGUServices\node_modules\node-windows\lib\wrapper.js</argument>

@@ -225,7 +225,7 @@ router.get("/courses-list", verifyLogin, async (req, res) => {
 
     const { program_filter } = req.query;
     const programsResult = await pool.query(
-      "SELECT program_code, subject_name, specialization FROM programs WHERE program_code NOT LIKE '%_CORE' ORDER BY subject_name ASC, specialization ASC",
+      "SELECT program_code, subject_name, specialization, department FROM programs WHERE program_code NOT LIKE '%_CORE' ORDER BY subject_name ASC, specialization ASC",
     );
     const programsList = programsResult.rows;
     let courses = [];
@@ -362,7 +362,9 @@ router.get("/courses-list", verifyLogin, async (req, res) => {
       commonCourses,
       programsList,
       selectedFilter: program_filter || "",
-      isAdmin: req.session.user.role === "admin",
+      isAdmin:
+        req.session.user.name === "admin" || req.session.user.name === "dev",
+      userDept: req.session.user.department || null,
     });
   } catch (error) {
     console.error("❌ Error fetching courses list:", error);
@@ -387,6 +389,37 @@ router.post("/delete-course", verifyPrivilageLogin, async (req, res) => {
         return res.redirect(
           `${redirectUrl}error=${encodeURIComponent("Cannot delete common PG courses.")}`,
         );
+      }
+
+      // Row-Level Security Check
+      if (
+        req.session.user &&
+        req.session.user.name !== "admin" &&
+        req.session.user.name !== "dev" &&
+        checkCommon.rows.length > 0
+      ) {
+        const owningCode = checkCommon.rows[0].owning_program_code;
+        if (owningCode && owningCode.startsWith("POOL|")) {
+          const parts = owningCode.split("|");
+          if (parts.length === 3 && parts[2] !== req.session.user.department) {
+            return res.redirect(
+              `${redirectUrl}error=${encodeURIComponent("Unauthorized: You can only delete courses belonging to your department.")}`,
+            );
+          }
+        } else if (owningCode && owningCode !== "From University Pool") {
+          const progCheck = await pool.query(
+            "SELECT department FROM programs WHERE program_code = $1",
+            [owningCode],
+          );
+          if (
+            progCheck.rows.length > 0 &&
+            progCheck.rows[0].department !== req.session.user.department
+          ) {
+            return res.redirect(
+              `${redirectUrl}error=${encodeURIComponent("Unauthorized: You can only delete courses belonging to your department.")}`,
+            );
+          }
+        }
       }
 
       const draftsResult = await pool.query(
@@ -472,9 +505,16 @@ router.post("/courses", verifyLogin, async (req, res) => {
     const resourcesArray = normalizeArray(
       courseData.resources || courseData["resources[]"],
     );
-    const resourcesString = resourcesArray
-      .filter((r) => r && r.trim() !== "")
-      .join("\n");
+    let resourcesString = "";
+    const validResources = resourcesArray.filter((r) => r && r.trim() !== "");
+    if (validResources.length > 0) {
+      resourcesString =
+        '<ul style="padding-left: 20px; margin: 0;">\n' +
+        validResources
+          .map((r) => `  <li style=\"margin-bottom: 4px;\">${r}</li>`)
+          .join("\n") +
+        "\n</ul>";
+    }
 
     const evaluationCriteria = {
       eval_cp_th: courseData.eval_cp_th || "",
@@ -495,10 +535,25 @@ router.post("/courses", verifyLogin, async (req, res) => {
       eval_execution_pr: courseData.eval_execution_pr || "",
     };
 
-    const closList = (courseData.courseOutcomes || "")
-      .split(/\r?\n|\r/)
-      .map((c) => c.trim())
-      .filter((c) => c !== "");
+    let closList = [];
+    if (courseData.courseOutcomes) {
+      closList = (
+        Array.isArray(courseData.courseOutcomes)
+          ? courseData.courseOutcomes
+          : [courseData.courseOutcomes]
+      )
+        .map((c) => c.trim())
+        .filter((c) => c !== "");
+    } else if (courseData["courseOutcomes[]"]) {
+      closList = (
+        Array.isArray(courseData["courseOutcomes[]"])
+          ? courseData["courseOutcomes[]"]
+          : [courseData["courseOutcomes[]"]]
+      )
+        .map((c) => c.trim())
+        .filter((c) => c !== "");
+    }
+
     const nepMapping = {
       employability: courseData.nep_employability || "",
       entrepreneurship: courseData.nep_entrepreneurship || "",
@@ -511,6 +566,8 @@ router.post("/courses", verifyLogin, async (req, res) => {
       public_policies: courseData.nep_public_policies || "",
       any_other: courseData.nep_any_other || "",
       course_semester: courseData.semester || "",
+      important_notes: xss(courseData.important_notes || ""),
+      lt_split: courseData.lt_split || "0",
     };
 
     const isPoolCourse = courseData.is_pool_course === "true";
@@ -525,6 +582,92 @@ router.post("/courses", verifyLogin, async (req, res) => {
       owningProgramCodeToSave = `POOL|${faculty}|${dept}`;
     } else {
       owningProgramCodeToSave = courseData.owning_program_code || null;
+    }
+
+    // Row-Level Security Check
+    if (
+      req.session.user &&
+      req.session.user.name !== "admin" &&
+      req.session.user.name !== "dev"
+    ) {
+      const userDept = req.session.user.department;
+
+      let targetDept = null;
+      if (isPoolCourse) {
+        targetDept = courseData.pool_department
+          ? courseData.pool_department.trim()
+          : null;
+      } else if (
+        owningProgramCodeToSave &&
+        owningProgramCodeToSave !== "COMMON_PG"
+      ) {
+        const progCheck = await pool.query(
+          "SELECT department FROM programs WHERE program_code = $1",
+          [owningProgramCodeToSave],
+        );
+        if (progCheck.rows.length > 0)
+          targetDept = progCheck.rows[0].department;
+      }
+
+      if (
+        courseData.is_common_course === "true" ||
+        owningProgramCodeToSave === "COMMON_PG"
+      ) {
+        return res
+          .status(403)
+          .send(
+            "Unauthorized: Only the 'admin' or 'dev' admin can modify Common PG courses.",
+          );
+      }
+      if (targetDept && targetDept !== userDept) {
+        return res
+          .status(403)
+          .send(
+            "Unauthorized: You can only create or modify courses belonging to your department.",
+          );
+      }
+
+      if (isEditMode && courseData.courseCode) {
+        const existingCourse = await pool.query(
+          "SELECT owning_program_code FROM course_syllabus WHERE course_code = $1",
+          [courseData.courseCode],
+        );
+        if (existingCourse.rows.length > 0) {
+          const existingOwning = existingCourse.rows[0].owning_program_code;
+          if (existingOwning === "COMMON_PG")
+            return res
+              .status(403)
+              .send(
+                "Unauthorized: Only the 'admin' or 'dev' admin can modify Common PG courses.",
+              );
+          if (existingOwning && existingOwning.startsWith("POOL|")) {
+            const parts = existingOwning.split("|");
+            if (parts.length === 3 && parts[2] !== userDept)
+              return res
+                .status(403)
+                .send(
+                  "Unauthorized: You cannot edit a pool course from another department.",
+                );
+          } else if (
+            existingOwning &&
+            existingOwning !== "From University Pool"
+          ) {
+            const exProgCheck = await pool.query(
+              "SELECT department FROM programs WHERE program_code = $1",
+              [existingOwning],
+            );
+            if (
+              exProgCheck.rows.length > 0 &&
+              exProgCheck.rows[0].department !== userDept
+            )
+              return res
+                .status(403)
+                .send(
+                  "Unauthorized: You cannot edit a course belonging to another department.",
+                );
+          }
+        }
+      }
     }
 
     const values = [
@@ -578,6 +721,58 @@ router.post("/reset-course-scheme", verifyPrivilageLogin, async (req, res) => {
       programCode,
     } = req.body;
     if (courseCode && creditScheme) {
+      const existing = await pool.query(
+        "SELECT owning_program_code FROM course_syllabus WHERE course_code = $1",
+        [courseCode],
+      );
+      let targetProgramCode = programCode || null;
+      if (existing.rows.length > 0) {
+        targetProgramCode = existing.rows[0].owning_program_code; // Preserve existing ownership for Pool Courses
+      }
+
+      // Row-Level Security Check
+      if (
+        req.session.user &&
+        req.session.user.name !== "admin" &&
+        req.session.user.name !== "dev"
+      ) {
+        if (targetProgramCode === "COMMON_PG") {
+          return res.status(403).json({
+            success: false,
+            error:
+              "Unauthorized: Only the 'admin' or 'dev' admin can modify Common PG courses.",
+          });
+        }
+        if (targetProgramCode && targetProgramCode.startsWith("POOL|")) {
+          const parts = targetProgramCode.split("|");
+          if (parts.length === 3 && parts[2] !== req.session.user.department) {
+            return res.status(403).json({
+              success: false,
+              error:
+                "Unauthorized: You can only modify courses belonging to your department.",
+            });
+          }
+        } else if (
+          targetProgramCode &&
+          targetProgramCode !== "From University Pool"
+        ) {
+          const progCheck = await pool.query(
+            "SELECT department FROM programs WHERE program_code = $1",
+            [targetProgramCode],
+          );
+          if (
+            progCheck.rows.length > 0 &&
+            progCheck.rows[0].department !== req.session.user.department
+          ) {
+            return res.status(403).json({
+              success: false,
+              error:
+                "Unauthorized: You can only modify courses belonging to your department.",
+            });
+          }
+        }
+      }
+
       await pool.query("DELETE FROM course_syllabus WHERE course_code = $1", [
         courseCode,
       ]);
@@ -589,7 +784,7 @@ router.post("/reset-course-scheme", verifyPrivilageLogin, async (req, res) => {
           courseType || "",
           parseInt(creditsTotal) || 0,
           creditScheme,
-          programCode || null,
+          targetProgramCode,
         ],
       );
       res.json({ success: true });

@@ -24,6 +24,13 @@
         }
     }
 
+    let programLevel = 'UG/PG';
+    if (typeof level_display !== 'undefined' && level_display) {
+        programLevel = level_display;
+    } else if (typeof program !== 'undefined' && program) {
+        programLevel = program.level || program.ug_pg || 'UG/PG';
+    }
+
     let numPOs = 11;
     let numPSOs = 2;
     
@@ -74,7 +81,7 @@
 
     let natureOfCourseDisplay = data.nature_of_course || '-';
     if (th > 0 && pr > 0) natureOfCourseDisplay = 'Theory + Practical';
-    else if (th > 0 && pr === 0) natureOfCourseDisplay = 'Theory(Theory + Tutorial)';
+    else if (th > 0 && pr === 0) natureOfCourseDisplay = 'Theory (Theory + Tutorial)';
     else if (th === 0 && pr > 0) natureOfCourseDisplay = 'Practical';
 
     let thDuration = 0;
@@ -97,72 +104,98 @@
 %>
 
 <table>
-    <tr><td colspan="4" class="section-title">Part A – Introduction</td></tr>
-    <tr><td class="header-cell"><%= isPoolCourse ? 'Department Name' : 'Name of the Programme/Subject' %></td><td colspan="3"><%= typeof programme_name_display !== 'undefined' ? programme_name_display : programmeNameDisplay %></td></tr>
-    <tr><td class="header-cell">Semester</td><td colspan="3"><%= typeof semester_display !== 'undefined' ? semester_display : storedSemester %></td></tr>
-    <tr><td class="header-cell">Course Composition</td><td colspan="3"><%= natureOfCourseDisplay %></td></tr>
-    <tr><td class="header-cell">Nomenclature of the Course</td><td colspan="3"><%= data.course_name || data.course_title %></td></tr>
-    <tr><td class="header-cell">Course Code</td><td colspan="3"><%= data.course_code %></td></tr>
-    <tr><td class="header-cell">Course Type</td><td colspan="3"><%= data.course_type || '-' %></td></tr>
-    <tr><td class="header-cell">Pre-requisites for the course (if any)</td><td colspan="3"><%= data.prerequisite || 'Nil' %></td></tr>
+    <colgroup>
+        <col style="width: 36%;">
+        <col style="width: 16%;">
+        <col style="width: 16%;">
+        <col style="width: 16%;">
+        <col style="width: 16%;">
+    </colgroup>
+    <tr style="page-break-after: avoid;"><td colspan="5" class="section-title">Introduction</td></tr>
+    <tr><td class="header-cell"><%= isPoolCourse ? 'Department Name' : 'Subject' %></td><td colspan="4"><%= typeof programme_name_display !== 'undefined' ? programme_name_display : programmeNameDisplay %> - <%= programLevel %></td></tr>
+    <tr><td class="header-cell">Semester</td><td colspan="4"><%= typeof semester_display !== 'undefined' ? semester_display : storedSemester %></td></tr>
+    <tr><td class="header-cell">Course Composition</td><td colspan="4"><%= natureOfCourseDisplay %></td></tr>
+    <tr><td class="header-cell">Nomenclature of the Course</td><td colspan="4"><%= data.course_name || data.course_title %></td></tr>
+    <tr><td class="header-cell">Course Code</td><td colspan="4"><%= data.course_code %></td></tr>
+    <tr><td class="header-cell">Course Type</td><td colspan="4"><%= data.course_type || '-' %></td></tr>
+    <tr><td class="header-cell">Pre-requisites for the course (if any)</td><td colspan="4"><%= data.prerequisite || 'Nil' %></td></tr>
     <tr>
         <td class="header-cell">Course Learning Outcomes (CLOs)<br>After completing this course, the learner will be able to:</td>
-        <td colspan="3">
+        <td colspan="4">
             <% clos.forEach((clo, i) => { %>
-                <%= (data.course_code || '[Course Code]') %>.<%= i+1 %>: <%= clo %><br>
+                <div class="justified-text" style="padding: 2px 0; text-align: justify; <%= i < clos.length - 1 ? 'border-bottom: 1px solid #ccc;' : '' %>">
+                    <span class="bold"><%= (data.course_code || '[Course Code]') %>.<%= i+1 %>:</span> <%= clo %>
+                </div>
             <% }) %>
         </td>
     </tr>
     <tr class="center bold">
-        <td></td><td>Theory</td><td>Practical</td><td>Total</td>
+        <td rowspan='2'></td><td colspan='2' >Theory (Th)</td><td rowspan='2' style="vertical-align: bottom;">Practical (P)</td><td rowspan='2' style="vertical-align: bottom;">Total</td>
+    </tr>
+    <tr class="center bold">
+        <td>Lecture (L)</td><td>Tutorial (T)</td>
     </tr>
     <tr>
         <td class="bold">Credits</td>
-        <td class="center"><%= th %></td><td class="center"><%= pr %></td><td class="center"><%= data.credits_total || 0 %></td>
+        <%
+            let lt = data.lt_split == "1" && th > 1 ? 1 : 0;
+            let l = th - lt;
+        %>
+        <td class="center"><%= l %></td><td class="center"><%= lt %></td><td class="center"><%= pr %></td><td class="center"><%= data.credits_total || 0 %></td>
     </tr>
     <tr>
         <td class="bold">Teaching hours per week</td>
-        <td class="center"><%= th %></td><td class="center"><%= pr * 2 %></td><td class="center"><%= th + (pr * 2) %></td>
+        <td class="center"><%= l %></td><td class="center"><%= lt %></td><td class="center"><%= pr * 2 %></td><td class="center"><%= th + (pr * 2) %></td>
     </tr>
     <tr>
         <td class="bold">Internal Assessment Marks (Th+P=Total)</td>
-        <td class="center"><%= intTh %></td><td class="center"><%= intPr %></td><td class="center"><%= intTot %></td>
+        <td colspan="2" class="center"><%= intTh %></td><td class="center"><%= intPr %></td><td class="center"><%= intTot %></td>
     </tr>
     <tr>
         <td class="bold">End Term Exam Marks</td>
-        <td class="center"><%= endTh %></td><td class="center"><%= endPr %></td><td class="center"><%= endTot %></td>
+        <td colspan="2" class="center"><%= endTh %></td><td class="center"><%= endPr %></td><td class="center"><%= endTot %></td>
     </tr>
     <tr>
         <td class="bold">Max. Marks</td>
-        <td class="center"><%= intTh + endTh %></td><td class="center"><%= intPr + endPr %></td><td class="center"><%= maxM %></td>
+        <td colspan="2" class="center"><%= intTh + endTh %></td><td class="center"><%= intPr + endPr %></td><td class="center"><%= maxM %></td>
     </tr>
     <tr>
         <td class="bold">Examination Duration (in Hours)</td>
-        <td class="center"><%= thDurDisplay %></td><td class="center"><%= prDurDisplay %></td><td class="center"><%= totalDurDisplay %></td>
+        <td colspan="2" class="center"><%= thDurDisplay %></td><td class="center"><%= prDurDisplay %></td><td class="center"><%= totalDurDisplay %></td>
     </tr>
 </table>
 
 <table>
     <colgroup>
+        <col style="width: 10%;">
+        <col style="width: 65%;">
         <col style="width: 12%;">
-        <col style="width: 60%;">
-        <col style="width: 18%;">
-        <col style="width: 15%;">
+        <col style="width: 13%;">
     </colgroup>
-    <tr><td colspan="4" class="section-title">Part B - Contents of the Course</td></tr>
+    <tr style="page-break-after: avoid;"><td colspan="4" class="section-title">Contents of the Course</td></tr>
     <tr>
-        <td colspan="4" class="justified-text">
+        <td colspan="4" class="justified-text" style="text-align: justify;">
             <span class="bold">Instructions for Examiner:</span><br>
-            <%- data.paper_setter_instructions ? data.paper_setter_instructions.replace(/ Practical:/g, '<br><br>Practical:') : 'Nil' %>
+            <% if (data.paper_setter_instructions) { %>
+                <% 
+                    let instr = data.paper_setter_instructions.replace(/<br\s*\/?>/gi, ' '); 
+                    instr = instr.replace(/(Theory:)\s*/gi, '<br><span class="bold">Theory:</span><br>');
+                    instr = instr.replace(/(Practical:)\s*/gi, '<br><br><span class="bold">Practical:</span><br>');
+                    instr = instr.replace(/^(<br>)+/, '');
+                %>
+                <%- instr %>
+            <% } else { %>
+                Nil
+            <% } %>
         </td>
     </tr>
     <tr class="bold">
-        <td>Unit</td><td class="center" style="vertical-align: middle;">Topics</td><td class="center">CLOs</td><td class="center">Contact Hours</td>
+        <td>Unit</td><td class="center" style="vertical-align: middle;">Topics</td><td class="center">CLO/s</td><td class="center">Contact Hours</td>
     </tr>
     <% units.forEach(unit => { %>
         <tr>
             <td><%= unit.title %></td>
-            <td class="justified-text"><%- unit.content %></td>
+            <td class="justified-text" style="text-align: justify;"><%- unit.content %></td>
             <td class="center"><%= unit.clos || '-' %></td>
             <td class="center"><%= unit.hours %></td>
         </tr>
@@ -171,17 +204,25 @@
 
 <% const eval = data.evaluation_criteria || {}; %>
 <table>
-    <tr><td colspan="6" class="section-title">Suggested Evaluation Methods</td></tr>
-    <tr class="section-title">
-        <td class="bold" style="width: 35%;">Internal Assessment: <%= intTot %></td>
-        <td class="center bold" style="width: 7.5%;">TH-<%= intTh %></td>
-        <td class="center bold" style="width: 7.5%;">PR-<%= intPr %></td>
-        <td class="bold" style="width: 35%;">End Term Examination: <%= endTot %></td>
-        <td class="center bold" style="width: 7.5%;">TH-<%= endTh %></td>
-        <td class="center bold" style="width: 7.5%;">PR-<%= endPr %></td>
+    <colgroup>
+        <col style="width: 32%;">
+        <col style="width: 9%;">
+        <col style="width: 9%;">
+        <col style="width: 32%;">
+        <col style="width: 9%;">
+        <col style="width: 9%;">
+    </colgroup>
+    <tr style="page-break-after: avoid;"><td colspan="6" class="section-title">Suggested Evaluation Methods</td></tr>
+    <tr class="section-title" style="page-break-after: avoid;">
+        <td class="bold">Internal Assessment: <%= intTot %></td>
+        <td class="center bold">TH-<%= intTh %></td>
+        <td class="center bold">PR-<%= intPr %></td>
+        <td class="bold">End Term Examination: <%= endTot %></td>
+        <td class="center bold">TH-<%= endTh %></td>
+        <td class="center bold">PR-<%= endPr %></td>
     </tr>
     <tr>
-        <td>Class Participation:</td>
+        <td>Class Participation</td>
         <td class="center"><%= eval.eval_cp_th || 'NA' %></td>
         <td class="center"><%= eval.eval_cp_pr || 'NA' %></td>
         <td>Written Examination</td>
@@ -189,7 +230,7 @@
         <td class="center"><%= eval.eval_written_exam_pr || 'NA' %></td>
     </tr>
     <tr>
-        <td>Seminar/presentation/assignment/quiz/class test etc.:</td>
+        <td>Seminar/presentation/assignment/quiz/class test etc.</td>
         <td class="center"><%= eval.eval_seminar_th || 'NA' %></td>
         <td class="center"><%= eval.eval_seminar_pr || 'NA' %></td>
         <td>Lab record</td>
@@ -197,7 +238,7 @@
         <td class="center"><%= eval.eval_lab_record_pr || 'NA' %></td>
     </tr>
     <tr>
-        <td>Seminar/Demonstration/Viva-voce/Lab records etc.:</td>
+        <td>Seminar/Demonstration/Viva-voce/Lab records etc.</td>
         <td class="center"><%= eval.eval_seminar_demo_th || 'NA' %></td>
         <td class="center"><%= eval.eval_seminar_demo_pr || 'NA' %></td>
         <td>Viva-Voce</td>
@@ -205,7 +246,7 @@
         <td class="center"><%= eval.eval_viva_pr || 'NA' %></td>
     </tr>
     <tr>
-        <td>Mid-Term Exam:</td>
+        <td>Mid-Term Exam</td>
         <td class="center"><%= eval.eval_midterm_th || 'NA' %></td>
         <td class="center"><%= eval.eval_midterm_pr || 'NA' %></td>
         <td>Write-up and execution of the practical</td>
@@ -215,9 +256,9 @@
 </table>
 
 <table>
-    <tr><td colspan="<%= 1 + numPOs + numPSOs %>" class="section-title">Mapping of (CLOs) to Programme Outcomes & Programme Specific Outcomes</td></tr>
-    <tr class="center bold">
-        <td>CLOs</td>
+    <tr style="page-break-after: avoid;"><td colspan="<%= 1 + numPOs + numPSOs %>" class="section-title">Mapping of (CLOs) to Programme Outcomes & Programme Specific Outcomes</td></tr>
+    <tr class="center bold" style="page-break-after: avoid;">
+        <td>CLO</td>
         <% for(let i=1; i<=numPOs; i++) { %><td>PO<sub><%= i %></sub></td><% } %>
         <% for(let i=1; i<=numPSOs; i++) { %><td>PSO<sub><%= i %></sub></td><% } %>
     </tr>
@@ -244,9 +285,12 @@
 
 <% if (data.learning_resources && data.learning_resources.trim() !== '') { %>
 <table>
-    <tr><td class="section-title">Part C - Learning Resources</td></tr>
+    <tr style="page-break-after: avoid;"><td class="section-title">Learning Resources</td></tr>
     <tr>
-        <td style="white-space: pre-wrap; padding: 2px;"><%= data.learning_resources %></td>
+        <% let isHtmlResource = data.learning_resources.includes('<ul'); %>
+        <td class="justified-text" style="<%= isHtmlResource ? '' : 'white-space: pre-wrap; ' %>padding: 2px; text-align: justify;">
+            <%- data.learning_resources %>
+        </td>
     </tr>
 </table>
 <% } %>
@@ -257,9 +301,13 @@
 %>
 <% if (hasNep) { %>
 <table>
-    <tr><td colspan="2" class="section-title">Content Mapping with NEP thrust areas</td></tr>
-    <tr class="center bold">
-        <td style="width: 35%;">Field</td>
+    <colgroup>
+        <col style="width: 30%;">
+        <col style="width: 70%;">
+    </colgroup>
+    <tr style="page-break-after: avoid;"><td colspan="2" class="section-title">Content Mapping with NEP thrust areas</td></tr>
+    <tr class="center bold" style="page-break-after: avoid;">
+        <td>Field</td>
         <td>Content/s</td>
     </tr>
     <% if (nep.employability) { %><tr><td class="header-cell">Employability</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.employability %></td></tr><% } %>
@@ -272,5 +320,16 @@
     <% if (nep.women_empowerment) { %><tr><td class="header-cell">Gender Issues</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.women_empowerment %></td></tr><% } %>
     <% if (nep.public_policies) { %><tr><td class="header-cell">Public policies</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.public_policies %></td></tr><% } %>
     <% if (nep.any_other) { %><tr><td class="header-cell">Any Other</td><td class="justified-text" style="white-space: pre-wrap;"><%= nep.any_other %></td></tr><% } %>
+</table>
+<% } %>
+
+<% if (nep.important_notes && nep.important_notes.trim() !== '' && nep.important_notes.trim() !== '<br>') { %>
+<table>
+    <tr style="page-break-after: avoid;"><td class="section-title" style="text-align: left; padding: 2px 4px;">Important Notes:</td></tr>
+    <tr>
+        <td style="padding: 4px 6px;">
+            <%- nep.important_notes %>
+        </td>
+    </tr>
 </table>
 <% } %>

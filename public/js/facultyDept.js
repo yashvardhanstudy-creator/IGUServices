@@ -6,10 +6,15 @@ const facultyDeptMap = {
     "Hotel & Tourism Management",
   ],
   "Earth and Space Sciences": ["Geography"],
-  "Engineering & Technology": ["Computer Science & Engg"],
+  "Engineering & Technology": ["Computer Science & Engineering"],
   Humanities: ["Hindi", "English", "Journalism & Mass Communication"],
   Law: ["Law"],
-  "Life Sciences": ["Biotech", "Botany", "EVS", "Zoology"],
+  "Life Sciences": [
+    "Biotechnology",
+    "Botany",
+    "Environmental Studies",
+    "Zoology",
+  ],
   "Pharmaceutical Sciences": ["Pharmaceutical Sciences"],
   "Physical Sciences": ["Chemistry", "Mathematics", "Physics"],
   "Social Sciences": [
