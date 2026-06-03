@@ -71,7 +71,12 @@ router.get("/edit-course/:courseCode", verifyLogin, async (req, res) => {
     draftsResult.rows.forEach((row) => {
       const draft = row.draft_data || {};
       for (const [key, value] of Object.entries(draft)) {
-        if (value && value.code === courseCode) {
+        if (value.slot_type && value.choices) {
+          if (value.choices.some((c) => c.code === courseCode)) {
+            programs.add(row.subject_name);
+            if (value.semester) semesters.add(value.semester);
+          }
+        } else if (value && value.code === courseCode) {
           programs.add(row.subject_name);
           const semNum = key.split("_")[0];
           semesters.add(semNum);
@@ -237,7 +242,13 @@ router.get("/courses-list", verifyLogin, async (req, res) => {
       const usedCodes = new Set();
       draftsResult.rows.forEach((row) => {
         Object.values(row.draft_data || {}).forEach((item) => {
-          if (item && item.code) usedCodes.add(item.code);
+          if (item.slot_type && item.choices) {
+            item.choices.forEach((c) => {
+              if (c.code) usedCodes.add(c.code);
+            });
+          } else if (item && item.code) {
+            usedCodes.add(item.code);
+          }
         });
       });
       const usedCodesArray = Array.from(usedCodes);
@@ -282,7 +293,13 @@ router.get("/courses-list", verifyLogin, async (req, res) => {
         const programLabel = row.subject_name;
         const codes = new Set();
         Object.values(draft).forEach((item) => {
-          if (item && item.code) codes.add(item.code);
+          if (item.slot_type && item.choices) {
+            item.choices.forEach((c) => {
+              if (c.code) codes.add(c.code);
+            });
+          } else if (item && item.code) {
+            codes.add(item.code);
+          }
         });
         const codesArray = Array.from(codes);
         if (codesArray.length > 0) {
@@ -327,7 +344,11 @@ router.get("/courses-list", verifyLogin, async (req, res) => {
           });
 
           Object.entries(draft).forEach(([key, value]) => {
-            if (value && value.code) {
+            if (value.slot_type && value.choices) {
+              value.choices.forEach((c) => {
+                if (c.code) codes.add(c.code);
+              });
+            } else if (value && value.code) {
               codes.add(value.code);
               const [semNum, courseIndex] = key.split("_").map(Number);
               if (courseIndex === 0 && semMap[semNum]) {
@@ -338,7 +359,13 @@ router.get("/courses-list", verifyLogin, async (req, res) => {
           });
         } else {
           Object.values(draft).forEach((item) => {
-            if (item && item.code) codes.add(item.code);
+            if (item.slot_type && item.choices) {
+              item.choices.forEach((c) => {
+                if (c.code) codes.add(c.code);
+              });
+            } else if (item && item.code) {
+              codes.add(item.code);
+            }
           });
         }
 
@@ -429,9 +456,19 @@ router.post("/delete-course", verifyPrivilageLogin, async (req, res) => {
       draftsResult.rows.forEach((row) => {
         const draft = row.draft_data || {};
         for (const key in draft) {
-          if (draft[key] && draft[key].code === courseCode) {
-            linkedPrograms.push(row.subject_name);
-            break;
+          const item = draft[key];
+          if (item) {
+            if (
+              item.slot_type &&
+              item.choices &&
+              item.choices.some((c) => c.code === courseCode)
+            ) {
+              linkedPrograms.push(row.subject_name);
+              break;
+            } else if (item.code === courseCode) {
+              linkedPrograms.push(row.subject_name);
+              break;
+            }
           }
         }
       });

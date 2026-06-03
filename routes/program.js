@@ -404,7 +404,13 @@ router.get("/curriculum", verifyPrivilageLogin, async (req, res) => {
 
     const usedCodes = new Set();
     Object.values(draftData).forEach((item) => {
-      if (item && item.code) usedCodes.add(item.code);
+      if (item.slot_type && item.choices) {
+        item.choices.forEach((choice) => {
+          if (choice.code) usedCodes.add(choice.code);
+        });
+      } else if (item && item.code) {
+        usedCodes.add(item.code);
+      }
     });
 
     let savedCoursesMap = {};
@@ -480,9 +486,75 @@ router.post(
       ]);
 
       for (const [key, item] of Object.entries(draft_data)) {
-        if (item && item.code && item.nom && item.type && !item.is_custom_row) {
+        if (item && item.slot_type && item.choices) {
+          // Process Elective Choices
+          for (const choice of item.choices) {
+            if (choice.code && choice.nom) {
+              const existingCourse = await pool.query(
+                "SELECT course_code, course_name, credit_scheme, nep_mapping FROM course_syllabus WHERE course_code = $1",
+                [choice.code],
+              );
+              if (existingCourse.rows.length === 0) {
+                await pool.query(
+                  `INSERT INTO course_syllabus (course_code, course_name, course_type, credits_total, credit_scheme, owning_program_code) VALUES ($1, $2, $3, $4, $5, $6)`,
+                  [
+                    choice.code,
+                    choice.nom,
+                    choice.type, // This is the base type, e.g. DEC-1
+                    parseInt(item.credits) || 0,
+                    item.credit_scheme || "",
+                    program_code,
+                  ],
+                );
+              } else {
+                const dbCourse = existingCourse.rows[0];
+                if (
+                  item.credit_scheme &&
+                  (item.credit_scheme !== dbCourse.credit_scheme ||
+                    !dbCourse.credit_scheme)
+                ) {
+                  await pool.query(
+                    "UPDATE course_syllabus SET credit_scheme = $1 WHERE course_code = $2",
+                    [item.credit_scheme, choice.code],
+                  );
+                }
+                if (choice.nom && choice.nom !== dbCourse.course_name) {
+                  await pool.query(
+                    "UPDATE course_syllabus SET course_name = $1 WHERE course_code = $2",
+                    [choice.nom, choice.code],
+                  );
+                }
+
+                let nep = dbCourse.nep_mapping;
+                if (typeof nep === "string") {
+                  try {
+                    nep = JSON.parse(nep);
+                  } catch (e) {
+                    nep = {};
+                  }
+                }
+                nep = nep || {};
+
+                if (item.lt_split && nep.lt_split !== item.lt_split) {
+                  nep.lt_split = item.lt_split;
+                  await pool.query(
+                    "UPDATE course_syllabus SET nep_mapping = $1 WHERE course_code = $2",
+                    [JSON.stringify(nep), choice.code],
+                  );
+                }
+              }
+            }
+          }
+        } else if (
+          item &&
+          item.code &&
+          item.nom &&
+          item.type &&
+          !item.is_custom_row
+        ) {
+          // Normal course processing
           const existingCourse = await pool.query(
-            "SELECT course_code, credit_scheme FROM course_syllabus WHERE course_code = $1",
+            "SELECT course_code, course_name, credit_scheme, nep_mapping FROM course_syllabus WHERE course_code = $1",
             [item.code],
           );
           if (existingCourse.rows.length === 0) {
@@ -509,6 +581,32 @@ router.post(
               await pool.query(
                 "UPDATE course_syllabus SET credit_scheme = $1 WHERE course_code = $2",
                 [item.credit_scheme, item.code],
+              );
+            }
+
+            // If the nomenclature (course_name) was changed, update it
+            if (item.nom && item.nom !== dbCourse.course_name) {
+              await pool.query(
+                "UPDATE course_syllabus SET course_name = $1 WHERE course_code = $2",
+                [item.nom, item.code],
+              );
+            }
+
+            let nep = dbCourse.nep_mapping;
+            if (typeof nep === "string") {
+              try {
+                nep = JSON.parse(nep);
+              } catch (e) {
+                nep = {};
+              }
+            }
+            nep = nep || {};
+
+            if (item.lt_split && nep.lt_split !== item.lt_split) {
+              nep.lt_split = item.lt_split;
+              await pool.query(
+                "UPDATE course_syllabus SET nep_mapping = $1 WHERE course_code = $2",
+                [JSON.stringify(nep), item.code],
               );
             }
           }
@@ -572,5 +670,55 @@ router.post(
     }
   },
 );
+
+// =========================================
+// Feedback & Issues Routes
+// =========================================
+router.get("/feedback", verifyLogin, async (req, res) => {
+  try {
+    // Auto-create the table safely if it doesn't exist yet!
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS feedback (
+          id SERIAL PRIMARY KEY,
+          title VARCHAR(255) NOT NULL,
+          department VARCHAR(255) NOT NULL,
+          person VARCHAR(255),
+          contact VARCHAR(255),
+          issues_text TEXT NOT NULL,
+          status VARCHAR(50) DEFAULT 'new',
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    // Explicitly excluding 'status' from the query per requirements
+    const result = await pool.query(
+      "SELECT id, title, department, person, contact, issues_text, created_at FROM feedback ORDER BY created_at DESC",
+    );
+    res.render("feedbackView.ejs", { feedbacks: result.rows });
+  } catch (err) {
+    console.error("Error loading feedback view:", err);
+    res.status(500).send("Error loading feedback board.");
+  }
+});
+
+router.get("/feedback/new", verifyLogin, (req, res) => {
+  res.render("feedbackForm.ejs", {
+    userDept: req.session.user ? req.session.user.department : "",
+  });
+});
+
+router.post("/feedback", verifyLogin, async (req, res) => {
+  try {
+    const { title, department, person, contact, issues_text } = req.body;
+    // Status is hard-coded as 'new' internally
+    await pool.query(
+      "INSERT INTO feedback (title, department, person, contact, issues_text, status) VALUES ($1, $2, $3, $4, $5, 'new')",
+      [title, department, person, contact, issues_text],
+    );
+    res.redirect("/feedback");
+  } catch (err) {
+    console.error("Error submitting feedback:", err);
+    res.status(500).send("Error submitting feedback.");
+  }
+});
 
 module.exports = router;

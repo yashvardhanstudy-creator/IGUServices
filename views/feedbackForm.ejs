@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Submit Feedback</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 600px;
+            width: 100%;
+        }
+        h2 { color: #333; margin-top: 0; text-align: center; }
+        label { font-weight: bold; color: #555; }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn:hover { background: #218838; }
+        .back-link { display: block; text-align: center; margin-top: 15px; color: #6c757d; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Submit Feedback / Report Issue</h2>
+        <form action="/feedback" method="POST">
+            <label>Title (Required)</label> <input type="text" name="title" required placeholder="Brief summary of the issue">
+            <label>Department (Required)</label> <input type="text" name="department" value="<%= userDept %>" required>
+            <label>Your Name (Optional)</label> <input type="text" name="person" placeholder="e.g., John Doe">
+            <label>Contact Info (Optional)</label> <input type="text" name="contact" placeholder="Email or Phone">
+            <label>Issue Description (Required)</label> <textarea name="issues_text" required rows="6" placeholder="Describe your feedback or issue in detail..."></textarea>
+            <button type="submit" class="btn">Submit Feedback</button>
+        </form>
+        <a href="/feedback" class="back-link">← Cancel and return to feedback board</a>
+    </div>
+</body>
+</html>

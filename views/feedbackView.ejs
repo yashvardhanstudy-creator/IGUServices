@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Feedback & Issues Board</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 1000px;
+            width: 100%;
+        }
+        h2 { color: #333; margin-top: 0; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #667eea; color: white; }
+        tr:hover { background-color: #f1f1f1; }
+        .btn-new { display: inline-block; padding: 10px 15px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin-bottom: 10px; }
+        .btn-new:hover { background: #218838; }
+        .back-btn { display: inline-block; margin-top: 20px; padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px; }
+        .issue-text { white-space: pre-wrap; word-break: break-word; min-width: 300px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Feedback & Reported Issues</h2>
+        
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="/programs-list" class="back-btn" style="margin-top: 0;">← Back to Programs</a>
+            <a href="/feedback/new" class="btn-new">➕ Submit New Feedback</a>
+        </div>
+        <div style="text-align: center; margin-bottom: 20px; color: #555;">
+            This Website is Currently in Demo & Testing Mode. If you encounter any issues or have suggestions for improvement, please let us know by submitting your feedback below. <strong style="color: #dc3545;">Note: The data you have created may or may not be saved in the future.</strong>
+        </div>
+        <% if (feedbacks.length === 0) { %>
+            <p style="text-align: center; margin-top: 30px; color: #666;">No feedback or issues have been reported yet.</p>
+        <% } else { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Department</th>
+                        <th>Submitted By</th>
+                        <th>Contact</th>
+                        <th>Issue Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% feedbacks.forEach(f => { %>
+                        <tr>
+                            <td><strong><%= f.title %></strong></td>
+                            <td><%= f.department %></td>
+                            <td><%= f.person || '-' %></td>
+                            <td><%= f.contact || '-' %></td>
+                            <td class="issue-text"><%= f.issues_text %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        <% } %>
+    </div>
+</body>
+</html>

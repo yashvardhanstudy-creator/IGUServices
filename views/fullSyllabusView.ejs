@@ -74,7 +74,7 @@
                 <p class="bold" style="font-size: 2.4em; margin: 0 0 5px 0; color: #1a1a87; font-family: 'Times New Roman', Times, serif; text-transform: uppercase; letter-spacing: 1px;">Indira Gandhi University</p>
                 <p class="bold" style="font-size: 1.6em; margin: 0 0 10px 0; color: #333;">Meerpur-Rewari, Haryana (122502)</p>
                 <p style="margin: 0 0 5px 0; font-size: 1.1em; font-style: italic; color: #555;">(A State University Established under Haryana Act No.29 of 2013)</p>
-                <p style="margin: 0; font-size: 1.1em; font-style: italic; color: #555;">(Recognized u/s 12B & 2f of UGC Act, 1956)</p>
+                <p style="margin: 0; font-size: 1.1em; font-style: italic; color: #555;">(Recognized u/s 12(B) & 2(f) of UGC Act, 1956)</p>
             </div>
             
             <div class="center">
@@ -82,7 +82,7 @@
             </div>
             
             <div class="center" style="margin-bottom: 10px;">
-                <p class="bold" style="font-size: 1.6em; margin: 0 0 5px 0; color: #222; text-transform: uppercase;">Syllabi and Scheme of Examination</p>
+                <p class="bold" style="font-size: 1.6em; margin: 0 0 5px 0; color: #222; text-transform: uppercase;">Scheme of Examination & Syllabi</p>
                 <p style="font-size: 1.1em; margin: 0 0 5px 0; font-style: italic; color: #555;">in accordance with National Education Policy-2020</p>
                 <p style="font-size: 1.1em; margin: 0 0 15px 0; font-style: italic; color: #555;">for</p>
                 <p class="bold" style="font-size: 1.4em; margin: 0 0 2px 0; color: #333;"><%= (program.level && program.level.toUpperCase() === 'UG') ? 'Under' : 'Post' %>graduate Programme</p>
@@ -287,6 +287,7 @@
                             <%
                                 let semRowCount = 1;
                                 sem.detailed_courses.forEach(c => {
+                                    if (c.is_elective_choice_row) return;
                                     if (c.isElectiveGroup && !c.isLinkedElective) {
                                         const choices = electiveCourseGroups[c.baseElectiveType] || [];
                                         const validChoices = choices.filter(ch => !ch.is_missing && ch.course_code !== '-');
@@ -304,6 +305,8 @@
                                 let hasPoolInSem = false;
                                 
                                 sem.detailed_courses.forEach((course, index) => { 
+                                    if (course.is_elective_choice_row) return;
+                                    
                                     const courseType = course.curriculum_display_type || course.course_type || '';
                                     const isPoolGroup1 = ['VAC', 'SEC', 'AEC', 'MDC'].some(p => courseType.startsWith(p));
                                     const isExceptionMinor = program.scheme && program.scheme.trim().toUpperCase() === 'D' && /^(CC-M1|CC-M2|CC-M3)$/.test(courseType);

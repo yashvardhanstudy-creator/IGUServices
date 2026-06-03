@@ -228,7 +228,7 @@ const schemeB = [
   // Divider
   {
     isDivider: true,
-    title: "OR (with Research)",
+    title: "OR",
     color: "#fff3cd",
   },
   // Semester 8 - Option B (Project/Dissertation)
@@ -365,6 +365,7 @@ const schemeC = [
     courses: [
       { type: "CC-H4", credits: 4 },
       { type: "CC-H5", credits: 4 },
+      { type: "CC-H6", credits: 4 },
       { type: "DSE-H2", credits: 4 },
       { type: "PC-H2", credits: 4 },
       { type: "CC-HM2", credits: 4 },
@@ -373,7 +374,7 @@ const schemeC = [
   // Divider
   {
     isDivider: true,
-    title: "OR (with Research)",
+    title: "OR",
     color: "#fff3cd",
   },
   // Semester 8 - Option B (Project/Dissertation)
@@ -518,7 +519,7 @@ const schemeD = [
   },
   {
     isDivider: true,
-    title: "OR (with Research)",
+    title: "OR",
     color: "#fff3cd",
   },
   // Semester 8 - Option B (Project/Dissertation)

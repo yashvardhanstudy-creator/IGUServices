@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="shortcut icon" href="https://igu1.ucanapply.com/images/webicon.png" type="image/png">
+    <meta charset="UTF-8">
+    <title>View Curriculum - <%= program.program_code %></title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.25; font-size: 12px; color: #000; margin: 0; padding: 10px; }
+        .container { width: 95%; margin: auto; max-width: 1200px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; }
+        th, td { border: 1px solid black; padding: 4px; vertical-align: middle; word-wrap: break-word; text-align: center; }
+        th { font-weight: bold; background-color: #f2f2f2; }
+        
+        .header-row { background-color: #e2efda !important; font-weight: bold; }
+        .divider-row { font-weight: bold; }
+        .total-row { font-weight: bold; background-color: #f2f2f2; }
+        
+        .action-buttons { text-align: center; margin: 20px 0; }
+        .print-btn, .back-btn {
+            display: inline-block;
+            width: 200px;
+            margin: 10px;
+            padding: 10px;
+            background-color: #6c757d;
+            color: white;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: sans-serif;
+            font-size: 16px;
+            border: none;
+            text-decoration: none;
+        }
+        .print-btn:hover, .back-btn:hover { background-color: #5a6268; }
+
+        @media print {
+            body { max-width: 100%; margin: 0; padding: 0; }
+            .container { width: 100%; }
+            .print-btn, .back-btn, .action-buttons { display: none !important; }
+            tr, td, th { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="action-buttons">
+        <a href="/programs-list" class="back-btn">Go Back</a>
+        <button class="print-btn" onclick="window.print()">Print Curriculum</button>
+    </div>
+
+    <div class="container">
+        <h2 style="text-align: center; text-transform: uppercase;">Curriculum Framework: <%= program.subject_name %></h2>
+        <% if (program.specialization) { %>
+            <h3 style="text-align: center;">Specialization: <%= program.specialization %></h3>
+        <% } %>
+        
+        <table>
+            <thead>
+                <tr class="header-row">
+                    <th style="width: 6%;">Semester</th>
+                    <th style="width: 10%;">Course Type</th>
+                    <th style="width: 12%;">Course Code</th>
+                    <th style="width: 20%;">Nomenclature of the Course</th>
+                    <th style="width: 6%;">Theory (Th)/<br>Practical (P)</th>
+                    <th style="width: 5%;">Credit</th>
+                    <th style="width: 9%;">Contact hours per week<br>(L+T+P=T)</th>
+                    <th style="width: 8%;">Internal Assessment</th>
+                    <th style="width: 8%;">End Term Marks</th>
+                    <th style="width: 6%;">Total Marks</th>
+                    <th style="width: 10%;">Exam Hours</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% semesters.forEach(sem => { %>
+                    <% if (sem.isDivider) { %>
+                        <% if (sem.title.trim() !== '') { %>
+                            <tr class="divider-row" style="background-color: <%= sem.color || '#fff3cd' %>;">
+                                <td colspan="11" style="padding: 10px; font-size: 14px; letter-spacing: 1px;"><%= sem.title %></td>
+                            </tr>
+                        <% } %>
+                    <% } else if (sem.isYearlyDivider) { %>
+                        <tr class="divider-row" style="background-color: <%= sem.color || '#d1ecf1' %>;">
+                            <td colspan="11" style="padding: 10px;"><%= sem.text || '' %></td>
+                        </tr>
+                    <% } else { %>
+                        <% 
+                           const coursesCount = sem.detailed_courses ? sem.detailed_courses.length : 0;
+                           const rowspanCount = coursesCount > 0 ? coursesCount + 1 : 1; 
+                           let isFirstRow = true;
+                        %>
+                        <% if (coursesCount > 0) { %>
+                            <% sem.detailed_courses.forEach((course, index) => { %>
+                                <%
+                                    let dispTp = course.tp || '';
+                                    let dispHrs = course.hrs || '';
+                                    if (!course.is_custom_row && course.credit_scheme) {
+                                        let schemeParts = course.credit_scheme.split('+');
+                                        if (schemeParts.length === 2) {
+                                            let th = parseInt(schemeParts[0]) || 0;
+                                            let pr = parseInt(schemeParts[1]) || 0;
+                                            let p = pr * 2;
+                                            let tot = th + p;
+                                            dispTp = th + 'T / ' + pr + 'P';
+                                            let lt = parseInt(course.lt_split) || 0;
+                                            if (lt === 1 && th > 0) {
+                                                dispHrs = (th-1) + '+1+' + p + '=' + tot;
+                                            } else {
+                                                dispHrs = th + '+0+' + p + '=' + tot;
+                                            }
+                                        }
+                                    }
+                                %>
+                                <tr style="background-color: <%= course.is_missing ? sem.color : '#fff' %>;">
+                                    <% if (isFirstRow) { %>
+                                        <td rowspan="<%= rowspanCount %>" style="background-color: <%= sem.color %>; font-weight: bold; font-size: 14px;"><%= sem.number %></td>
+                                        <% isFirstRow = false; %>
+                                    <% } %>
+                                    
+                                    <td><strong><%= course.curriculum_display_type || course.course_type %></strong></td>
+                                    <td><%= course.course_code %></td>
+                                    <td style="text-align: left;"><%= course.course_name %></td>
+                                    <td><%= dispTp %></td>
+                                    <td><%= course.credits_total || '' %></td>
+                                    <td><%= dispHrs %></td>
+                                    <td>
+                                        <% if (!course.is_custom_row && course.marks_max) { %>
+                                            <%= course.marks_internal_theory || 0 %>+<%= course.marks_internal_practical || 0 %>=<%= course.marks_internal_total || 0 %>
+                                        <% } else { %>
+                                            <%= course.marks_internal_total || '' %>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if (!course.is_custom_row && course.marks_max) { %>
+                                            <%= course.marks_endterm_theory || 0 %>+<%= course.marks_endterm_practical || 0 %>=<%= course.marks_endterm_total || 0 %>
+                                        <% } else { %>
+                                            <%= course.marks_endterm_total || '' %>
+                                        <% } %>
+                                    </td>
+                                    <td><%= course.marks_max || '' %></td>
+                                    <td><%- course.exam_duration ? course.exam_duration.replace(', ', '<br>') : '' %></td>
+                                </tr>
+                            <% }) %>
+                            <tr style="background-color: <%= sem.color %>;" class="total-row">
+                                <td colspan="4" style="text-align: right; padding-right: 15px;">Total</td>
+                                <td><%= sem.totalCredits %></td>
+                                <td colspan="6"></td>
+                            </tr>
+                        <% } %>
+                    <% } %>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

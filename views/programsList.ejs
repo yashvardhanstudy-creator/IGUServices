@@ -75,6 +75,11 @@
         <% if (locals.query && locals.query.message) { %>
             <div style="color: green; background-color: #e8f5e9; padding: 10px; border-radius: 5px; margin-bottom: 15px; text-align: center;"><%= locals.query.message %></div>
         <% } %>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <a href="/" class="back-btn">Back to Home</a>
+            <a href="/feedback" class="btn" style="background-color: #ffc107; color: #000; border: 1px solid #d39e00;">💬 View & Submit Feedback</a>
+        </div>
+        
         <table>
             <thead>
                 <tr>
@@ -95,6 +100,7 @@
                         <td>Scheme <%= p.scheme %></td>
                         <td><%= p.num_pos %> / <%= p.num_peos %> / <%= p.num_psos %></td>
                         <td style="white-space: nowrap;">
+                            <a class="btn" style="background-color: #28a745; margin-right: 5px;" href="/view-curriculum?program_code=<%= encodeURIComponent(p.program_code) %>">View</a>
                             <% if (locals.isAdmin || (locals.userDept && p.department === locals.userDept)) { %>
                                 <a class="btn" href="/curriculum?program_code=<%= encodeURIComponent(p.program_code) %>&scheme=<%= encodeURIComponent(p.scheme) %>">Edit</a>
                                 <form action="/delete-program" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this program? Its curriculum draft will also be permanently deleted.');">
@@ -109,7 +115,6 @@
                 <% }) %>
             </tbody>
         </table>
-        <a href="/" class="back-btn">Back to Home</a>
     </div>
 </body>
 </html>

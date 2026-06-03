@@ -509,6 +509,7 @@ function generateUnits(
                     <button type="button" onmousedown="event.preventDefault(); document.execCommand('bold', false, null)" style="padding: 2px 6px; font-weight: bold; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 3px;" title="Bold">B</button>
                     <button type="button" onmousedown="event.preventDefault(); document.execCommand('italic', false, null)" style="padding: 2px 6px; font-weight: bold; font-style: italic; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 3px;" title="Italic">I</button>
                     <button type="button" onmousedown="event.preventDefault(); document.execCommand('underline', false, null)" style="padding: 2px 6px; font-weight: bold; text-decoration: underline; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 3px;" title="Underline">U</button>
+                    ${isPracticalUnitFor0_4 ? `<button type="button" onmousedown="event.preventDefault(); document.execCommand('insertUnorderedList', false, null)" style="padding: 2px 6px; font-weight: bold; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 3px;" title="Bullet List">• List</button> <button type="button" onmousedown="event.preventDefault(); document.execCommand('insertOrderedList', false, null)" style="padding: 2px 6px; font-weight: bold; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 3px;" title="Numbered List">1. List</button>` : ""}
                 </div>
                 <div contenteditable="true" style="border: 1px solid #ccc; padding: 6px; min-height: 60px; border-radius: 4px; background-color: #fff; outline: none;" oninput="document.getElementById('hidden_topic_${unitIndex}').value = this.innerHTML" placeholder="Enter topics for Unit ${i}"></div>
                 <input type="hidden" name="unitContents[]" id="hidden_topic_${unitIndex}">
@@ -533,6 +534,8 @@ function generateUnits(
                     <button type="button" onmousedown="event.preventDefault(); document.execCommand('bold', false, null)" style="padding: 2px 6px; font-weight: bold; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 3px;" title="Bold">B</button>
                     <button type="button" onmousedown="event.preventDefault(); document.execCommand('italic', false, null)" style="padding: 2px 6px; font-weight: bold; font-style: italic; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 3px;" title="Italic">I</button>
                     <button type="button" onmousedown="event.preventDefault(); document.execCommand('underline', false, null)" style="padding: 2px 6px; font-weight: bold; text-decoration: underline; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 3px;" title="Underline">U</button>
+                    <button type="button" onmousedown="event.preventDefault(); document.execCommand('insertUnorderedList', false, null)" style="padding: 2px 6px; font-weight: bold; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 3px;" title="Bullet List">• List</button>
+                    <button type="button" onmousedown="event.preventDefault(); document.execCommand('insertOrderedList', false, null)" style="padding: 2px 6px; font-weight: bold; cursor: pointer; border: 1px solid #ccc; background: #f9f9f9; border-radius: 3px;" title="Numbered List">1. List</button>
                 </div>
                 <div contenteditable="true" style="border: 1px solid #ccc; padding: 6px; min-height: 60px; border-radius: 4px; background-color: #fff; outline: none;" oninput="document.getElementById('hidden_topic_${unitIndex}').value = this.innerHTML" placeholder="Enter practical components"></div>
                 <input type="hidden" name="unitContents[]" id="hidden_topic_${unitIndex}">
@@ -579,18 +582,34 @@ function validateContactHours() {
     currentPractical += Number(input.value) || 0;
   });
 
+  let isTheoryValid = true;
+  let isPracticalValid = true;
+
   const theoryTotalCell = document.getElementById("theory_hours_total");
   if (theoryTotalCell) {
     const max = Number(theoryTotalCell.dataset.max);
     theoryTotalCell.textContent = `${currentTheory} / ${max}`;
-    theoryTotalCell.style.color = currentTheory > max ? "red" : "black";
+    theoryTotalCell.style.color = currentTheory !== max ? "red" : "green";
+    if (currentTheory !== max) isTheoryValid = false;
   }
 
   const practicalTotalCell = document.getElementById("practical_hours_total");
   if (practicalTotalCell) {
     const max = Number(practicalTotalCell.dataset.max);
     practicalTotalCell.textContent = `${currentPractical} / ${max}`;
-    practicalTotalCell.style.color = currentPractical > max ? "red" : "black";
+    practicalTotalCell.style.color = currentPractical !== max ? "red" : "green";
+    if (currentPractical !== max) isPracticalValid = false;
+  }
+
+  const submitBtn = document.querySelector(".submit-btn");
+  if (submitBtn) {
+    const isValid = isTheoryValid && isPracticalValid;
+    submitBtn.disabled = !isValid;
+    submitBtn.style.opacity = isValid ? "1" : "0.5";
+    submitBtn.style.cursor = isValid ? "pointer" : "not-allowed";
+    submitBtn.title = isValid
+      ? ""
+      : "Contact hours must exactly match the required totals to save.";
   }
 }
 

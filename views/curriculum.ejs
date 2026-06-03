@@ -121,10 +121,13 @@ const schemesDataEJS = {
             <li><strong>Auto-Save:</strong> Automatically saves your changes 1 second after you stop typing. Look for the green "Saved!" text appearing next to the title.</li>
             <li><strong>Course Generation:</strong> Entering a Course Code, Nomenclature, and selecting a Scheme will generate an empty "shell" course. Teachers can then find this course in their list to fill out the detailed syllabus!</li>
             <li><strong>Scheme Overrides:</strong> ⚠️ Changing the scheme of an already saved course will permanently reset it. Doing this will wipe the teacher's data!</li>
-            <li><strong>Elective Choices:</strong> The framework automatically provides maximum of 6 rows for any Elective slots so students have choices. Select scheme for the main elective row, then fill the elective table!</li>
+            <li><strong>Elective Choices:</strong> The framework automatically provides maximum of 6 rows for any Elective slots so students have choices. Minimum 2 elective choices required.</li>
             <% if (schemeName && schemeName.includes('Scheme D')) { %>
                 <li><strong>Minor Exceptions (Scheme D):</strong> CC-M1, CC-M2, and CC-M3 can be set to fixed courses. If left empty, they will default to "from available pool of Minor/ Minor (Vocational)" in the generated syllabus.</li>
             <% } %>
+            <li><strong>Exit Options:</strong> You can specify exit awards for students at the end of each year.</li>
+            <li>Format as per Ordinance.</li>
+
         </ul>
     </div>
 
@@ -192,10 +195,13 @@ const schemesDataEJS = {
                         <% if (course.isElective) { %>
                             <% const baseElectiveType = course.type.split('.')[0]; %>
                             <% const cellKey = sem.number + '_' + index; %>
-                            <% const cellDraft = draftData[cellKey] || {}; %>
-                            <% const savedCourse = cellDraft.code ? savedCoursesMap[cellDraft.code] : null; %>
+                            <% const slotDraft = draftData[baseElectiveType] || {}; %>
+                            <% const choices = slotDraft.choices || []; %>
+                            <% const choiceIndex = course.electiveOpt - 1; %>
+                            <% const choiceDraft = choices[choiceIndex] || {}; %>
+                            <% const savedCourse = choiceDraft.code ? savedCoursesMap[choiceDraft.code] : null; %>
                             <% const isSaved = !!savedCourse; %>
-                            <% const summaryDraft = draftData[cellKey + '_summary'] || {}; %> 
+                            <% const summaryDraft = slotDraft; %> 
 
                             <tr style="background-color: <%= isSaved ? '#d4edda' : sem.color %>;" data-cell-key="<%= cellKey %>" <%= course.electiveOpt === 1 ? 'class="elective-summary-row"' : '' %>>
                                 <% if (isFirstRenderedRow) { %>
@@ -207,8 +213,8 @@ const schemesDataEJS = {
                                     <td rowspan="6"><span style="color: #0056b3; font-weight: bold;" id="type_<%= cellKey %>" data-type="<%= baseElectiveType %>" data-credits="<%= course.credits %>"><%= baseElectiveType %></span><br><span style="font-size:11px; font-style:italic;">(pick any one)</span></td>
                                 <% } %>
 
-                                <td><input type="text" id="code_<%= cellKey %>" data-type="<%= course.type %>" data-credits="<%= course.credits %>" placeholder="Code" value="<%= cellDraft.code || '' %>" style="width: 100%; border: none; background: transparent; text-align: center; outline: 1px solid #ccc;" onchange="checkCourseCode(this, '<%= cellKey %>', '<%= course.credits %>', '<%= sem.number %>', '<%= sem.color %>')"></td>
-                                <td><input type="text" id="nom_<%= cellKey %>" placeholder="Enter Nomenclature" value="<%= savedCourse ? savedCourse.course_name : (cellDraft.nom || '') %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: <%= isSaved ? '#e9ecef' : 'transparent' %>;" oninput="debounceSaveDraft()" <%= isSaved ? 'readonly' : '' %>></td>
+                                <td><input type="text" id="code_<%= cellKey %>" data-type="<%= course.type %>" data-credits="<%= course.credits %>" placeholder="Code" value="<%= choiceDraft.code || '' %>" style="width: 100%; border: none; background: transparent; text-align: center; outline: 1px solid #ccc;" onchange="checkCourseCode(this, '<%= cellKey %>', '<%= course.credits %>', '<%= sem.number %>', '<%= sem.color %>')"></td>
+                                <td><input type="text" id="nom_<%= cellKey %>" placeholder="Enter Nomenclature" value="<%= savedCourse ? savedCourse.course_name : (choiceDraft.nom || '') %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: transparent;" oninput="debounceSaveDraft()"></td>
                                 
                                 <% if (course.electiveOpt === 1) { %>
                                     <td class="center" id="td_tp_<%= cellKey %>" style="vertical-align: middle;" rowspan="6">
@@ -360,7 +366,7 @@ const schemesDataEJS = {
                                 <td>
                                     <input type="text" id="code_<%= cellKey %>" data-type="<%= course.type %>" data-credits="<%= course.credits %>" placeholder="Code" value="<%= cellDraft.code || '' %>" style="width: 100%; border: none; background: <%= isCoreProgram || isCommonPgCourse ? '#e9ecef' : 'transparent' %>; text-align: center; outline: 1px solid #ccc;" onchange="checkCourseCode(this, '<%= cellKey %>', '<%= course.credits %>', '<%= sem.number %>', '<%= sem.color %>')" <%= isCoreProgram || isCommonPgCourse ? 'readonly' : '' %>>
                                 </td> 
-                                <td><input type="text" id="nom_<%= cellKey %>" placeholder="Enter Nomenclature" value="<%= savedCourse ? savedCourse.course_name : (cellDraft.nom || '') %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: <%= isSaved || isCoreProgram || isCommonPgCourse ? '#e9ecef' : 'transparent' %>;" oninput="debounceSaveDraft()" <%= isSaved || isCoreProgram || isCommonPgCourse ? 'readonly' : '' %>></td> 
+                                <td><input type="text" id="nom_<%= cellKey %>" placeholder="Enter Nomenclature" value="<%= savedCourse ? savedCourse.course_name : (cellDraft.nom || '') %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: <%= isCoreProgram || isCommonPgCourse ? '#e9ecef' : 'transparent' %>;" oninput="debounceSaveDraft()" <%= isCoreProgram || isCommonPgCourse ? 'readonly' : '' %>></td> 
                                 <td class="center" id="td_tp_<%= cellKey %>" style="vertical-align: middle;">
                                         <% const currentScheme = (savedCourse && savedCourse.credit_scheme) || cellDraft.credit_scheme || ''; %>
                                         <% const displayCredits = cellDraft.credits || course.credits; %>
@@ -561,49 +567,71 @@ const schemesDataEJS = {
         async function handleSchemeChange(selectEl, cellKey) {
             const newScheme = selectEl.value;
             const dbScheme = selectEl.getAttribute('data-dbscheme');
-            // For electives, the code input is in the choices table, not the summary row
-            const codeInput = document.getElementById('code_' + cellKey);
-            const courseCode = codeInput ? codeInput.value.trim() : '';
 
-            // If this is an existing DB course, and the scheme is changing
-            if (courseCode && newScheme && dbScheme !== newScheme) {
-                if (dbScheme && !confirm(`WARNING: Changing the credit scheme for ${courseCode} will completely DELETE the existing course and recreate it as an empty shell. All teacher data (Units, CLOs, Mappings) will be permanently lost!\n\nAre you sure you want to proceed?`)) {
-                    // Revert selection and cancel
+            // Gather all course codes in this block that need their scheme reset
+            let coursesToReset = [];
+            
+            const row = selectEl.closest('tr');
+            if (row && row.classList.contains('elective-summary-row')) {
+                const typeSpan = document.getElementById('type_' + cellKey);
+                const baseType = typeSpan ? typeSpan.getAttribute('data-type') : '';
+                if (baseType) {
+                    const allCodeInputs = document.querySelectorAll(`input[data-type^="${baseType}."]`);
+                    allCodeInputs.forEach(input => {
+                        if (input.value.trim()) {
+                            const key = input.id.replace('code_', '');
+                            const nomInput = document.getElementById('nom_' + key);
+                            coursesToReset.push({
+                                code: input.value.trim(),
+                                nom: nomInput ? nomInput.value.trim() : '',
+                                type: baseType,
+                                credits: input.getAttribute('data-credits') || "0"
+                            });
+                        }
+                    });
+                }
+            } else {
+                const cellCodeInput = document.getElementById('code_' + cellKey);
+                if (cellCodeInput && cellCodeInput.value.trim()) {
+                    coursesToReset.push({
+                        code: cellCodeInput.value.trim(),
+                        nom: document.getElementById('nom_' + cellKey) ? document.getElementById('nom_' + cellKey).value.trim() : '',
+                        type: cellCodeInput.getAttribute('data-type'),
+                        credits: cellCodeInput.getAttribute('data-credits') || "0"
+                    });
+                }
+            }
+
+            if (coursesToReset.length > 0 && newScheme && dbScheme !== newScheme) {
+                const codeNames = coursesToReset.map(c => c.code).join(', ');
+                if (dbScheme && !confirm(`WARNING: Changing the credit scheme for [ ${codeNames} ] will completely DELETE the existing courses and recreate them as empty shells. All teacher data (Units, CLOs, Mappings) will be permanently lost!\n\nAre you sure you want to proceed?`)) {
                     selectEl.value = dbScheme;
                     return;
                 }
-
                 try {
-                    const row = selectEl.closest('tr');
-                    const nomInput = row.querySelector('input[id^="nom_"]');
-                    const typeSpan = document.getElementById('type_' + cellKey);
                     const urlParams = new URLSearchParams(window.location.search);
-                    const codeInputForCredits = document.getElementById('code_' + cellKey);
-                    const creditsTotal = codeInputForCredits ? (codeInputForCredits.getAttribute('data-credits') || "0") : "0";
-
-                    const response = await fetch('/reset-course-scheme', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            courseCode, 
-                            creditScheme: newScheme, 
-                            courseName: nomInput ? nomInput.value.trim() : '', 
-                            courseType: codeInputForCredits ? codeInputForCredits.getAttribute('data-type') : '', 
-                            creditsTotal: creditsTotal, 
-                            programCode: urlParams.get('program_code') 
-                        })
-                    });
-                    const result = await response.json();
-                    if (result.success) {
-                        selectEl.setAttribute('data-dbscheme', newScheme);
-                    } else {
-                        alert("Failed to reset course. Please try again.");
-                        selectEl.value = dbScheme;
-                        return;
+                    
+                    // Safely fire API resets for ALL sub-courses sequentially
+                    for (const c of coursesToReset) {
+                        const response = await fetch('/reset-course-scheme', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ 
+                                courseCode: c.code, 
+                                creditScheme: newScheme, 
+                                courseName: c.nom, 
+                                courseType: c.type, 
+                                creditsTotal: c.credits, 
+                                programCode: urlParams.get('program_code') 
+                            })
+                        });
+                        const result = await response.json();
+                        if (!result.success) throw new Error("Reset failed for " + c.code);
                     }
+                    selectEl.setAttribute('data-dbscheme', newScheme);
                 } catch (err) {
-                    console.error("Error resetting course:", err);
-                    alert("An error occurred while resetting the course.");
+                    console.error("Error resetting courses:", err);
+                    alert("An error occurred while resetting the courses. Data might be out of sync.");
                     selectEl.value = dbScheme;
                     return;
                 }
@@ -644,8 +672,8 @@ const schemesDataEJS = {
                     console.log("Existing course found! Auto-populating row data.");
                     const c = data.course;
                     nomInput.value = c.course_name;
-                    nomInput.readOnly = true;
-                    nomInput.style.backgroundColor = '#e9ecef';
+                        nomInput.readOnly = false;
+                        nomInput.style.backgroundColor = 'transparent';
 
                     if (typeSpan) {
                         typeSpan.style.color = '#155724';
@@ -686,6 +714,8 @@ const schemesDataEJS = {
             const draft_data = Object.fromEntries(Object.entries(draftData).filter(([key, value]) => key.startsWith('yearly_divider_')));
             const rows = document.querySelectorAll('#mainCurriculumTable tbody tr:not(.total-row):not(.divider-row)');
             
+            const electiveSlots = {};
+
             rows.forEach(row => {
                 const codeInput = row.querySelector('input[id^="code_"]');
                 const slaveInput = row.querySelector('input[disabled], select[disabled]');
@@ -697,11 +727,55 @@ const schemesDataEJS = {
                 if (codeInput) { 
                     const key = codeInput.id.replace('code_', '');
                     const type = codeInput.getAttribute('data-type') || "";
+                    const isElective = type.includes('.') && (type.startsWith('DEC') || type.startsWith('DSE')) && !type.startsWith('DSEC');
                     const isCustomRow = /^(Internship|Intership)$/i.test(type);
                     const isSeminarRow = /^SEMINAR$/i.test(type);
                     const isDissertationRow = /^(PROJECT(?:\s*WORK)?\/DISSERTATION|DISSERTATION)$/i.test(type);
 
-                    if (isCustomRow || isSeminarRow || isDissertationRow) {
+                    if (isElective) {
+                        const baseType = type.split('.')[0];
+                        if (!electiveSlots[baseType]) {
+                            electiveSlots[baseType] = {
+                                slot_type: baseType,
+                                credit_scheme: "",
+                                lt_split: "0",
+                                credits: "0",
+                                semester: key.split('_')[0],
+                                choices: []
+                            };
+                        }
+
+                        if (row.classList.contains('elective-summary-row')) {
+                            const summaryTypeSpan = row.querySelector(`span[data-type="${baseType}"]`);
+                            if (summaryTypeSpan) {
+                                const sSelect = row.querySelector('select[id^="scheme_"]');
+                                const lSelect = row.querySelector('select[id^="ltsplit_"]');
+                                const credits = summaryTypeSpan.getAttribute('data-credits') || "0";
+                                
+                                if (sSelect && sSelect.value) {
+                                    electiveSlots[baseType].credit_scheme = sSelect.value;
+                                }
+                                if (lSelect && lSelect.value) {
+                                    electiveSlots[baseType].lt_split = String(lSelect.value);
+                                }
+                                if (credits && credits !== "0") {
+                                    electiveSlots[baseType].credits = credits;
+                                }
+                            }
+                        }
+
+                        const code = codeInput.value.trim();
+                        const nomInput = row.querySelector('#nom_' + key);
+                        const nom = nomInput ? nomInput.value.trim() : "";
+
+                        if (code || nom) {
+                            // Prevent duplicate choices if this elective slot is linked across multiple semesters (e.g. 4, 4A, 4B)
+                            const exists = electiveSlots[baseType].choices.some(c => c.code === code && c.nom === nom);
+                            if (!exists) {
+                                electiveSlots[baseType].choices.push({ code, nom, type: baseType });
+                            }
+                        }
+                    } else if (isCustomRow || isSeminarRow || isDissertationRow) {
                         const code = row.querySelector('#code_' + key) ? row.querySelector('#code_' + key).value.trim() : "";
                         const nom = row.querySelector('#nom_' + key) ? row.querySelector('#nom_' + key).value.trim() : "";
                         const tp = row.querySelector('#tp_' + key) ? row.querySelector('#tp_' + key).value.trim() : "";
@@ -719,13 +793,6 @@ const schemesDataEJS = {
                         const nomInput = row.querySelector('#nom_' + key);
                         let schemeSelect = row.querySelector('#scheme_' + key);
                         let ltSplitSelect = row.querySelector('#ltsplit_' + key);
-
-                        if (row.classList.contains('elective-summary-row')) {
-                            const credit_scheme = schemeSelect ? schemeSelect.value : "";
-                            const lt_split = ltSplitSelect ? String(ltSplitSelect.value) : "0";
-                            const credits = codeInput.getAttribute('data-credits') || "0";
-                            draft_data[key + '_summary'] = { type: type.split('.')[0], credits, credit_scheme, lt_split };
-                        }
                         
                         if (codeInput && nomInput) {
                             const code = codeInput.value.trim();
@@ -733,29 +800,21 @@ const schemesDataEJS = {
                             const credits = codeInput.getAttribute('data-credits');
                             const credit_scheme = schemeSelect ? schemeSelect.value : "";
                             const lt_split = ltSplitSelect ? String(ltSplitSelect.value) : "0";
-                            
-                            let final_scheme = credit_scheme;
-                            let final_lt = lt_split;
-                            if (!row.classList.contains('elective-summary-row') && type.includes('.')) {
-                                let prevRow = row.previousElementSibling;
-                                while (prevRow && !prevRow.classList.contains('elective-summary-row')) {
-                                    prevRow = prevRow.previousElementSibling;
-                                }
-                                if (prevRow) {
-                                    const sSelect = prevRow.querySelector('select[id^="scheme_"]');
-                                    const lSelect = prevRow.querySelector('select[id^="ltsplit_"]');
-                                    if (sSelect) final_scheme = sSelect.value;
-                                    if (lSelect) final_lt = lSelect.value;
-                                }
-                            }
 
-                            if (code || nom || final_scheme) {
-                                draft_data[key] = { code, nom, type: type, credits, credit_scheme: final_scheme, lt_split: final_lt };
+                            if (code || nom || credit_scheme) {
+                                draft_data[key] = { code, nom, type: type, credits, credit_scheme, lt_split };
                             }
                         }
                     }
                 }
             });
+
+            for (const baseType in electiveSlots) {
+                const slot = electiveSlots[baseType];
+                if (slot.credit_scheme || slot.choices.length > 0) {
+                    draft_data[baseType] = slot;
+                }
+            }
 
             const yearlyDividers = document.querySelectorAll('input[id^="yearly_divider_"]');
             yearlyDividers.forEach(input => {

@@ -262,3 +262,10 @@ sem.number.match is not a function
     at exports.renderFile [as engine] (C:\IGUServices\node_modules\ejs\lib\ejs.js:491:10)
     at View.render (C:\IGUServices\node_modules\express\lib\view.js:135:8)
     at tryRender (C:\IGUServices\node_modules\express\lib\application.js:657:10)
+PDF Generation Error: TimeoutError: Navigation timeout of 30000 ms exceeded
+    at new Deferred (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\util\Deferred.js:59:34)
+    at Deferred.create (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\util\Deferred.js:21:16)
+    at new LifecycleWatcher (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\cdp\LifecycleWatcher.js:69:60)
+    at CdpFrame.setContent (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\cdp\Frame.js:235:29)
+    at async CdpPage.setContent (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\api\Page.js:582:13)
+    at async C:\IGUServices\routes\syllabus.js:220:9

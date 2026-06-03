@@ -141,7 +141,7 @@ const sharedSchemeMap = {
 router.get("/generate-full-syllabus", verifyLogin, async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT program_code, subject_name, specialization, ug_pg, discipline_type FROM programs WHERE program_code NOT LIKE '%_CORE' ORDER BY subject_name, specialization",
+      "SELECT program_code, subject_name, specialization, ug_pg, discipline_type, department FROM programs WHERE program_code NOT LIKE '%_CORE' ORDER BY subject_name, specialization",
     );
     const options = result.rows;
     options.unshift({
@@ -149,8 +149,14 @@ router.get("/generate-full-syllabus", verifyLogin, async (req, res) => {
       subject_name: "All University Pool Courses",
       specialization: "",
       ug_pg: null,
+      department: null,
     });
-    res.render("fullSyllabusForm.ejs", { options: options });
+    res.render("fullSyllabusForm.ejs", {
+      options: options,
+      isAdmin:
+        req.session.user.name === "admin" || req.session.user.name === "dev",
+      userDept: req.session.user.department,
+    });
   } catch (error) {
     console.error("❌ Error fetching full syllabus options:", error);
     res.status(500).send("Error loading page.");
@@ -193,7 +199,7 @@ router.get("/download-approval-template", verifyLogin, async (req, res) => {
     await page.setContent(html, { waitUntil: "networkidle0" });
     const pdf = await page.pdf({
       format: "A4",
-      margin: { top: "20mm", bottom: "20mm", left: "20mm", right: "20mm" },
+      margin: { top: "20mm", bottom: "20mm", left: "15mm", right: "5mm" },
     });
     await page.close();
     res.set({
@@ -223,7 +229,7 @@ router.get("/download-empty-core-template", verifyLogin, async (req, res) => {
           displayHeaderFooter: true,
           headerTemplate: `<div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; display: flex; justify-content: flex-end; color: #000; padding: 5px 20px 0 20px;"><span>w.e.f. from 2026-27</span></div>`,
           footerTemplate: `<div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; text-align: center; color: #000;"><span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span></div>`,
-          margin: { top: "20mm", bottom: "20mm", left: "10mm", right: "10mm" },
+          margin: { top: "20mm", bottom: "20mm", left: "15mm", right: "5mm" },
         });
         await page.close();
         res.set({
@@ -404,8 +410,13 @@ async function getFullSyllabusData(program_code) {
   // 4. Collect all required course codes
   const courseCodesToFetch = new Set();
   Object.values(draftData).forEach((cell) => {
-    if (cell && cell.code && !cell.is_custom_row)
+    if (cell.slot_type && cell.choices) {
+      cell.choices.forEach((choice) => {
+        if (choice.code) courseCodesToFetch.add(choice.code);
+      });
+    } else if (cell && cell.code && !cell.is_custom_row) {
       courseCodesToFetch.add(cell.code);
+    }
   });
 
   // 5. Fetch full data for those courses
@@ -454,8 +465,35 @@ async function getFullSyllabusData(program_code) {
     sem.detailed_courses = [];
     sem.courses.forEach((courseTemplate, index) => {
       const cellKey = `${sem.number}_${index}`;
-      const draftCell = draftData[cellKey] || {};
       const isSeminar = /^SEMINAR$/i.test(courseTemplate.type);
+      const isElective = courseTemplate.isElective;
+
+      let draftCell = {};
+      if (isElective) {
+        const baseElectiveType = courseTemplate.type.split(".")[0];
+        const slotDraft = draftData[baseElectiveType] || {};
+        const choiceIndex = courseTemplate.electiveOpt - 1;
+        if (slotDraft.choices && slotDraft.choices[choiceIndex]) {
+          draftCell = {
+            ...slotDraft.choices[choiceIndex],
+            type: baseElectiveType,
+            credit_scheme: slotDraft.credit_scheme,
+            credits: slotDraft.credits,
+            lt_split: slotDraft.lt_split,
+          };
+        } else if (
+          courseTemplate.electiveOpt === 1 &&
+          slotDraft.credit_scheme
+        ) {
+          draftCell = {
+            credit_scheme: slotDraft.credit_scheme,
+            credits: slotDraft.credits,
+            lt_split: slotDraft.lt_split,
+          };
+        }
+      } else {
+        draftCell = draftData[cellKey] || {};
+      }
       const isDissertation =
         /^(PROJECT(?:\s*WORK)?\/DISSERTATION|DISSERTATION)$/i.test(
           courseTemplate.type,
@@ -671,11 +709,10 @@ async function getFullSyllabusData(program_code) {
         }
 
         if (courseTemplate.electiveOpt === 1) {
-          const summaryDraft =
-            draftData[`${sem.number}_${index}_summary`] || {};
+          const slotDraft = draftData[baseElectiveType] || {};
           let repMarks = {};
           let finalRepScheme =
-            summaryDraft.credit_scheme || courseObj.credit_scheme;
+            slotDraft.credit_scheme || courseObj.credit_scheme;
           if (finalRepScheme && sharedSchemeMap[finalRepScheme]) {
             repMarks = {
               marks_internal_theory: sharedSchemeMap[finalRepScheme].int_th,
@@ -689,7 +726,7 @@ async function getFullSyllabusData(program_code) {
               credits_theory: sharedSchemeMap[finalRepScheme].th,
               credits_practical: sharedSchemeMap[finalRepScheme].pr,
               credit_scheme: finalRepScheme,
-              lt_split: summaryDraft.lt_split || "0",
+              lt_split: slotDraft.lt_split || "0",
             };
           }
           const representativeRow = {
@@ -711,18 +748,41 @@ async function getFullSyllabusData(program_code) {
 
   semesters.forEach((sem) => {
     if (sem.detailed_courses) {
+      const newDetailedCourses = [];
       sem.detailed_courses.forEach((course) => {
+        newDetailedCourses.push(course);
         if (course.isElectiveGroup && !course.isLinkedElective) {
           const choices = electiveCourseGroups[course.baseElectiveType] || [];
           const validChoices = choices.filter(
             (c) => !c.is_missing && c.course_code !== "-",
           );
-          course.course_code =
-            validChoices.length > 0
-              ? validChoices.map((c) => c.course_code).join(" / ")
-              : "-";
+
+          if (validChoices.length > 0) {
+            course.course_code = "See Below";
+            validChoices.forEach((choice) => {
+              newDetailedCourses.push({
+                ...choice,
+                curriculum_display_type: "", // Hide type for choices
+                credits_total: "",
+                marks_internal_theory: "",
+                marks_internal_practical: "",
+                marks_internal_total: "",
+                marks_endterm_theory: "",
+                marks_endterm_practical: "",
+                marks_endterm_total: "",
+                marks_max: "",
+                exam_duration: "",
+                tp: "",
+                hrs: "",
+                is_elective_choice_row: true,
+              });
+            });
+          } else {
+            course.course_code = "-";
+          }
         }
       });
+      sem.detailed_courses = newDetailedCourses;
     }
   });
 
@@ -831,6 +891,61 @@ router.get("/view-full-syllabus", verifyLogin, async (req, res) => {
   }
 });
 
+router.get("/view-curriculum", verifyLogin, async (req, res) => {
+  try {
+    const { program_code } = req.query;
+    if (!program_code) return res.status(400).send("Program code is required.");
+    const data = await getFullSyllabusData(program_code);
+    res.render("curriculumView.ejs", data);
+  } catch (error) {
+    console.error("❌ Error loading curriculum view:", error);
+    res.status(500).send("Error loading curriculum view.");
+  }
+});
+
+// router.get("/download-curriculum-pdf", verifyLogin, async (req, res) => {
+//   try {
+//     const { program_code } = req.query;
+//     if (!program_code) return res.status(400).send("Missing program code");
+//     const data = await getFullSyllabusData(program_code);
+
+//     req.app.render("curriculumView.ejs", data, async (err, html) => {
+//       if (err) return res.status(500).send("Error rendering HTML for PDF");
+//       try {
+//         const browser = await getBrowser();
+//         const page = await browser.newPage();
+//         await page.setUserAgent(
+//           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+//         );
+//         await page.setContent(html, { waitUntil: "networkidle2" });
+
+//         const pdf = await page.pdf({
+//           format: "A4",
+//           landscape: true,
+//           printBackground: true,
+//           displayHeaderFooter: true,
+//           headerTemplate: `<div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; display: flex; justify-content: space-between; color: #000; padding: 5px 20px 0 20px;"><span>Department of ${data.programDetails.department || data.program.department || "N/A"}</span><span>w.e.f. from 2026-27</span></div>`,
+//           footerTemplate: `<div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; text-align: center; color: #000; position: relative;"><span style="position: absolute; left: 20px;">Curriculum - ${data.academic_program}</span><span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span><span style="position: absolute; right: 20px;">IGU Meerpur</span></div>`,
+//           margin: { top: "20mm", right: "10mm", bottom: "25mm", left: "10mm" },
+//         });
+//         await page.close();
+
+//         res.set({
+//           "Content-Type": "application/pdf",
+//           "Content-Disposition": `attachment; filename="Curriculum_${data.academic_program.replace(/[^a-zA-Z0-9]/g, "_")}.pdf"`,
+//         });
+//         res.send(pdf);
+//       } catch (pdfErr) {
+//         console.error("❌ PDF Generation Error:", pdfErr);
+//         res.status(500).send("Error generating PDF document.");
+//       }
+//     });
+//   } catch (error) {
+//     console.error("❌ Error initiating PDF download:", error);
+//     res.status(500).send("Error generating PDF.");
+//   }
+// });
+
 router.get("/download-full-syllabus-pdf", verifyLogin, async (req, res) => {
   try {
     const { program_code } = req.query;
@@ -874,7 +989,7 @@ router.get("/download-full-syllabus-pdf", verifyLogin, async (req, res) => {
               <span style="position: absolute; right: 20px;">IGU Meerpur</span>
             </div>
           `,
-          margin: { top: "20mm", right: "10mm", bottom: "25mm", left: "10mm" },
+          margin: { top: "20mm", right: "5mm", bottom: "25mm", left: "15mm" },
         });
         await page.close();
 
@@ -1383,7 +1498,7 @@ router.get("/download-pdf/:courseCode", verifyLogin, async (req, res) => {
           displayHeaderFooter: true,
           headerTemplate: `<div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; display: flex; justify-content: space-between; color: #000; padding: 5px 20px 0 20px;"><span>Department of ${deptName}</span><span>w.e.f. from 2026-27</span></div>`,
           footerTemplate: "<span></span>",
-          margin: { top: "15mm", bottom: "15mm", left: "10mm", right: "10mm" },
+          margin: { top: "15mm", bottom: "15mm", left: "15mm", right: "5mm" },
         });
         await page.close();
         res.set({
