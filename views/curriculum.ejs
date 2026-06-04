@@ -126,7 +126,8 @@ const schemesDataEJS = {
                 <li><strong>Minor Exceptions (Scheme D):</strong> CC-M1, CC-M2, and CC-M3 can be set to fixed courses. If left empty, they will default to "from available pool of Minor/ Minor (Vocational)" in the generated syllabus.</li>
             <% } %>
             <li><strong>Exit Options:</strong> You can specify exit awards for students at the end of each year.</li>
-            <li>Format as per Ordinance.</li>
+            <li><strong>Internship Course Code: </strong><a href="https://drive.google.com/file/d/1QU1-JMLtRof1mlV13xf4ARZFhPLuUx5e/view?usp=drive_link" target="_blank">here</a> is the link to the Internship Course Code Guide.</li>
+            <li>Format as per Ordinance.</li>`
 
         </ul>
     </div>
@@ -214,7 +215,7 @@ const schemesDataEJS = {
                                 <% } %>
 
                                 <td><input type="text" id="code_<%= cellKey %>" data-type="<%= course.type %>" data-credits="<%= course.credits %>" placeholder="Code" value="<%= choiceDraft.code || '' %>" style="width: 100%; border: none; background: transparent; text-align: center; outline: 1px solid #ccc;" onchange="checkCourseCode(this, '<%= cellKey %>', '<%= course.credits %>', '<%= sem.number %>', '<%= sem.color %>')"></td>
-                                <td><input type="text" id="nom_<%= cellKey %>" placeholder="Enter Nomenclature" value="<%= savedCourse ? savedCourse.course_name : (choiceDraft.nom || '') %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: transparent;" oninput="debounceSaveDraft()"></td>
+                                <td><textarea id="nom_<%= cellKey %>" placeholder="Enter Nomenclature" rows="2" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: transparent; resize: vertical;" oninput="debounceSaveDraft()"><%= savedCourse ? savedCourse.course_name : (choiceDraft.nom || '') %></textarea></td>
                                 
                                 <% if (course.electiveOpt === 1) { %>
                                     <td class="center" id="td_tp_<%= cellKey %>" style="vertical-align: middle;" rowspan="6">
@@ -268,17 +269,23 @@ const schemesDataEJS = {
                             <% let cellDraft = draftData[cellKey] || {}; %>
                             <% let savedCourse = cellDraft.code ? savedCoursesMap[cellDraft.code] : null; %>
                             <% let isCommonPgCourse = false; %>
+                            <% let isLockedCommonPgCourse = false; %>
                             <% if (locals.programLevel === 'PG' && locals.commonCoursesMap && locals.commonCoursesMap[course.type]) {
-                                isCommonPgCourse = true;
                                 const commonData = locals.commonCoursesMap[course.type];
-                                savedCourse = commonData;
-                                cellDraft = {
-                                    code: commonData.course_code,
-                                    nom: commonData.course_name,
-                                    credit_scheme: commonData.credit_scheme,
-                                    credits: commonData.credits_total,
-                                    tp: '', hrs: '', int: '', end: '', max: '', dur: ''
-                                };
+                                if (course.type === 'EEC' && cellDraft.code && cellDraft.code !== commonData.course_code) {
+                                    // User has overridden the EEC slot with a custom course, so do not force common data
+                                } else {
+                                    isCommonPgCourse = true;
+                                    if (course.type !== 'EEC') isLockedCommonPgCourse = true;
+                                    savedCourse = commonData;
+                                    cellDraft = {
+                                        code: commonData.course_code,
+                                        nom: commonData.course_name,
+                                        credit_scheme: commonData.credit_scheme,
+                                        credits: commonData.credits_total,
+                                        tp: '', hrs: '', int: '', end: '', max: '', dur: ''
+                                    };
+                                }
                             } %>
                             <% const isSaved = !!savedCourse; %>
                             <% const isPoolType1 = /^(MDC|AEC|SEC|VAC)/.test(course.type); %>
@@ -364,13 +371,13 @@ const schemesDataEJS = {
                                     <% if (course.type === 'OEC' || course.type === 'MDC') { %><br><span style="font-size:11px; font-style:italic;">(*offered for other depts)</span><% } %>
                                 </td>
                                 <td>
-                                    <input type="text" id="code_<%= cellKey %>" data-type="<%= course.type %>" data-credits="<%= course.credits %>" placeholder="Code" value="<%= cellDraft.code || '' %>" style="width: 100%; border: none; background: <%= isCoreProgram || isCommonPgCourse ? '#e9ecef' : 'transparent' %>; text-align: center; outline: 1px solid #ccc;" onchange="checkCourseCode(this, '<%= cellKey %>', '<%= course.credits %>', '<%= sem.number %>', '<%= sem.color %>')" <%= isCoreProgram || isCommonPgCourse ? 'readonly' : '' %>>
+                                    <input type="text" id="code_<%= cellKey %>" data-type="<%= course.type %>" data-credits="<%= course.credits %>" placeholder="Code" value="<%= cellDraft.code || '' %>" style="width: 100%; border: none; background: <%= isCoreProgram || isLockedCommonPgCourse ? '#e9ecef' : 'transparent' %>; text-align: center; outline: 1px solid #ccc;" onchange="checkCourseCode(this, '<%= cellKey %>', '<%= course.credits %>', '<%= sem.number %>', '<%= sem.color %>')" <%= isCoreProgram || isLockedCommonPgCourse ? 'readonly' : '' %>>
                                 </td> 
-                                <td><input type="text" id="nom_<%= cellKey %>" placeholder="Enter Nomenclature" value="<%= savedCourse ? savedCourse.course_name : (cellDraft.nom || '') %>" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: <%= isCoreProgram || isCommonPgCourse ? '#e9ecef' : 'transparent' %>;" oninput="debounceSaveDraft()" <%= isCoreProgram || isCommonPgCourse ? 'readonly' : '' %>></td> 
+                                <td><textarea id="nom_<%= cellKey %>" placeholder="Enter Nomenclature" rows="2" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: <%= isCoreProgram || isLockedCommonPgCourse ? '#e9ecef' : 'transparent' %>; resize: vertical;" oninput="debounceSaveDraft()" <%= isCoreProgram || isLockedCommonPgCourse ? 'readonly' : '' %>><%= savedCourse ? savedCourse.course_name : (cellDraft.nom || '') %></textarea></td> 
                                 <td class="center" id="td_tp_<%= cellKey %>" style="vertical-align: middle;">
                                         <% const currentScheme = (savedCourse && savedCourse.credit_scheme) || cellDraft.credit_scheme || ''; %>
                                         <% const displayCredits = cellDraft.credits || course.credits; %>
-                                        <select id="scheme_<%= cellKey %>" data-dbscheme="<%= savedCourse ? savedCourse.credit_scheme || '' : '' %>" onchange="handleSchemeChange(this, '<%= cellKey %>')" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: <%= isSaved || isCoreProgram || isCommonPgCourse ? '#e9ecef' : 'transparent' %>;" <%= isCoreProgram || isCommonPgCourse ? 'disabled' : '' %>>
+                                        <select id="scheme_<%= cellKey %>" data-dbscheme="<%= savedCourse ? savedCourse.credit_scheme || '' : '' %>" onchange="handleSchemeChange(this, '<%= cellKey %>')" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: <%= isSaved || isCoreProgram || isLockedCommonPgCourse ? '#e9ecef' : 'transparent' %>;" <%= isCoreProgram || isLockedCommonPgCourse ? 'disabled' : '' %>>
                                             <option value="">Scheme</option>
                                             <% if (displayCredits == 4) { %>
                                                 <option value="4+0" <%= currentScheme === '4+0' ? 'selected' : '' %>>4+0</option>
@@ -425,7 +432,7 @@ const schemesDataEJS = {
                                                 let tot = th + p;
                                                 if (th > 1) {
                                                     %>
-                                                    <select id="ltsplit_<%= cellKey %>" onchange="debounceSaveDraft()" style="background-color: <%= isSaved || isCoreProgram || isCommonPgCourse ? '#e9ecef' : 'transparent' %>; border: 1px solid #ccc; padding: 2px;" <%= isCoreProgram || isCommonPgCourse ? 'disabled' : '' %>>
+                                                    <select id="ltsplit_<%= cellKey %>" onchange="debounceSaveDraft()" style="background-color: <%= isSaved || isCoreProgram || isLockedCommonPgCourse ? '#e9ecef' : 'transparent' %>; border: 1px solid #ccc; padding: 2px;" <%= isCoreProgram || isLockedCommonPgCourse ? 'disabled' : '' %>>
                                                         <option value="0" <%= lt_split == "0" ? "selected" : "" %>><%= th %>+0+<%= p %>=<%= tot %></option>
                                                         <option value="1" <%= lt_split == "1" ? "selected" : "" %>><%= th-1 %>+1+<%= p %>=<%= tot %></option>
                                                     </select>
@@ -506,7 +513,7 @@ const schemesDataEJS = {
                 const slaveRow = document.querySelector(`tr[data-cell-key="${slaveKey}"]`);
                 if (!slaveRow) return;
 
-                const masterInputs = masterRow.querySelectorAll('input[id], select[id]');
+                const masterInputs = masterRow.querySelectorAll('input[id], select[id], textarea[id]');
                 masterInputs.forEach(masterInput => {
                     const slaveInput = slaveRow.querySelector(`[id="${masterInput.id.replace(masterKey, slaveKey)}"]`);
                     if (slaveInput) {
@@ -727,7 +734,7 @@ const schemesDataEJS = {
                 if (codeInput) { 
                     const key = codeInput.id.replace('code_', '');
                     const type = codeInput.getAttribute('data-type') || "";
-                    const isElective = type.includes('.') && (type.startsWith('DEC') || type.startsWith('DSE')) && !type.startsWith('DSEC');
+                    const isElective = type.includes('.') && (type.startsWith('DEC') || type.startsWith('DSE') || type.startsWith('PC')) && !type.startsWith('DSEC');
                     const isCustomRow = /^(Internship|Intership)$/i.test(type);
                     const isSeminarRow = /^SEMINAR$/i.test(type);
                     const isDissertationRow = /^(PROJECT(?:\s*WORK)?\/DISSERTATION|DISSERTATION)$/i.test(type);

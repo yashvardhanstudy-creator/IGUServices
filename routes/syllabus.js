@@ -200,6 +200,8 @@ router.get("/download-approval-template", verifyLogin, async (req, res) => {
     const pdf = await page.pdf({
       format: "A4",
       margin: { top: "20mm", bottom: "20mm", left: "15mm", right: "5mm" },
+      displayHeaderFooter: true,
+      footerTemplate: `<div style="font-size: 11px; font-family: 'Arial', serif; width: 100%; text-align: center; color: #000;">2</div>`,
     });
     await page.close();
     res.set({
@@ -362,7 +364,9 @@ async function getFullSyllabusData(program_code) {
       sem.courses.forEach((c) => {
         // Generic handling for all elective types that need choices
         if (
-          (c.type.startsWith("DEC") || c.type.startsWith("DSE")) &&
+          (c.type.startsWith("DEC") ||
+            c.type.startsWith("DSE") ||
+            c.type.startsWith("PC")) &&
           !c.type.startsWith("DSEC")
         ) {
           const match = c.type.match(/\.(\d+)$/);
@@ -412,9 +416,15 @@ async function getFullSyllabusData(program_code) {
   Object.values(draftData).forEach((cell) => {
     if (cell.slot_type && cell.choices) {
       cell.choices.forEach((choice) => {
-        if (choice.code) courseCodesToFetch.add(choice.code);
+        if (choice.code && !/\bmoocs?\b/i.test(choice.nom || ""))
+          courseCodesToFetch.add(choice.code);
       });
-    } else if (cell && cell.code && !cell.is_custom_row) {
+    } else if (
+      cell &&
+      cell.code &&
+      !cell.is_custom_row &&
+      !/\bmoocs?\b/i.test(cell.nom || "")
+    ) {
       courseCodesToFetch.add(cell.code);
     }
   });
@@ -576,9 +586,24 @@ async function getFullSyllabusData(program_code) {
                 ? ""
                 : draftCell.dur || "-",
         };
-      } else if (draftCell.code) {
-        const fullCourse = courseDataMap[draftCell.code];
-        if (fullCourse) {
+      } else if (draftCell.code || draftCell.nom) {
+        const isMooc = /\bmoocs?\b/i.test(draftCell.nom || "");
+        const fullCourse = draftCell.code
+          ? courseDataMap[draftCell.code]
+          : null;
+        if (isMooc) {
+          courseObj = {
+            course_code: draftCell.code || "-",
+            course_name: draftCell.nom,
+            course_type: draftCell.type || courseTemplate.type,
+            credits_total: draftCell.credits || courseTemplate.credits,
+            credit_scheme: draftCell.credit_scheme || "",
+            lt_split: draftCell.lt_split || "0",
+            is_db_course: false,
+            is_missing: false,
+            is_mooc: true,
+          };
+        } else if (fullCourse) {
           courseObj = {
             ...fullCourse,
             course_type: draftCell.type || courseTemplate.type,
@@ -587,7 +612,20 @@ async function getFullSyllabusData(program_code) {
             is_db_course: true,
             is_missing: false,
           };
+        } else {
+          courseObj = {
+            course_code: draftCell.code || "-",
+            course_name: draftCell.nom || "Unassigned Slot",
+            course_type: draftCell.type || courseTemplate.type,
+            credits_total: draftCell.credits || courseTemplate.credits,
+            credit_scheme: draftCell.credit_scheme || "",
+            lt_split: draftCell.lt_split || "0",
+            is_db_course: false,
+            is_missing: true,
+          };
+        }
 
+        if (courseObj.is_mooc || courseObj.is_db_course) {
           if (
             (!courseObj.marks_max || courseObj.marks_max == 0) &&
             courseObj.credit_scheme &&
@@ -610,21 +648,13 @@ async function getFullSyllabusData(program_code) {
               sharedSchemeMap[courseObj.credit_scheme].dur;
           }
 
-          if (!addedToAllCourses.has(courseObj.course_code)) {
+          if (
+            courseObj.is_db_course &&
+            !addedToAllCourses.has(courseObj.course_code)
+          ) {
             allCourses.push(courseObj);
             addedToAllCourses.add(courseObj.course_code);
           }
-        } else {
-          courseObj = {
-            course_code: draftCell.code,
-            course_name: draftCell.nom || "Unassigned Slot",
-            course_type: draftCell.type || courseTemplate.type,
-            credits_total: draftCell.credits || courseTemplate.credits,
-            credit_scheme: draftCell.credit_scheme || "",
-            lt_split: draftCell.lt_split || "0",
-            is_db_course: false,
-            is_missing: true,
-          };
         }
       } else {
         courseObj = {

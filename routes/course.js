@@ -8,6 +8,131 @@ const {
   insertCourseQuery,
 } = require("../constants");
 
+// Middleware: Row-Level Security for Courses
+const rlsCourseMiddleware = async (req, res, next) => {
+  if (
+    !req.session.user ||
+    req.session.user.name === "admin" ||
+    req.session.user.name === "dev"
+  ) {
+    return next();
+  }
+
+  const userDept = req.session.user.department;
+  const {
+    courseCode,
+    programCode,
+    isEditMode,
+    is_pool_course,
+    pool_department,
+    pool_faculty,
+    owning_program_code,
+    is_common_course,
+    program_filter,
+  } = req.body;
+  const redirectUrl =
+    req.path === "/delete-course"
+      ? `/courses-list?${program_filter ? `program_filter=${encodeURIComponent(program_filter)}&` : ""}`
+      : null;
+
+  const checkOwnership = async (owningCode) => {
+    if (owningCode === "COMMON_PG")
+      return "Unauthorized: Only the 'admin' or 'dev' admin can modify Common PG courses.";
+    if (owningCode && owningCode.startsWith("POOL|")) {
+      const parts = owningCode.split("|");
+      if (parts.length === 3 && parts[2] !== userDept) {
+        return "Unauthorized: You can only modify courses belonging to your department.";
+      }
+    } else if (owningCode && owningCode !== "From University Pool") {
+      const progCheck = await pool.query(
+        "SELECT department FROM programs WHERE program_code = $1",
+        [owningCode],
+      );
+      if (
+        progCheck.rows.length > 0 &&
+        progCheck.rows[0].department !== userDept
+      ) {
+        return "Unauthorized: You can only modify courses belonging to your department.";
+      }
+    }
+    return null;
+  };
+
+  const sendError = (msg) => {
+    if (req.path === "/delete-course")
+      return res.redirect(`${redirectUrl}error=${encodeURIComponent(msg)}`);
+    if (req.path === "/reset-course-scheme")
+      return res.status(403).json({ success: false, error: msg });
+    return res.status(403).send(msg);
+  };
+
+  try {
+    if (req.path === "/delete-course" && courseCode) {
+      const checkCommon = await pool.query(
+        "SELECT owning_program_code FROM course_syllabus WHERE course_code = $1",
+        [courseCode],
+      );
+      if (checkCommon.rows.length > 0) {
+        const error = await checkOwnership(
+          checkCommon.rows[0].owning_program_code,
+        );
+        if (error) return sendError(error);
+      }
+    } else if (req.path === "/reset-course-scheme") {
+      let targetProgramCode = programCode || null;
+      if (courseCode) {
+        const existing = await pool.query(
+          "SELECT owning_program_code FROM course_syllabus WHERE course_code = $1",
+          [courseCode],
+        );
+        if (existing.rows.length > 0)
+          targetProgramCode = existing.rows[0].owning_program_code;
+      }
+      const error = await checkOwnership(targetProgramCode);
+      if (error) return sendError(error);
+    } else if (req.path === "/courses") {
+      let owningCodeToSave = null;
+      if (is_pool_course === "true") {
+        owningCodeToSave = `POOL|${pool_faculty ? pool_faculty.trim() : ""}|${pool_department ? pool_department.trim() : ""}`;
+      } else {
+        owningCodeToSave = owning_program_code || null;
+      }
+
+      if (is_common_course === "true" || owningCodeToSave === "COMMON_PG") {
+        return sendError(
+          "Unauthorized: Only the 'admin' or 'dev' admin can modify Common PG courses.",
+        );
+      }
+
+      const saveError = await checkOwnership(owningCodeToSave);
+      if (saveError)
+        return sendError(
+          "Unauthorized: You can only create or modify courses belonging to your department.",
+        );
+
+      if (isEditMode === "true" && courseCode) {
+        const existingCourse = await pool.query(
+          "SELECT owning_program_code FROM course_syllabus WHERE course_code = $1",
+          [courseCode],
+        );
+        if (existingCourse.rows.length > 0) {
+          const editError = await checkOwnership(
+            existingCourse.rows[0].owning_program_code,
+          );
+          if (editError)
+            return sendError(
+              "Unauthorized: You cannot edit a course belonging to another department.",
+            );
+        }
+      }
+    }
+    next();
+  } catch (err) {
+    console.error("RLS Middleware Error:", err);
+    return res.status(500).send("Error checking authorization.");
+  }
+};
+
 router.get("/courses", verifyPrivilageLogin, async (req, res) => {
   res.render("courseForm.ejs");
 });
@@ -399,98 +524,72 @@ router.get("/courses-list", verifyLogin, async (req, res) => {
   }
 });
 
-router.post("/delete-course", verifyPrivilageLogin, async (req, res) => {
-  try {
-    const { courseCode, program_filter } = req.body;
-    const redirectUrl = `/courses-list?${program_filter ? `program_filter=${encodeURIComponent(program_filter)}&` : ""}`;
+router.post(
+  "/delete-course",
+  verifyPrivilageLogin,
+  rlsCourseMiddleware,
+  async (req, res) => {
+    try {
+      const { courseCode, program_filter } = req.body;
+      const redirectUrl = `/courses-list?${program_filter ? `program_filter=${encodeURIComponent(program_filter)}&` : ""}`;
 
-    if (courseCode) {
-      const checkCommon = await pool.query(
-        "SELECT owning_program_code FROM course_syllabus WHERE course_code = $1",
-        [courseCode],
-      );
-      if (
-        checkCommon.rows.length > 0 &&
-        checkCommon.rows[0].owning_program_code === "COMMON_PG"
-      ) {
-        return res.redirect(
-          `${redirectUrl}error=${encodeURIComponent("Cannot delete common PG courses.")}`,
+      if (courseCode) {
+        const checkCommon = await pool.query(
+          "SELECT owning_program_code FROM course_syllabus WHERE course_code = $1",
+          [courseCode],
         );
-      }
-
-      // Row-Level Security Check
-      if (
-        req.session.user &&
-        req.session.user.name !== "admin" &&
-        req.session.user.name !== "dev" &&
-        checkCommon.rows.length > 0
-      ) {
-        const owningCode = checkCommon.rows[0].owning_program_code;
-        if (owningCode && owningCode.startsWith("POOL|")) {
-          const parts = owningCode.split("|");
-          if (parts.length === 3 && parts[2] !== req.session.user.department) {
-            return res.redirect(
-              `${redirectUrl}error=${encodeURIComponent("Unauthorized: You can only delete courses belonging to your department.")}`,
-            );
-          }
-        } else if (owningCode && owningCode !== "From University Pool") {
-          const progCheck = await pool.query(
-            "SELECT department FROM programs WHERE program_code = $1",
-            [owningCode],
+        if (
+          checkCommon.rows.length > 0 &&
+          checkCommon.rows[0].owning_program_code === "COMMON_PG"
+        ) {
+          return res.redirect(
+            `${redirectUrl}error=${encodeURIComponent("Cannot delete common PG courses.")}`,
           );
-          if (
-            progCheck.rows.length > 0 &&
-            progCheck.rows[0].department !== req.session.user.department
-          ) {
-            return res.redirect(
-              `${redirectUrl}error=${encodeURIComponent("Unauthorized: You can only delete courses belonging to your department.")}`,
-            );
-          }
         }
-      }
 
-      const draftsResult = await pool.query(
-        "SELECT p.subject_name, p.specialization, c.draft_data FROM curriculum_drafts c JOIN programs p ON c.program_code = p.program_code",
-      );
-      const linkedPrograms = [];
-      draftsResult.rows.forEach((row) => {
-        const draft = row.draft_data || {};
-        for (const key in draft) {
-          const item = draft[key];
-          if (item) {
-            if (
-              item.slot_type &&
-              item.choices &&
-              item.choices.some((c) => c.code === courseCode)
-            ) {
-              linkedPrograms.push(row.subject_name);
-              break;
-            } else if (item.code === courseCode) {
-              linkedPrograms.push(row.subject_name);
-              break;
+        const draftsResult = await pool.query(
+          "SELECT p.subject_name, p.specialization, c.draft_data FROM curriculum_drafts c JOIN programs p ON c.program_code = p.program_code",
+        );
+        const linkedPrograms = [];
+        draftsResult.rows.forEach((row) => {
+          const draft = row.draft_data || {};
+          for (const key in draft) {
+            const item = draft[key];
+            if (item) {
+              if (
+                item.slot_type &&
+                item.choices &&
+                item.choices.some((c) => c.code === courseCode)
+              ) {
+                linkedPrograms.push(row.subject_name);
+                break;
+              } else if (item.code === courseCode) {
+                linkedPrograms.push(row.subject_name);
+                break;
+              }
             }
           }
+        });
+
+        if (linkedPrograms.length > 0) {
+          const errorMsg = `Cannot delete ${courseCode}. It is currently used in: ${linkedPrograms.join(", ")}. Please remove it from these curriculum drafts first.`;
+          return res.redirect(
+            `${redirectUrl}error=${encodeURIComponent(errorMsg)}`,
+          );
         }
-      });
-
-      if (linkedPrograms.length > 0) {
-        const errorMsg = `Cannot delete ${courseCode}. It is currently used in: ${linkedPrograms.join(", ")}. Please remove it from these curriculum drafts first.`;
-        return res.redirect(
-          `${redirectUrl}error=${encodeURIComponent(errorMsg)}`,
-        );
+        await pool.query("DELETE FROM course_syllabus WHERE course_code = $1", [
+          courseCode,
+        ]);
       }
-      await pool.query("DELETE FROM course_syllabus WHERE course_code = $1", [
-        courseCode,
-      ]);
+      res.redirect(`${redirectUrl}message=Course deleted successfully!`);
+    } catch (error) {
+      console.error("❌ Error deleting course:", error);
+      res.status(500).send("Error deleting course.");
     }
-    res.redirect(`${redirectUrl}message=Course deleted successfully!`);
-  } catch (error) {
-    console.error("❌ Error deleting course:", error);
-    res.status(500).send("Error deleting course.");
-  }
-});
+  },
+);
 
-router.post("/courses", verifyLogin, async (req, res) => {
+router.post("/courses", verifyLogin, rlsCourseMiddleware, async (req, res) => {
   try {
     const courseData = req.body;
     const isEditMode = courseData.isEditMode === "true";
@@ -593,15 +692,28 @@ router.post("/courses", verifyLogin, async (req, res) => {
 
     const nepMapping = {
       employability: courseData.nep_employability || "",
+      employability_hours: courseData.nep_employability_hours || "",
       entrepreneurship: courseData.nep_entrepreneurship || "",
+      entrepreneurship_hours: courseData.nep_entrepreneurship_hours || "",
       skill_enhancement: courseData.nep_skill_enhancement || "",
+      skill_enhancement_hours: courseData.nep_skill_enhancement_hours || "",
       communication_development: courseData.nep_communication_development || "",
+      communication_development_hours:
+        courseData.nep_communication_development_hours || "",
       indian_knowledge_system: courseData.nep_indian_knowledge_system || "",
+      indian_knowledge_system_hours:
+        courseData.nep_indian_knowledge_system_hours || "",
       environmental_awareness: courseData.nep_environmental_awareness || "",
+      environmental_awareness_hours:
+        courseData.nep_environmental_awareness_hours || "",
       current_issues: courseData.nep_current_issues || "",
+      current_issues_hours: courseData.nep_current_issues_hours || "",
       women_empowerment: courseData.nep_women_empowerment || "",
+      women_empowerment_hours: courseData.nep_women_empowerment_hours || "",
       public_policies: courseData.nep_public_policies || "",
+      public_policies_hours: courseData.nep_public_policies_hours || "",
       any_other: courseData.nep_any_other || "",
+      any_other_hours: courseData.nep_any_other_hours || "",
       course_semester: courseData.semester || "",
       important_notes: xss(courseData.important_notes || ""),
       lt_split: courseData.lt_split || "0",
@@ -619,92 +731,6 @@ router.post("/courses", verifyLogin, async (req, res) => {
       owningProgramCodeToSave = `POOL|${faculty}|${dept}`;
     } else {
       owningProgramCodeToSave = courseData.owning_program_code || null;
-    }
-
-    // Row-Level Security Check
-    if (
-      req.session.user &&
-      req.session.user.name !== "admin" &&
-      req.session.user.name !== "dev"
-    ) {
-      const userDept = req.session.user.department;
-
-      let targetDept = null;
-      if (isPoolCourse) {
-        targetDept = courseData.pool_department
-          ? courseData.pool_department.trim()
-          : null;
-      } else if (
-        owningProgramCodeToSave &&
-        owningProgramCodeToSave !== "COMMON_PG"
-      ) {
-        const progCheck = await pool.query(
-          "SELECT department FROM programs WHERE program_code = $1",
-          [owningProgramCodeToSave],
-        );
-        if (progCheck.rows.length > 0)
-          targetDept = progCheck.rows[0].department;
-      }
-
-      if (
-        courseData.is_common_course === "true" ||
-        owningProgramCodeToSave === "COMMON_PG"
-      ) {
-        return res
-          .status(403)
-          .send(
-            "Unauthorized: Only the 'admin' or 'dev' admin can modify Common PG courses.",
-          );
-      }
-      if (targetDept && targetDept !== userDept) {
-        return res
-          .status(403)
-          .send(
-            "Unauthorized: You can only create or modify courses belonging to your department.",
-          );
-      }
-
-      if (isEditMode && courseData.courseCode) {
-        const existingCourse = await pool.query(
-          "SELECT owning_program_code FROM course_syllabus WHERE course_code = $1",
-          [courseData.courseCode],
-        );
-        if (existingCourse.rows.length > 0) {
-          const existingOwning = existingCourse.rows[0].owning_program_code;
-          if (existingOwning === "COMMON_PG")
-            return res
-              .status(403)
-              .send(
-                "Unauthorized: Only the 'admin' or 'dev' admin can modify Common PG courses.",
-              );
-          if (existingOwning && existingOwning.startsWith("POOL|")) {
-            const parts = existingOwning.split("|");
-            if (parts.length === 3 && parts[2] !== userDept)
-              return res
-                .status(403)
-                .send(
-                  "Unauthorized: You cannot edit a pool course from another department.",
-                );
-          } else if (
-            existingOwning &&
-            existingOwning !== "From University Pool"
-          ) {
-            const exProgCheck = await pool.query(
-              "SELECT department FROM programs WHERE program_code = $1",
-              [existingOwning],
-            );
-            if (
-              exProgCheck.rows.length > 0 &&
-              exProgCheck.rows[0].department !== userDept
-            )
-              return res
-                .status(403)
-                .send(
-                  "Unauthorized: You cannot edit a course belonging to another department.",
-                );
-          }
-        }
-      }
     }
 
     const values = [
@@ -747,91 +773,53 @@ router.post("/courses", verifyLogin, async (req, res) => {
   }
 });
 
-router.post("/reset-course-scheme", verifyPrivilageLogin, async (req, res) => {
-  try {
-    const {
-      courseCode,
-      creditScheme,
-      courseName,
-      courseType,
-      creditsTotal,
-      programCode,
-    } = req.body;
-    if (courseCode && creditScheme) {
-      const existing = await pool.query(
-        "SELECT owning_program_code FROM course_syllabus WHERE course_code = $1",
-        [courseCode],
-      );
-      let targetProgramCode = programCode || null;
-      if (existing.rows.length > 0) {
-        targetProgramCode = existing.rows[0].owning_program_code; // Preserve existing ownership for Pool Courses
-      }
-
-      // Row-Level Security Check
-      if (
-        req.session.user &&
-        req.session.user.name !== "admin" &&
-        req.session.user.name !== "dev"
-      ) {
-        if (targetProgramCode === "COMMON_PG") {
-          return res.status(403).json({
-            success: false,
-            error:
-              "Unauthorized: Only the 'admin' or 'dev' admin can modify Common PG courses.",
-          });
-        }
-        if (targetProgramCode && targetProgramCode.startsWith("POOL|")) {
-          const parts = targetProgramCode.split("|");
-          if (parts.length === 3 && parts[2] !== req.session.user.department) {
-            return res.status(403).json({
-              success: false,
-              error:
-                "Unauthorized: You can only modify courses belonging to your department.",
-            });
-          }
-        } else if (
-          targetProgramCode &&
-          targetProgramCode !== "From University Pool"
-        ) {
-          const progCheck = await pool.query(
-            "SELECT department FROM programs WHERE program_code = $1",
-            [targetProgramCode],
-          );
-          if (
-            progCheck.rows.length > 0 &&
-            progCheck.rows[0].department !== req.session.user.department
-          ) {
-            return res.status(403).json({
-              success: false,
-              error:
-                "Unauthorized: You can only modify courses belonging to your department.",
-            });
-          }
-        }
-      }
-
-      await pool.query("DELETE FROM course_syllabus WHERE course_code = $1", [
+router.post(
+  "/reset-course-scheme",
+  verifyPrivilageLogin,
+  rlsCourseMiddleware,
+  async (req, res) => {
+    try {
+      const {
         courseCode,
-      ]);
-      await pool.query(
-        `INSERT INTO course_syllabus (course_code, course_name, course_type, credits_total, credit_scheme, owning_program_code) VALUES ($1, $2, $3, $4, $5, $6)`,
-        [
+        creditScheme,
+        courseName,
+        courseType,
+        creditsTotal,
+        programCode,
+      } = req.body;
+      if (courseCode && creditScheme) {
+        const existing = await pool.query(
+          "SELECT owning_program_code FROM course_syllabus WHERE course_code = $1",
+          [courseCode],
+        );
+        let targetProgramCode = programCode || null;
+        if (existing.rows.length > 0) {
+          targetProgramCode = existing.rows[0].owning_program_code; // Preserve existing ownership for Pool Courses
+        }
+
+        await pool.query("DELETE FROM course_syllabus WHERE course_code = $1", [
           courseCode,
-          courseName || "",
-          courseType || "",
-          parseInt(creditsTotal) || 0,
-          creditScheme,
-          targetProgramCode,
-        ],
-      );
-      res.json({ success: true });
-    } else {
-      res.status(400).json({ success: false, error: "Missing data" });
+        ]);
+        await pool.query(
+          `INSERT INTO course_syllabus (course_code, course_name, course_type, credits_total, credit_scheme, owning_program_code) VALUES ($1, $2, $3, $4, $5, $6)`,
+          [
+            courseCode,
+            courseName || "",
+            courseType || "",
+            parseInt(creditsTotal) || 0,
+            creditScheme,
+            targetProgramCode,
+          ],
+        );
+        res.json({ success: true });
+      } else {
+        res.status(400).json({ success: false, error: "Missing data" });
+      }
+    } catch (err) {
+      console.error("Error overriding scheme:", err);
+      res.status(500).json({ success: false, error: "Internal Server Error" });
     }
-  } catch (err) {
-    console.error("Error overriding scheme:", err);
-    res.status(500).json({ success: false, error: "Internal Server Error" });
-  }
-});
+  },
+);
 
 module.exports = router;

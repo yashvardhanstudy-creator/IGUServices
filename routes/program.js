@@ -34,6 +34,40 @@ const upload = multer({
   },
 });
 
+// Middleware: Row-Level Security for Programs
+const rlsProgramMiddleware = async (req, res, next) => {
+  const { program_code } = req.body;
+  if (!program_code) return next();
+
+  if (
+    req.session.user &&
+    req.session.user.name !== "admin" &&
+    req.session.user.name !== "dev"
+  ) {
+    try {
+      const checkRes = await pool.query(
+        "SELECT department FROM programs WHERE program_code = $1",
+        [program_code],
+      );
+      if (
+        checkRes.rows.length > 0 &&
+        checkRes.rows[0].department !== req.session.user.department
+      ) {
+        const errorMsg =
+          "Unauthorized: You can only modify programs/curricula belonging to your department.";
+        if (req.path === "/save-curriculum-draft") {
+          return res.status(403).json({ success: false, error: errorMsg });
+        }
+        return res.status(403).send(errorMsg);
+      }
+    } catch (err) {
+      console.error("RLS Middleware Error:", err);
+      return res.status(500).send("Error checking authorization.");
+    }
+  }
+  next();
+};
+
 router.get("/api/program/:programCode", verifyLogin, async (req, res) => {
   try {
     const programCode = req.params.programCode;
@@ -93,6 +127,7 @@ router.post(
       next();
     });
   },
+  rlsProgramMiddleware,
   async (req, res) => {
     try {
       const {
@@ -117,28 +152,6 @@ router.post(
         scheme_framework,
         scheme_name_override,
       } = req.body;
-
-      // Row-Level Security Check
-      if (
-        req.session.user &&
-        req.session.user.name !== "admin" &&
-        req.session.user.name !== "dev"
-      ) {
-        const checkRes = await pool.query(
-          "SELECT department FROM programs WHERE program_code = $1",
-          [program_code],
-        );
-        if (
-          checkRes.rows.length > 0 &&
-          checkRes.rows[0].department !== req.session.user.department
-        ) {
-          return res
-            .status(403)
-            .send(
-              "Unauthorized: You can only modify programs belonging to your department.",
-            );
-        }
-      }
 
       let approval_pdf = req.body.existing_approval_pdf || "";
       if (req.file) {
@@ -272,55 +285,38 @@ router.get("/programs-list", verifyPrivilageLogin, async (req, res) => {
   }
 });
 
-router.post("/delete-program", verifyPrivilageLogin, async (req, res) => {
-  try {
-    const { program_code } = req.body;
-    if (program_code) {
-      // Row-Level Security Check
-      if (
-        req.session.user &&
-        req.session.user.name !== "admin" &&
-        req.session.user.name !== "dev"
-      ) {
-        const checkRes = await pool.query(
-          "SELECT department FROM programs WHERE program_code = $1",
+router.post(
+  "/delete-program",
+  verifyPrivilageLogin,
+  rlsProgramMiddleware,
+  async (req, res) => {
+    try {
+      const { program_code } = req.body;
+      if (program_code) {
+        await pool.query("DELETE FROM programs WHERE program_code = $1", [
+          program_code,
+        ]);
+        // Also delete the associated _CORE program and drafts if they exist
+        const coreProgramCode = program_code + "_CORE";
+        await pool.query("DELETE FROM programs WHERE program_code = $1", [
+          coreProgramCode,
+        ]);
+        await pool.query(
+          "DELETE FROM curriculum_drafts WHERE program_code = $1",
           [program_code],
         );
-        if (
-          checkRes.rows.length > 0 &&
-          checkRes.rows[0].department !== req.session.user.department
-        ) {
-          return res
-            .status(403)
-            .send(
-              "Unauthorized: You can only delete programs belonging to your department.",
-            );
-        }
+        await pool.query(
+          "DELETE FROM curriculum_drafts WHERE program_code = $1",
+          [coreProgramCode],
+        );
       }
-
-      await pool.query("DELETE FROM programs WHERE program_code = $1", [
-        program_code,
-      ]);
-      // Also delete the associated _CORE program and drafts if they exist
-      const coreProgramCode = program_code + "_CORE";
-      await pool.query("DELETE FROM programs WHERE program_code = $1", [
-        coreProgramCode,
-      ]);
-      await pool.query(
-        "DELETE FROM curriculum_drafts WHERE program_code = $1",
-        [program_code],
-      );
-      await pool.query(
-        "DELETE FROM curriculum_drafts WHERE program_code = $1",
-        [coreProgramCode],
-      );
+      res.redirect("/programs-list?message=Program deleted successfully!");
+    } catch (error) {
+      console.error("❌ Error deleting program:", error);
+      res.status(500).send("Error deleting program.");
     }
-    res.redirect("/programs-list?message=Program deleted successfully!");
-  } catch (error) {
-    console.error("❌ Error deleting program:", error);
-    res.status(500).send("Error deleting program.");
-  }
-});
+  },
+);
 
 router.get("/curriculum", verifyPrivilageLogin, async (req, res) => {
   try {
@@ -366,7 +362,9 @@ router.get("/curriculum", verifyPrivilageLogin, async (req, res) => {
         sem.courses.forEach((c) => {
           // Generic handling for all elective types that need choices
           if (
-            (c.type.startsWith("DEC") || c.type.startsWith("DSE")) &&
+            (c.type.startsWith("DEC") ||
+              c.type.startsWith("DSE") ||
+              c.type.startsWith("PC")) &&
             !c.type.startsWith("DSEC")
           ) {
             for (let i = 1; i <= 6; i++) {
@@ -450,6 +448,7 @@ router.get("/curriculum", verifyPrivilageLogin, async (req, res) => {
 router.post(
   "/save-curriculum-draft",
   verifyPrivilageLogin,
+  rlsProgramMiddleware,
   async (req, res) => {
     try {
       const { program_code, draft_data } = req.body;
@@ -458,91 +457,26 @@ router.post(
           .status(400)
           .json({ success: false, error: "Missing program code" });
 
-      // Row-Level Security Check
-      if (
-        req.session.user &&
-        req.session.user.name !== "admin" &&
-        req.session.user.name !== "dev"
-      ) {
-        const checkRes = await pool.query(
-          "SELECT department FROM programs WHERE program_code = $1",
-          [program_code],
-        );
-        if (
-          checkRes.rows.length > 0 &&
-          checkRes.rows[0].department !== req.session.user.department
-        ) {
-          return res.status(403).json({
-            success: false,
-            error:
-              "Unauthorized: You can only modify curricula for your department.",
-          });
-        }
-      }
-
       await pool.query(insertCurriculumDraftQuery, [
         program_code,
         JSON.stringify(draft_data),
       ]);
 
+      // Phase 1: Deduplicate and aggregate all courses that need processing
+      const coursesToUpsert = new Map();
       for (const [key, item] of Object.entries(draft_data)) {
         if (item && item.slot_type && item.choices) {
-          // Process Elective Choices
           for (const choice of item.choices) {
-            if (choice.code && choice.nom) {
-              const existingCourse = await pool.query(
-                "SELECT course_code, course_name, credit_scheme, nep_mapping FROM course_syllabus WHERE course_code = $1",
-                [choice.code],
-              );
-              if (existingCourse.rows.length === 0) {
-                await pool.query(
-                  `INSERT INTO course_syllabus (course_code, course_name, course_type, credits_total, credit_scheme, owning_program_code) VALUES ($1, $2, $3, $4, $5, $6)`,
-                  [
-                    choice.code,
-                    choice.nom,
-                    choice.type, // This is the base type, e.g. DEC-1
-                    parseInt(item.credits) || 0,
-                    item.credit_scheme || "",
-                    program_code,
-                  ],
-                );
-              } else {
-                const dbCourse = existingCourse.rows[0];
-                if (
-                  item.credit_scheme &&
-                  (item.credit_scheme !== dbCourse.credit_scheme ||
-                    !dbCourse.credit_scheme)
-                ) {
-                  await pool.query(
-                    "UPDATE course_syllabus SET credit_scheme = $1 WHERE course_code = $2",
-                    [item.credit_scheme, choice.code],
-                  );
-                }
-                if (choice.nom && choice.nom !== dbCourse.course_name) {
-                  await pool.query(
-                    "UPDATE course_syllabus SET course_name = $1 WHERE course_code = $2",
-                    [choice.nom, choice.code],
-                  );
-                }
-
-                let nep = dbCourse.nep_mapping;
-                if (typeof nep === "string") {
-                  try {
-                    nep = JSON.parse(nep);
-                  } catch (e) {
-                    nep = {};
-                  }
-                }
-                nep = nep || {};
-
-                if (item.lt_split && nep.lt_split !== item.lt_split) {
-                  nep.lt_split = item.lt_split;
-                  await pool.query(
-                    "UPDATE course_syllabus SET nep_mapping = $1 WHERE course_code = $2",
-                    [JSON.stringify(nep), choice.code],
-                  );
-                }
-              }
+            const isMooc = /\bmoocs?\b/i.test(choice.nom || "");
+            if (!isMooc && choice.code && choice.nom) {
+              coursesToUpsert.set(choice.code, {
+                code: choice.code,
+                nom: choice.nom,
+                type: choice.type,
+                credits: parseInt(item.credits) || 0,
+                credit_scheme: item.credit_scheme || "",
+                lt_split: item.lt_split || "0",
+              });
             }
           }
         } else if (
@@ -552,66 +486,78 @@ router.post(
           item.type &&
           !item.is_custom_row
         ) {
-          // Normal course processing
-          const existingCourse = await pool.query(
-            "SELECT course_code, course_name, credit_scheme, nep_mapping FROM course_syllabus WHERE course_code = $1",
-            [item.code],
-          );
-          if (existingCourse.rows.length === 0) {
-            await pool.query(
-              `INSERT INTO course_syllabus (course_code, course_name, course_type, credits_total, credit_scheme, owning_program_code) VALUES ($1, $2, $3, $4, $5, $6)`,
-              [
-                item.code,
-                item.nom,
-                item.type,
-                parseInt(item.credits) || 0,
-                item.credit_scheme || "",
-                program_code,
-              ],
-            );
-          } else {
-            const dbCourse = existingCourse.rows[0];
-            // If the draft has a scheme, and it's different from the one in the DB,
-            // or if the DB has no scheme, update it.
-            if (
-              item.credit_scheme &&
-              (item.credit_scheme !== dbCourse.credit_scheme ||
-                !dbCourse.credit_scheme)
-            ) {
-              await pool.query(
-                "UPDATE course_syllabus SET credit_scheme = $1 WHERE course_code = $2",
-                [item.credit_scheme, item.code],
-              );
-            }
-
-            // If the nomenclature (course_name) was changed, update it
-            if (item.nom && item.nom !== dbCourse.course_name) {
-              await pool.query(
-                "UPDATE course_syllabus SET course_name = $1 WHERE course_code = $2",
-                [item.nom, item.code],
-              );
-            }
-
-            let nep = dbCourse.nep_mapping;
-            if (typeof nep === "string") {
-              try {
-                nep = JSON.parse(nep);
-              } catch (e) {
-                nep = {};
-              }
-            }
-            nep = nep || {};
-
-            if (item.lt_split && nep.lt_split !== item.lt_split) {
-              nep.lt_split = item.lt_split;
-              await pool.query(
-                "UPDATE course_syllabus SET nep_mapping = $1 WHERE course_code = $2",
-                [JSON.stringify(nep), item.code],
-              );
-            }
+          const isMooc = /\bmoocs?\b/i.test(item.nom || "");
+          if (!isMooc) {
+            coursesToUpsert.set(item.code, {
+              code: item.code,
+              nom: item.nom,
+              type: item.type,
+              credits: parseInt(item.credits) || 0,
+              credit_scheme: item.credit_scheme || "",
+              lt_split: item.lt_split || "0",
+            });
           }
         }
       }
+
+      // Phase 2: Process all unique courses concurrently
+      const upsertPromises = Array.from(coursesToUpsert.values()).map(
+        async (c) => {
+          const existingCourse = await pool.query(
+            "SELECT course_code, course_name, credit_scheme, nep_mapping FROM course_syllabus WHERE course_code = $1",
+            [c.code],
+          );
+
+          if (existingCourse.rows.length === 0) {
+            await pool.query(
+              `INSERT INTO course_syllabus (course_code, course_name, course_type, credits_total, credit_scheme, owning_program_code) VALUES ($1, $2, $3, $4, $5, $6)`,
+              [c.code, c.nom, c.type, c.credits, c.credit_scheme, program_code],
+            );
+          } else {
+            const dbCourse = existingCourse.rows[0];
+            const updateQueries = [];
+
+            if (
+              c.credit_scheme &&
+              (c.credit_scheme !== dbCourse.credit_scheme ||
+                !dbCourse.credit_scheme)
+            ) {
+              updateQueries.push(
+                pool.query(
+                  "UPDATE course_syllabus SET credit_scheme = $1 WHERE course_code = $2",
+                  [c.credit_scheme, c.code],
+                ),
+              );
+            }
+            if (c.nom && c.nom !== dbCourse.course_name) {
+              updateQueries.push(
+                pool.query(
+                  "UPDATE course_syllabus SET course_name = $1 WHERE course_code = $2",
+                  [c.nom, c.code],
+                ),
+              );
+            }
+
+            let nep =
+              typeof dbCourse.nep_mapping === "string"
+                ? JSON.parse(dbCourse.nep_mapping)
+                : dbCourse.nep_mapping || {};
+            if (c.lt_split && nep.lt_split !== c.lt_split) {
+              nep.lt_split = c.lt_split;
+              updateQueries.push(
+                pool.query(
+                  "UPDATE course_syllabus SET nep_mapping = $1 WHERE course_code = $2",
+                  [JSON.stringify(nep), c.code],
+                ),
+              );
+            }
+
+            if (updateQueries.length > 0) await Promise.all(updateQueries);
+          }
+        },
+      );
+
+      await Promise.all(upsertPromises);
 
       const progRes = await pool.query(
         "SELECT * FROM programs WHERE program_code = $1",

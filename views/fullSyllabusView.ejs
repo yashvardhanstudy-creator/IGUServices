@@ -370,12 +370,20 @@
                                         </td>
                                         <% if (!course.isLinkedElective && choices.length > 0) { %>
                                             <td class="center" style="vertical-align: middle;">
-                                                <a href="#course-<%= choices[0].course_code %>"><b><%= choices[0].course_code %></b></a>
+                                                <% if (choices[0].is_mooc) { %>
+                                                    <b><%= choices[0].course_code %></b>
+                                                <% } else { %>
+                                                    <a href="#course-<%= choices[0].course_code %>"><b><%= choices[0].course_code %></b></a>
+                                                <% } %>
                                             </td>
                                             <td <%- choices[0].is_missing ? 'style="color: red;"' : '' %>>
-                                                <%= choices[0].course_name=='Unassigned Slot' ? ' ' : choices[0].course_name %>
-                                                <% if (choices[0].is_db_course && (!choices[0].owning_program_code || choices[0].owning_program_code === 'From University Pool')) { %>
-                                                    <div style="font-size: 0.85em; font-style: italic; margin-top: 3px; color: #555;">(University Pool)</div>
+                                                <% if (choices[0].is_mooc) { %>
+                                                    <a href="https://swayam.gov.in/" target="_blank" style="color: #0056b3; text-decoration: underline;"><%= choices[0].course_name %></a>
+                                                <% } else { %>
+                                                    <%= choices[0].course_name=='Unassigned Slot' ? ' ' : choices[0].course_name %>
+                                                    <% if (choices[0].is_db_course && (!choices[0].owning_program_code || choices[0].owning_program_code === 'From University Pool')) { %>
+                                                        <div style="font-size: 0.85em; font-style: italic; margin-top: 3px; color: #555;">(University Pool)</div>
+                                                    <% } %>
                                                 <% } %>
                                             </td>
                                         <% } else { %>
@@ -432,7 +440,7 @@
                                         <td class="center" style="vertical-align: middle;" rowspan="<%= rowSpanCount %>"><%= (course.is_missing && !course.credit_scheme) ? ' ' : (course.exam_duration || '-') %></td>
                                     <% } else { %>
                                         <td class="center" style="vertical-align: middle;">
-                                            <% if (!course.is_db_course) { %>
+                                            <% if (!course.is_db_course || course.is_mooc) { %>
                                                 <%= course.curriculum_display_type || course.course_type || 'N/A' %>
                                             <% } else { %>
                                                 <a href="#course-<%= course.course_code %>"><%= course.curriculum_display_type || course.course_type || 'N/A' %></a>
@@ -441,10 +449,14 @@
                                         </td>
                                         <td><%= course.course_code %></td>
                                         <td <%- course.is_missing ? 'style="color: red;"' : '' %>>
-                                            <%= course.course_name=='Unassigned Slot' ? ' ' : course.course_name %>
-                                            <% if (!course.is_missing && course.is_db_course && (!course.owning_program_code || course.owning_program_code === 'From University Pool')) { %>
-                                                    <div style="font-size: 0.85em; font-style: italic; margin-top: 3px; color: #555;">(University Pool)</div>
+                                            <% if (course.is_mooc) { %>
+                                                <a href="https://swayam.gov.in/" target="_blank" style="color: #0056b3; text-decoration: underline;"><%= course.course_name %></a>
+                                            <% } else { %>
+                                                <%= course.course_name=='Unassigned Slot' ? ' ' : course.course_name %>
+                                                <% if (!course.is_missing && course.is_db_course && (!course.owning_program_code || course.owning_program_code === 'From University Pool')) { %>
+                                                        <div style="font-size: 0.85em; font-style: italic; margin-top: 3px; color: #555;">(University Pool)</div>
                                                 <% } %>
+                                            <% } %>
                                             </td>
                                         <td class="center" style="vertical-align: middle;">
                                             <% 
@@ -494,11 +506,21 @@
                                 <% if (isElectiveWithChoices && choices.length > 1) { %>
                                     <% for (let i = 1; i < choices.length; i++) { %>
                                         <tr>
-                                            <td class="center"><a href="#course-<%= choices[i].course_code %>"><b><%= choices[i].course_code %></b></a></td>
+                                            <td class="center">
+                                                <% if (choices[i].is_mooc) { %>
+                                                    <b><%= choices[i].course_code %></b>
+                                                <% } else { %>
+                                                    <a href="#course-<%= choices[i].course_code %>"><b><%= choices[i].course_code %></b></a>
+                                                <% } %>
+                                            </td>
                                             <td <%- choices[i].is_missing ? 'style="color: red;"' : '' %>>
-                                                <%= choices[i].course_name=='Unassigned Slot' ? ' ' : choices[i].course_name %>
-                                                <% if (choices[i].is_db_course && (!choices[i].owning_program_code || choices[i].owning_program_code === 'From University Pool')) { %>
-                                                    <div style="font-size: 0.85em; font-style: italic; margin-top: 3px; color: #555;">(University Pool)</div>
+                                                <% if (choices[i].is_mooc) { %>
+                                                    <a href="https://swayam.gov.in/" target="_blank" style="color: #0056b3; text-decoration: underline;"><%= choices[i].course_name %></a>
+                                                <% } else { %>
+                                                    <%= choices[i].course_name=='Unassigned Slot' ? ' ' : choices[i].course_name %>
+                                                    <% if (choices[i].is_db_course && (!choices[i].owning_program_code || choices[i].owning_program_code === 'From University Pool')) { %>
+                                                        <div style="font-size: 0.85em; font-style: italic; margin-top: 3px; color: #555;">(University Pool)</div>
+                                                    <% } %>
                                                 <% } %>
                                             </td>
                                         </tr>
@@ -560,7 +582,11 @@
                                         <td class="center" style="vertical-align: middle;"><%= course.course_type || 'N/A' %></td>
                                         <td><%= course.course_code %></td>
                                         <td <%- course.is_missing ? 'style="color: red;"' : '' %>>
-                                            <%= course.course_name=='Unassigned Slot' ? ' ' : course.course_name %>
+                                            <% if (course.is_mooc) { %>
+                                                <a href="https://swayam.gov.in/" target="_blank" style="color: #0056b3; text-decoration: underline;"><%= course.course_name %></a>
+                                            <% } else { %>
+                                                <%= course.course_name=='Unassigned Slot' ? ' ' : course.course_name %>
+                                            <% } %>
                                         </td>
                                         <td class="center" style="vertical-align: middle;">
                                             <% if (course.is_custom_row) { %><%= course.tp %><% } else if ((!course.is_db_course || course.is_missing) && !course.credit_scheme) { %> <% } else {

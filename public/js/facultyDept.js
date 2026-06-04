@@ -12,7 +12,7 @@ const facultyDeptMap = {
   "Life Sciences": [
     "Biotechnology",
     "Botany",
-    "Environmental Studies",
+    "Environmental Science",
     "Zoology",
   ],
   "Pharmaceutical Sciences": ["Pharmaceutical Sciences"],

@@ -728,8 +728,8 @@ const schemeQ = [
     totalCredits: 26,
     courses: [
       { type: "CC-13", credits: 4 },
+      { type: "DEC-4", credits: 4 },
       { type: "DEC-5", credits: 4 },
-      { type: "DEC-6", credits: 4 },
       { type: "PROJECT WORK/DISSERTATION", credits: 12 },
       { type: "EEC", credits: 2 },
     ],

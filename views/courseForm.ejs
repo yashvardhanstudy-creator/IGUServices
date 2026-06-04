@@ -103,7 +103,7 @@
 <div class="guide-box">
     <h3>📝 Welcome to the Course Editor! Here is how it works:</h3>
     <ul style="margin: 0; padding-left: 20px; line-height: 1.5; font-size: 14px;">
-        <li style="margin-bottom: 8px;"><strong>Course Category:</strong> You are currently editing a <b><%= isPool ? 'University Pool' : (isCommon ? 'Common PG' : 'Program-Specific') %></b> course. <%= isPool ? 'Pool courses allow you to set custom PO/PSO mapping.' : (isCommon ? 'This is a fixed common course.' : 'For this course, the number of POs/PSOs is strictly locked by the Curriculum Framework.') %></li>
+        <li style="margin-bottom: 8px;"><strong>Course Category:</strong> You are currently editing a <b><%= isPool ? 'Pool' : (isCommon ? 'Common PG' : 'Program-Specific') %></b> course. <%= isPool ? 'Pool courses allow you to set custom PO/PSO mapping.' : (isCommon ? 'This is a fixed common course.' : 'For this course, the number of POs/PSOs is strictly locked by the Curriculum Framework.') %></li>
         <li style="margin-bottom: 8px;"><strong>Credit Scheme Automation:</strong> Selecting a Credit Scheme below will automatically fill out all your Credits, Marks, Contact Hours, and Examination Durations. It will also generate the required Syllabus Units for you!</li>
         <li style="margin-bottom: 8px;"><strong>Contact Hours:</strong> When filling out your Syllabus Units in Part B, ensure your "Unit Contact Hours" perfectly sum up to the target hours. Look for the counter at the bottom of the Units table (it turns red if it doesn't match).</li>
         <li style="margin-bottom: 8px;"><strong>CLO(s) & PO/PSO Mapping:</strong> Type your Course Learning Outcomes (CLOs) one per line in Part A. The mapping table at the very bottom of this form will <b>automatically update</b> to match them!</li>
@@ -418,49 +418,65 @@
         </ul>
         </p>
         <table>
+            <colgroup>
+                <col style="width: 25%;">
+                <col style="width: 60%;">
+                <col style="width: 15%;">
+            </colgroup>
             <tr class="section-title">
                 <td>Field</td>
                 <td>Content/s</td>
+                <td>Hours Devoted</td>
             </tr>
             <tr>
                 <td class="header-cell">Employability</td>
                 <td><textarea name="nep_employability" rows="2"></textarea></td>
+                <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_employability_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
             <tr>
                 <td class="header-cell">Entrepreneurship</td>
                 <td><textarea name="nep_entrepreneurship" rows="2"></textarea></td>
+                <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_entrepreneurship_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
             <tr>
                 <td class="header-cell">Skill Enhancement</td>
                 <td><textarea name="nep_skill_enhancement" rows="2"></textarea></td>
+                <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_skill_enhancement_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
             <tr>
                 <td class="header-cell">Communication Development</td>
                 <td><textarea name="nep_communication_development" rows="2"></textarea></td>
+                <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_communication_development_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
             <tr>
                 <td class="header-cell">Indian Knowledge System</td>
                 <td><textarea name="nep_indian_knowledge_system" rows="2"></textarea></td>
+                <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_indian_knowledge_system_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
             <tr>
                 <td class="header-cell">Environmental Awareness</td>
                 <td><textarea name="nep_environmental_awareness" rows="2"></textarea></td>
+                <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_environmental_awareness_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
             <tr>
                 <td class="header-cell">Current Issues and Social Awareness</td>
                 <td><textarea name="nep_current_issues" rows="2"></textarea></td>
+                <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_current_issues_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
             <tr>
                 <td class="header-cell">Gender Issues</td>
                 <td><textarea name="nep_women_empowerment" rows="2"></textarea></td>
+                <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_women_empowerment_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
             <tr>
                 <td class="header-cell">Public policies</td>
                 <td><textarea name="nep_public_policies" rows="2"></textarea></td>
+                <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_public_policies_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
             <tr>
                 <td class="header-cell">Any Other</td>
                 <td><textarea name="nep_any_other" rows="2"></textarea></td>
+                <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_any_other_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
         </table>
     </div>
@@ -696,15 +712,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (course.nep_mapping) {
         setTa("nep_employability", course.nep_mapping.employability);
+        setVal("nep_employability_hours", course.nep_mapping.employability_hours);
         setTa("nep_entrepreneurship", course.nep_mapping.entrepreneurship);
+        setVal("nep_entrepreneurship_hours", course.nep_mapping.entrepreneurship_hours);
         setTa("nep_skill_enhancement", course.nep_mapping.skill_enhancement);
+        setVal("nep_skill_enhancement_hours", course.nep_mapping.skill_enhancement_hours);
         setTa("nep_communication_development", course.nep_mapping.communication_development);
+        setVal("nep_communication_development_hours", course.nep_mapping.communication_development_hours);
         setTa("nep_indian_knowledge_system", course.nep_mapping.indian_knowledge_system);
+        setVal("nep_indian_knowledge_system_hours", course.nep_mapping.indian_knowledge_system_hours);
         setTa("nep_environmental_awareness", course.nep_mapping.environmental_awareness);
+        setVal("nep_environmental_awareness_hours", course.nep_mapping.environmental_awareness_hours);
         setTa("nep_current_issues", course.nep_mapping.current_issues);
+        setVal("nep_current_issues_hours", course.nep_mapping.current_issues_hours);
         setTa("nep_women_empowerment", course.nep_mapping.women_empowerment);
+        setVal("nep_women_empowerment_hours", course.nep_mapping.women_empowerment_hours);
         setTa("nep_public_policies", course.nep_mapping.public_policies);
+        setVal("nep_public_policies_hours", course.nep_mapping.public_policies_hours);
         setTa("nep_any_other", course.nep_mapping.any_other);
+        setVal("nep_any_other_hours", course.nep_mapping.any_other_hours);
         const notesEditor = document.getElementById("important_notes_editor");
         if (notesEditor) {
             notesEditor.innerHTML = course.nep_mapping.important_notes || "";
