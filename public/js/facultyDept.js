@@ -22,6 +22,7 @@ const facultyDeptMap = {
     "Defence Studies",
     "History",
     "Social Work",
+    "Economics",
   ],
   "Sports Science": ["Yoga"],
   Education: ["Education", "Physical Education"],
