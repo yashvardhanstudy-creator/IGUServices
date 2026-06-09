@@ -269,3 +269,99 @@ PDF Generation Error: TimeoutError: Navigation timeout of 30000 ms exceeded
     at CdpFrame.setContent (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\cdp\Frame.js:235:29)
     at async CdpPage.setContent (C:\IGUServices\node_modules\puppeteer-core\lib\cjs\puppeteer\api\Page.js:582:13)
     at async C:\IGUServices\routes\syllabus.js:220:9
+🔥 Global Error Caught: PayloadTooLargeError: request entity too large
+    at readStream (C:\IGUServices\node_modules\raw-body\index.js:163:17)
+    at getRawBody (C:\IGUServices\node_modules\raw-body\index.js:116:12)
+    at read (C:\IGUServices\node_modules\body-parser\lib\read.js:79:3)
+    at urlencodedParser (C:\IGUServices\node_modules\body-parser\lib\types\urlencoded.js:116:5)
+    at Layer.handle [as handle_request] (C:\IGUServices\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\IGUServices\node_modules\express\lib\router\index.js:328:13)
+    at C:\IGUServices\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (C:\IGUServices\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\IGUServices\node_modules\express\lib\router\index.js:280:10)
+    at serveStatic (C:\IGUServices\node_modules\serve-static\index.js:75:16)
+🔥 Global Error Caught: PayloadTooLargeError: request entity too large
+    at readStream (C:\IGUServices\node_modules\raw-body\index.js:163:17)
+    at getRawBody (C:\IGUServices\node_modules\raw-body\index.js:116:12)
+    at read (C:\IGUServices\node_modules\body-parser\lib\read.js:79:3)
+    at urlencodedParser (C:\IGUServices\node_modules\body-parser\lib\types\urlencoded.js:116:5)
+    at Layer.handle [as handle_request] (C:\IGUServices\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\IGUServices\node_modules\express\lib\router\index.js:328:13)
+    at C:\IGUServices\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (C:\IGUServices\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\IGUServices\node_modules\express\lib\router\index.js:280:10)
+    at serveStatic (C:\IGUServices\node_modules\serve-static\index.js:75:16)
+🔥 Global Error Caught: PayloadTooLargeError: request entity too large
+    at readStream (C:\IGUServices\node_modules\raw-body\index.js:163:17)
+    at getRawBody (C:\IGUServices\node_modules\raw-body\index.js:116:12)
+    at read (C:\IGUServices\node_modules\body-parser\lib\read.js:79:3)
+    at urlencodedParser (C:\IGUServices\node_modules\body-parser\lib\types\urlencoded.js:116:5)
+    at Layer.handle [as handle_request] (C:\IGUServices\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\IGUServices\node_modules\express\lib\router\index.js:328:13)
+    at C:\IGUServices\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (C:\IGUServices\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\IGUServices\node_modules\express\lib\router\index.js:280:10)
+    at serveStatic (C:\IGUServices\node_modules\serve-static\index.js:75:16)
+🔥 Global Error Caught: PayloadTooLargeError: request entity too large
+    at readStream (C:\IGUServices\node_modules\raw-body\index.js:163:17)
+    at getRawBody (C:\IGUServices\node_modules\raw-body\index.js:116:12)
+    at read (C:\IGUServices\node_modules\body-parser\lib\read.js:79:3)
+    at urlencodedParser (C:\IGUServices\node_modules\body-parser\lib\types\urlencoded.js:116:5)
+    at Layer.handle [as handle_request] (C:\IGUServices\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\IGUServices\node_modules\express\lib\router\index.js:328:13)
+    at C:\IGUServices\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (C:\IGUServices\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\IGUServices\node_modules\express\lib\router\index.js:280:10)
+    at serveStatic (C:\IGUServices\node_modules\serve-static\index.js:75:16)
+🔥 Global Error Caught: PayloadTooLargeError: request entity too large
+    at readStream (C:\IGUServices\node_modules\raw-body\index.js:163:17)
+    at getRawBody (C:\IGUServices\node_modules\raw-body\index.js:116:12)
+    at read (C:\IGUServices\node_modules\body-parser\lib\read.js:79:3)
+    at urlencodedParser (C:\IGUServices\node_modules\body-parser\lib\types\urlencoded.js:116:5)
+    at Layer.handle [as handle_request] (C:\IGUServices\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\IGUServices\node_modules\express\lib\router\index.js:328:13)
+    at C:\IGUServices\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (C:\IGUServices\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\IGUServices\node_modules\express\lib\router\index.js:280:10)
+    at serveStatic (C:\IGUServices\node_modules\serve-static\index.js:75:16)
+🔥 Global Error Caught: PayloadTooLargeError: request entity too large
+    at readStream (C:\IGUServices\node_modules\raw-body\index.js:163:17)
+    at getRawBody (C:\IGUServices\node_modules\raw-body\index.js:116:12)
+    at read (C:\IGUServices\node_modules\body-parser\lib\read.js:79:3)
+    at urlencodedParser (C:\IGUServices\node_modules\body-parser\lib\types\urlencoded.js:116:5)
+    at Layer.handle [as handle_request] (C:\IGUServices\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\IGUServices\node_modules\express\lib\router\index.js:328:13)
+    at C:\IGUServices\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (C:\IGUServices\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\IGUServices\node_modules\express\lib\router\index.js:280:10)
+    at serveStatic (C:\IGUServices\node_modules\serve-static\index.js:75:16)
+🔥 Global Error Caught: PayloadTooLargeError: request entity too large
+    at readStream (C:\IGUServices\node_modules\raw-body\index.js:163:17)
+    at getRawBody (C:\IGUServices\node_modules\raw-body\index.js:116:12)
+    at read (C:\IGUServices\node_modules\body-parser\lib\read.js:79:3)
+    at urlencodedParser (C:\IGUServices\node_modules\body-parser\lib\types\urlencoded.js:116:5)
+    at Layer.handle [as handle_request] (C:\IGUServices\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\IGUServices\node_modules\express\lib\router\index.js:328:13)
+    at C:\IGUServices\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (C:\IGUServices\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\IGUServices\node_modules\express\lib\router\index.js:280:10)
+    at serveStatic (C:\IGUServices\node_modules\serve-static\index.js:75:16)
+🔥 Global Error Caught: PayloadTooLargeError: request entity too large
+    at readStream (C:\IGUServices\node_modules\raw-body\index.js:163:17)
+    at getRawBody (C:\IGUServices\node_modules\raw-body\index.js:116:12)
+    at read (C:\IGUServices\node_modules\body-parser\lib\read.js:79:3)
+    at urlencodedParser (C:\IGUServices\node_modules\body-parser\lib\types\urlencoded.js:116:5)
+    at Layer.handle [as handle_request] (C:\IGUServices\node_modules\express\lib\router\layer.js:95:5)
+    at trim_prefix (C:\IGUServices\node_modules\express\lib\router\index.js:328:13)
+    at C:\IGUServices\node_modules\express\lib\router\index.js:286:9
+    at router.process_params (C:\IGUServices\node_modules\express\lib\router\index.js:346:12)
+    at next (C:\IGUServices\node_modules\express\lib\router\index.js:280:10)
+    at serveStatic (C:\IGUServices\node_modules\serve-static\index.js:75:16)
+❌ Error generating template: Error: Failed to launch the browser process!
+
+
+TROUBLESHOOTING: https://pptr.dev/troubleshooting
+
+    at ChildProcess.onClose (C:\IGUServices\node_modules\@puppeteer\browsers\lib\cjs\launch.js:310:24)
+    at ChildProcess.emit (node:events:520:22)
+    at ChildProcess._handle.onexit (node:internal/child_process:293:12)

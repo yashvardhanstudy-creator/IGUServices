@@ -976,3 +976,777 @@
 👤 User session found: { name: 'admin', role: 'admin', department: null }
 👤 User session found: { name: 'admin', role: 'admin', department: null }
 ✅ User logged out successfully.
+🚀 Server running on http://0.0.0.0:3005
+✅ Table 'programs' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+✅ Table 'auth' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Connected to PostgreSQL database IGUServices
+📥 Received Login Request: { username: ' admin' }
+❌ Invalid credentials for user:  admin
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'computer' }
+✅ Login successful for user: computer
+👤 User session found: {
+  name: 'computer',
+  role: 'admin',
+  department: 'Computer Science & Engineering'
+}
+👤 User session found: {
+  name: 'computer',
+  role: 'admin',
+  department: 'Computer Science & Engineering'
+}
+👤 User session found: {
+  name: 'computer',
+  role: 'admin',
+  department: 'Computer Science & Engineering'
+}
+👤 User session found: {
+  name: 'computer',
+  role: 'admin',
+  department: 'Computer Science & Engineering'
+}
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'edmin' }
+❌ Invalid credentials for user: edmin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: ' admin' }
+❌ Invalid credentials for user:  admin
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'Admin' }
+❌ Invalid credentials for user: Admin
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: ' admin' }
+❌ Invalid credentials for user:  admin
+📥 Received Login Request: { username: ' admin' }
+❌ Invalid credentials for user:  admin
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'programs' ensured to exist.
+✅ Table 'auth' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'auth' ensured to exist.
+✅ Table 'programs' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'programs' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+✅ Table 'auth' ensured to exist.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'auth' ensured to exist.
+✅ Table 'programs' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'auth' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Table 'programs' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+🚀 Server running on http://0.0.0.0:3005
+✅ Connected to PostgreSQL database IGUServices
+✅ Table 'programs' ensured to exist.
+✅ Table 'auth' ensured to exist.
+✅ Table 'course_syllabus' ensured to exist.
+✅ Table 'curriculum_drafts' ensured to exist.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Bty123' }
+✅ Registration successful for user: Bty123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'Bty123' }
+❌ Invalid credentials for user: Bty123
+📥 Received Login Request: { username: 'Bty123' }
+❌ Invalid credentials for user: Bty123
+📥 Received Login Request: { username: 'bty123' }
+❌ Invalid credentials for user: bty123
+📥 Received Login Request: { username: 'Bty123' }
+✅ Login successful for user: Bty123
+👤 User session found: { name: 'Bty123', role: 'admin', department: 'Biotechnology' }
+👤 User session found: { name: 'Bty123', role: 'admin', department: 'Biotechnology' }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Bot123' }
+✅ Registration successful for user: Bot123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'Bot123' }
+✅ Login successful for user: Bot123
+👤 User session found: { name: 'Bot123', role: 'admin', department: 'Botany' }
+📥 Received Edit Password Request: { username: 'Bot123' }
+✅ Password updated successfully for user: Bot123
+👤 User session found: { name: 'Bot123', role: 'admin', department: 'Botany' }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Chem123' }
+✅ Registration successful for user: Chem123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Com123' }
+✅ Registration successful for user: Com123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Cse123' }
+✅ Registration successful for user: Cse123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Eng123' }
+✅ Registration successful for user: Eng123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Evs123' }
+✅ Registration successful for user: Evs123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Geo123' }
+✅ Registration successful for user: Geo123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Hnd123' }
+✅ Registration successful for user: Hnd123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'His123' }
+✅ Registration successful for user: His123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Htm123' }
+✅ Registration successful for user: Htm123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Jmc123' }
+✅ Registration successful for user: Jmc123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Llb123' }
+✅ Registration successful for user: Llb123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Man123' }
+✅ Registration successful for user: Man123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Mat123' }
+✅ Registration successful for user: Mat123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Pms123' }
+✅ Registration successful for user: Pms123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Dfs123' }
+✅ Registration successful for user: Dfs123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Edu123' }
+✅ Registration successful for user: Edu123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Ped123' }
+✅ Registration successful for user: Ped123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Phy123' }
+✅ Registration successful for user: Phy123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Pols123' }
+✅ Registration successful for user: Pols123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Psy123' }
+✅ Registration successful for user: Psy123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Scw123' }
+✅ Registration successful for user: Scw123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Yog123' }
+✅ Registration successful for user: Yog123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Registration Request: { username: 'Zoo123' }
+✅ Registration successful for user: Zoo123
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Edit Password Request: { username: 'admin' }
+✅ Password updated successfully for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+✅ User logged out successfully.
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin ' }
+❌ Invalid credentials for user: admin 
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+✅ Login successful for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+👤 User session found: { name: 'admin', role: 'admin', department: null }
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
+📥 Received Login Request: { username: 'admin' }
+❌ Invalid credentials for user: admin
