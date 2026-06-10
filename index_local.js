@@ -5,7 +5,7 @@ const path = require("path");
 const pgSession = require("connect-pg-simple")(session);
 const pool = require("./config/database");
 
-const PORT = process.env.PORT_REAL || 3005;
+const PORT = process.env.PORT_LOCAL || 3000;
 const app = express();
 
 // Middleware: Serve static files and parse incoming request bodies

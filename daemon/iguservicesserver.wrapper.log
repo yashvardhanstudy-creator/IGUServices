@@ -780,3 +780,111 @@ Stacktrace:   at System.Runtime.InteropServices.Marshal.ThrowExceptionForHRInter
 2026-06-03 11:42:36 - Finished iguservicesserver.exe
 2026-06-03 11:42:37 - Starting C:\nvm4w\nodejs\node.exe  --max-old-space-size=4096 --optimize_for_size C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\index.js --scriptoptions= --log "IGUServices Server wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
 2026-06-03 11:42:37 - Started 1664
+2026-06-09 10:59:21 - Stopping iguservicesserver.exe
+2026-06-09 10:59:21 - ProcessKill 1664
+2026-06-09 10:59:21 - Shutdown exception
+Message:Class not registered
+
+Stacktrace:   at System.Runtime.InteropServices.Marshal.ThrowExceptionForHRInternal(Int32 errorCode, IntPtr errorInfo)
+   at System.Management.ManagementScope.InitializeGuts(Object o)
+   at System.Management.ManagementScope.Initialize()
+   at System.Management.ManagementObjectSearcher.Initialize()
+   at System.Management.ManagementObjectSearcher.Get()
+   at winsw.WrapperService.GetChildPids(Int32 pid)
+   at winsw.WrapperService.StopProcessAndChildren(Int32 pid)
+   at winsw.WrapperService.StopIt()
+   at winsw.WrapperService.OnShutdown()
+2026-06-09 11:00:03 - Starting C:\nvm4w\nodejs\node.exe  --max-old-space-size=4096 --optimize_for_size C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\index.js --scriptoptions= --log "IGUServices Server wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-06-09 11:00:03 - Started 8964
+2026-06-09 13:31:21 - Stopping iguservicesserver.exe
+2026-06-09 13:31:21 - ProcessKill 8964
+2026-06-09 13:31:21 - Found child process: 9312 Name: conhost.exe
+2026-06-09 13:31:21 - Found child process: 10132 Name: node.exe
+2026-06-09 13:31:21 - Stopping process 9312
+2026-06-09 13:31:21 - Send SIGINT 9312
+2026-06-09 13:31:21 - SIGINT to 9312 failed - Killing as fallback
+2026-06-09 13:31:21 - Stopping process 10132
+2026-06-09 13:31:21 - Send SIGINT 10132
+2026-06-09 13:31:21 - SIGINT to 10132 failed - Killing as fallback
+2026-06-09 13:31:21 - Stopping process 8964
+2026-06-09 13:31:21 - Send SIGINT 8964
+2026-06-09 13:31:21 - SIGINT to 8964 failed - Killing as fallback
+2026-06-09 13:31:21 - Finished iguservicesserver.exe
+2026-06-09 13:31:22 - Starting C:\nvm4w\nodejs\node.exe  --max-old-space-size=4096 --optimize_for_size C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\index.js --scriptoptions= --log "IGUServices Server wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-06-09 13:31:22 - Started 7320
+2026-06-10 15:04:09 - Stopping iguservicesserver.exe
+2026-06-10 15:04:09 - ProcessKill 7320
+2026-06-10 15:04:09 - Found child process: 17564 Name: conhost.exe
+2026-06-10 15:04:09 - Found child process: 1168 Name: node.exe
+2026-06-10 15:04:09 - Stopping process 17564
+2026-06-10 15:04:09 - Send SIGINT 17564
+2026-06-10 15:04:09 - SIGINT to 17564 failed - Killing as fallback
+2026-06-10 15:04:09 - Found child process: 1336 Name: chrome.exe
+2026-06-10 15:04:09 - Found child process: 19308 Name: chrome.exe
+2026-06-10 15:04:09 - Found child process: 6092 Name: chrome.exe
+2026-06-10 15:04:09 - Found child process: 24520 Name: chrome.exe
+2026-06-10 15:04:09 - Found child process: 20360 Name: chrome.exe
+2026-06-10 15:04:09 - Found child process: 24248 Name: chrome.exe
+2026-06-10 15:04:09 - Found child process: 23392 Name: chrome.exe
+2026-06-10 15:04:09 - Stopping process 19308
+2026-06-10 15:04:09 - Send SIGINT 19308
+2026-06-10 15:04:09 - SIGINT to 19308 failed - Killing as fallback
+2026-06-10 15:04:09 - Stopping process 6092
+2026-06-10 15:04:09 - Send SIGINT 6092
+2026-06-10 15:04:09 - SIGINT to 6092 failed - Killing as fallback
+2026-06-10 15:04:10 - Stopping process 24520
+2026-06-10 15:04:10 - Send SIGINT 24520
+2026-06-10 15:04:10 - SIGINT to 24520 failed - Killing as fallback
+2026-06-10 15:04:10 - Stopping process 20360
+2026-06-10 15:04:10 - Send SIGINT 20360
+2026-06-10 15:04:10 - SIGINT to 20360 failed - Killing as fallback
+2026-06-10 15:04:10 - Stopping process 24248
+2026-06-10 15:04:10 - Send SIGINT 24248
+2026-06-10 15:04:10 - SIGINT to 24248 failed - Killing as fallback
+2026-06-10 15:04:10 - Stopping process 23392
+2026-06-10 15:04:10 - Send SIGINT 23392
+2026-06-10 15:04:10 - SIGINT to 23392 failed - Killing as fallback
+2026-06-10 15:04:10 - Stopping process 1336
+2026-06-10 15:04:10 - Send SIGINT 1336
+2026-06-10 15:04:10 - SIGINT to 1336 failed - Killing as fallback
+2026-06-10 15:04:10 - Stopping process 1168
+2026-06-10 15:04:10 - Send SIGINT 1168
+2026-06-10 15:04:10 - SIGINT to 1168 failed - Killing as fallback
+2026-06-10 15:04:10 - Stopping process 7320
+2026-06-10 15:04:10 - Send SIGINT 7320
+2026-06-10 15:04:10 - SIGINT to 7320 failed - Killing as fallback
+2026-06-10 15:04:10 - Finished iguservicesserver.exe
+2026-06-10 15:04:10 - Starting C:\nvm4w\nodejs\node.exe  --max-old-space-size=4096 --optimize_for_size C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\index.js --scriptoptions= --log "IGUServices Server wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-06-10 15:04:10 - Started 18468
+2026-06-10 15:05:35 - Stopping iguservicesserver.exe
+2026-06-10 15:05:35 - ProcessKill 18468
+2026-06-10 15:05:35 - Found child process: 18860 Name: conhost.exe
+2026-06-10 15:05:35 - Found child process: 19784 Name: node.exe
+2026-06-10 15:05:35 - Stopping process 18860
+2026-06-10 15:05:35 - Send SIGINT 18860
+2026-06-10 15:05:35 - SIGINT to 18860 failed - Killing as fallback
+2026-06-10 15:05:35 - Stopping process 19784
+2026-06-10 15:05:35 - Send SIGINT 19784
+2026-06-10 15:05:35 - SIGINT to 19784 failed - Killing as fallback
+2026-06-10 15:05:35 - Stopping process 18468
+2026-06-10 15:05:35 - Send SIGINT 18468
+2026-06-10 15:05:35 - SIGINT to 18468 failed - Killing as fallback
+2026-06-10 15:05:35 - Finished iguservicesserver.exe
+2026-06-10 15:05:36 - Starting C:\nvm4w\nodejs\node.exe  --max-old-space-size=4096 --optimize_for_size C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\index.js --scriptoptions= --log "IGUServices Server wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-06-10 15:05:36 - Started 15544
+2026-06-10 15:06:41 - Stopping iguservicesserver.exe
+2026-06-10 15:06:41 - ProcessKill 15544
+2026-06-10 15:06:41 - Found child process: 23948 Name: conhost.exe
+2026-06-10 15:06:41 - Found child process: 5972 Name: node.exe
+2026-06-10 15:06:41 - Stopping process 23948
+2026-06-10 15:06:41 - Send SIGINT 23948
+2026-06-10 15:06:41 - SIGINT to 23948 failed - Killing as fallback
+2026-06-10 15:06:41 - Stopping process 5972
+2026-06-10 15:06:41 - Send SIGINT 5972
+2026-06-10 15:06:41 - SIGINT to 5972 failed - Killing as fallback
+2026-06-10 15:06:41 - Stopping process 15544
+2026-06-10 15:06:41 - Send SIGINT 15544
+2026-06-10 15:06:41 - SIGINT to 15544 failed - Killing as fallback
+2026-06-10 15:06:41 - Finished iguservicesserver.exe
+2026-06-10 15:06:42 - Starting C:\nvm4w\nodejs\node.exe  --max-old-space-size=4096 --optimize_for_size C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\index.js --scriptoptions= --log "IGUServices Server wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-06-10 15:06:42 - Started 20012

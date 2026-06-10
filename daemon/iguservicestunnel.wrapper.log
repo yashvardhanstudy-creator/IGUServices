@@ -136,3 +136,19 @@ Stacktrace:   at System.Runtime.InteropServices.Marshal.ThrowExceptionForHRInter
 2026-05-27 10:59:28 - Finished iguservicestunnel.exe
 2026-05-27 10:59:29 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
 2026-05-27 10:59:29 - Started 14852
+2026-06-09 10:59:21 - Stopping iguservicestunnel.exe
+2026-06-09 10:59:21 - ProcessKill 14852
+2026-06-09 10:59:21 - Shutdown exception
+Message:Class not registered
+
+Stacktrace:   at System.Runtime.InteropServices.Marshal.ThrowExceptionForHRInternal(Int32 errorCode, IntPtr errorInfo)
+   at System.Management.ManagementScope.InitializeGuts(Object o)
+   at System.Management.ManagementScope.Initialize()
+   at System.Management.ManagementObjectSearcher.Initialize()
+   at System.Management.ManagementObjectSearcher.Get()
+   at winsw.WrapperService.GetChildPids(Int32 pid)
+   at winsw.WrapperService.StopProcessAndChildren(Int32 pid)
+   at winsw.WrapperService.StopIt()
+   at winsw.WrapperService.OnShutdown()
+2026-06-09 11:00:03 - Starting C:\nvm4w\nodejs\node.exe  --harmony C:\IGUServices\node_modules\node-windows\lib\wrapper.js --file C:\IGUServices\tunnel.js --scriptoptions= --log "IGUServices Tunnel wrapper" --grow 0.25 --wait 5 --maxrestarts 5 --abortonerror n --stopparentfirst undefined --maxretries 10
+2026-06-09 11:00:03 - Started 8720

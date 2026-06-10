@@ -365,3 +365,144 @@ TROUBLESHOOTING: https://pptr.dev/troubleshooting
     at ChildProcess.onClose (C:\IGUServices\node_modules\@puppeteer\browsers\lib\cjs\launch.js:310:24)
     at ChildProcess.emit (node:events:520:22)
     at ChildProcess._handle.onexit (node:internal/child_process:293:12)
+⚠️ Puppeteer browser disconnected or crashed. Restarting on next request...
+Error creating user table: error: the database system is starting up
+    at parseErrorMessage (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:305:11)
+    at Parser.handlePacket (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:143:27)
+    at Parser.parse (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:37:38)
+    at Socket.<anonymous> (C:\IGUServices\node_modules\pg-protocol\dist\index.js:11:42)
+    at Socket.emit (node:events:508:20)
+    at addChunk (node:internal/streams/readable:564:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:515:3)
+    at Readable.push (node:internal/streams/readable:395:5)
+    at TCP.onStreamRead (node:internal/stream_base_commons:189:23) {
+  length: 105,
+  severity: 'FATAL',
+  code: '57P03',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'backend_startup.c',
+  line: '309',
+  routine: 'BackendInitialize'
+}
+Database connection failed: error: the database system is starting up
+    at parseErrorMessage (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:305:11)
+    at Parser.handlePacket (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:143:27)
+    at Parser.parse (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:37:38)
+    at Socket.<anonymous> (C:\IGUServices\node_modules\pg-protocol\dist\index.js:11:42)
+    at Socket.emit (node:events:508:20)
+    at addChunk (node:internal/streams/readable:564:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:515:3)
+    at Readable.push (node:internal/streams/readable:395:5)
+    at TCP.onStreamRead (node:internal/stream_base_commons:189:23) {
+  length: 105,
+  severity: 'FATAL',
+  code: '57P03',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'backend_startup.c',
+  line: '309',
+  routine: 'BackendInitialize'
+}
+Error creating programs table: error: the database system is starting up
+    at parseErrorMessage (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:305:11)
+    at Parser.handlePacket (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:143:27)
+    at Parser.parse (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:37:38)
+    at Socket.<anonymous> (C:\IGUServices\node_modules\pg-protocol\dist\index.js:11:42)
+    at Socket.emit (node:events:508:20)
+    at addChunk (node:internal/streams/readable:564:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:515:3)
+    at Readable.push (node:internal/streams/readable:395:5)
+    at TCP.onStreamRead (node:internal/stream_base_commons:189:23) {
+  length: 105,
+  severity: 'FATAL',
+  code: '57P03',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'backend_startup.c',
+  line: '309',
+  routine: 'BackendInitialize'
+}
+Error creating course table: error: the database system is starting up
+    at parseErrorMessage (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:305:11)
+    at Parser.handlePacket (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:143:27)
+    at Parser.parse (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:37:38)
+    at Socket.<anonymous> (C:\IGUServices\node_modules\pg-protocol\dist\index.js:11:42)
+    at Socket.emit (node:events:508:20)
+    at addChunk (node:internal/streams/readable:564:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:515:3)
+    at Readable.push (node:internal/streams/readable:395:5)
+    at TCP.onStreamRead (node:internal/stream_base_commons:189:23) {
+  length: 105,
+  severity: 'FATAL',
+  code: '57P03',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'backend_startup.c',
+  line: '309',
+  routine: 'BackendInitialize'
+}
+Error creating curriculum_drafts table: error: the database system is starting up
+    at parseErrorMessage (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:305:11)
+    at Parser.handlePacket (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:143:27)
+    at Parser.parse (C:\IGUServices\node_modules\pg-protocol\dist\parser.js:37:38)
+    at Socket.<anonymous> (C:\IGUServices\node_modules\pg-protocol\dist\index.js:11:42)
+    at Socket.emit (node:events:508:20)
+    at addChunk (node:internal/streams/readable:564:12)
+    at readableAddChunkPushByteMode (node:internal/streams/readable:515:3)
+    at Readable.push (node:internal/streams/readable:395:5)
+    at TCP.onStreamRead (node:internal/stream_base_commons:189:23) {
+  length: 105,
+  severity: 'FATAL',
+  code: '57P03',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'backend_startup.c',
+  line: '309',
+  routine: 'BackendInitialize'
+}

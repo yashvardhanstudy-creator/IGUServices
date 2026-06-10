@@ -560,14 +560,14 @@ async function getFullSyllabusData(program_code) {
           marks_internal_total: isSeminar
             ? "0"
             : isDissertation
-              ? "0"
+              ? "90"
               : isInternship
                 ? ""
                 : draftCell.int || "0",
           marks_endterm_total: isSeminar
             ? "50"
             : isDissertation
-              ? "300"
+              ? "210"
               : isInternship
                 ? ""
                 : draftCell.end || "0",

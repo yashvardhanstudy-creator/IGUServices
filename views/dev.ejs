@@ -2,17 +2,71 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dev</title>
+    <title>Developer Database Access</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f8f9fa; }
+        textarea { width: 100%; height: 150px; font-family: monospace; padding: 10px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 20px; font-weight: bold; cursor: pointer; margin-top: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; }
+        button:hover { background-color: #0056b3; }
+        pre { background: #fff; padding: 15px; border: 1px solid #ddd; overflow-x: auto; border-radius: 4px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background: #343a40; color: white; }
+        .error { color: #dc3545; font-weight: bold; }
+    </style>
 </head>
 <body>
-    <form action="./dev" method="post">
+    <h2>Developer Database Access</h2>
+    <p>Execute SQL queries directly against the PostgreSQL database. <strong style="color: #dc3545;">Use with extreme caution!</strong></p>
+    
+    <textarea id="sqlInput" placeholder="Enter your SQL query here... (e.g., SELECT * FROM auth;)"></textarea>
+    <br>
+    <button onclick="executeQuery()">Execute Query</button>
+    <a href="/" style="margin-left: 15px; text-decoration: none; color: #6c757d; font-weight: bold;">Back to Home</a>
 
-        <label for="">sql</label>
-        <input type="text" id="sqlInput" name="sql" placeholder="Enter SQL query here">
-        
-        <div id="output"><%= locals.message || " " %></div>
-        <button type="submit">Execute</button>
-    </form>
+    <h3 style="margin-top: 30px;">Results:</h3>
+    <div id="resultsContainer">
+        <pre id="jsonOutput">No results yet.</pre>
+    </div>
+
+    <script>
+        async function executeQuery() {
+            const sql = document.getElementById('sqlInput').value.trim();
+            const resultsContainer = document.getElementById('resultsContainer');
+            if (!sql) return alert('Please enter a SQL query.');
+
+            resultsContainer.innerHTML = '<pre>Executing...</pre>';
+
+            try {
+                const response = await fetch('/dev', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sql })
+                });
+
+                if (!response.ok) {
+                    const errText = await response.text();
+                    resultsContainer.innerHTML = `<pre class="error">${errText}</pre>`;
+                    return;
+                }
+
+                const data = await response.json();
+                
+                if (data.rows && data.rows.length > 0) {
+                    const cols = Object.keys(data.rows[0]);
+                    let tableHTML = '<table><thead><tr>' + cols.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>';
+                    tableHTML += data.rows.map(row => '<tr>' + cols.map(c => `<td>${typeof row[c] === 'object' && row[c] !== null ? JSON.stringify(row[c]) : (row[c] !== null && row[c] !== undefined ? row[c] : '<em>null</em>')}</td>`).join('') + '</tr>').join('');
+                    tableHTML += `</tbody></table><br><p style="color: #28a745;"><strong>Command:</strong> ${data.command} | <strong>Row Count:</strong> ${data.rowCount}</p>`;
+                    resultsContainer.innerHTML = tableHTML;
+                } else if (data.command) {
+                    resultsContainer.innerHTML = `<pre style="color: #28a745;">Query executed successfully.\nCommand: ${data.command}\nRow Count: ${data.rowCount}</pre>`;
+                } else {
+                    resultsContainer.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                }
+            } catch (err) {
+                resultsContainer.innerHTML = `<pre class="error">Network/Parsing Error: ${err.message}</pre>`;
+            }
+        }
+    </script>
 </body>
 </html>
