@@ -690,6 +690,19 @@ router.post("/courses", verifyLogin, rlsCourseMiddleware, async (req, res) => {
         .filter((c) => c !== "");
     }
 
+    const customNepTitles = normalizeArray(
+      courseData.nep_custom_title || courseData["nep_custom_title[]"],
+    );
+    const customNepHours = normalizeArray(
+      courseData.nep_custom_hours || courseData["nep_custom_hours[]"],
+    );
+    const customNepRows = customNepTitles
+      .map((title, index) => ({
+        title: title.trim(),
+        hours: customNepHours[index] || "",
+      }))
+      .filter((row) => row.title !== "");
+
     const nepMapping = {
       employability: courseData.nep_employability || "",
       employability_hours: courseData.nep_employability_hours || "",
@@ -712,8 +725,7 @@ router.post("/courses", verifyLogin, rlsCourseMiddleware, async (req, res) => {
       women_empowerment_hours: courseData.nep_women_empowerment_hours || "",
       public_policies: courseData.nep_public_policies || "",
       public_policies_hours: courseData.nep_public_policies_hours || "",
-      any_other: courseData.nep_any_other || "",
-      any_other_hours: courseData.nep_any_other_hours || "",
+      custom_rows: customNepRows,
       course_semester: courseData.semester || "",
       important_notes: xss(courseData.important_notes || ""),
       lt_split: courseData.lt_split || "0",

@@ -419,66 +419,64 @@
         </p>
         <table>
             <colgroup>
-                <col style="width: 25%;">
-                <col style="width: 60%;">
-                <col style="width: 15%;">
+                <col style="width: 50%;">
+                <col style="width: 50%;">
+                <col style="width: 0%;">
             </colgroup>
             <tr class="section-title">
                 <td>Field</td>
-                <td>Content/s</td>
+                <td style="display: none;">Content/s</td>
                 <td>Hours Devoted</td>
             </tr>
             <tr>
                 <td class="header-cell">Employability</td>
-                <td><textarea name="nep_employability" rows="2"></textarea></td>
+                <td style="display: none;"><textarea name="nep_employability" rows="2"></textarea></td>
                 <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_employability_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
             <tr>
                 <td class="header-cell">Entrepreneurship</td>
-                <td><textarea name="nep_entrepreneurship" rows="2"></textarea></td>
+                <td style="display: none;"><textarea name="nep_entrepreneurship" rows="2"></textarea></td>
                 <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_entrepreneurship_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
             <tr>
                 <td class="header-cell">Skill Enhancement</td>
-                <td><textarea name="nep_skill_enhancement" rows="2"></textarea></td>
+                <td style="display: none;"><textarea name="nep_skill_enhancement" rows="2"></textarea></td>
                 <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_skill_enhancement_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
             <tr>
                 <td class="header-cell">Communication Development</td>
-                <td><textarea name="nep_communication_development" rows="2"></textarea></td>
+                <td style="display: none;"><textarea name="nep_communication_development" rows="2"></textarea></td>
                 <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_communication_development_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
             <tr>
                 <td class="header-cell">Indian Knowledge System</td>
-                <td><textarea name="nep_indian_knowledge_system" rows="2"></textarea></td>
+                <td style="display: none;"><textarea name="nep_indian_knowledge_system" rows="2"></textarea></td>
                 <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_indian_knowledge_system_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
             <tr>
                 <td class="header-cell">Environmental Awareness</td>
-                <td><textarea name="nep_environmental_awareness" rows="2"></textarea></td>
+                <td style="display: none;"><textarea name="nep_environmental_awareness" rows="2"></textarea></td>
                 <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_environmental_awareness_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
             <tr>
                 <td class="header-cell">Current Issues and Social Awareness</td>
-                <td><textarea name="nep_current_issues" rows="2"></textarea></td>
+                <td style="display: none;"><textarea name="nep_current_issues" rows="2"></textarea></td>
                 <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_current_issues_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
             <tr>
                 <td class="header-cell">Gender Issues</td>
-                <td><textarea name="nep_women_empowerment" rows="2"></textarea></td>
+                <td style="display: none;"><textarea name="nep_women_empowerment" rows="2"></textarea></td>
                 <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_women_empowerment_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
             <tr>
                 <td class="header-cell">Public policies</td>
-                <td><textarea name="nep_public_policies" rows="2"></textarea></td>
+                <td style="display: none;"><textarea name="nep_public_policies" rows="2"></textarea></td>
                 <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_public_policies_hours" min="0" style="width: 80px; text-align: center;"></td>
             </tr>
-            <tr>
-                <td class="header-cell">Any Other</td>
-                <td><textarea name="nep_any_other" rows="2"></textarea></td>
-                <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_any_other_hours" min="0" style="width: 80px; text-align: center;"></td>
-            </tr>
+            <tbody id="customNepContainer">
+            </tbody>
         </table>
+        <button type="button" onclick="addCustomNepRow()" style="margin-top: 10px; padding: 5px 15px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 14px;">+ Add Custom Field</button>
     </div>
 
     <div class="form-section">
@@ -729,8 +727,12 @@ document.addEventListener("DOMContentLoaded", () => {
         setVal("nep_women_empowerment_hours", course.nep_mapping.women_empowerment_hours);
         setTa("nep_public_policies", course.nep_mapping.public_policies);
         setVal("nep_public_policies_hours", course.nep_mapping.public_policies_hours);
-        setTa("nep_any_other", course.nep_mapping.any_other);
-        setVal("nep_any_other_hours", course.nep_mapping.any_other_hours);
+        if (course.nep_mapping.any_other_hours && course.nep_mapping.any_other_hours !== "0" && course.nep_mapping.any_other_hours !== "") {
+            addCustomNepRow("Any Other", course.nep_mapping.any_other_hours);
+        }
+        if (course.nep_mapping.custom_rows && Array.isArray(course.nep_mapping.custom_rows)) {
+            course.nep_mapping.custom_rows.forEach(row => addCustomNepRow(row.title, row.hours));
+        }
         const notesEditor = document.getElementById("important_notes_editor");
         if (notesEditor) {
             notesEditor.innerHTML = course.nep_mapping.important_notes || "";
@@ -925,6 +927,23 @@ document.addEventListener("DOMContentLoaded", () => {
             addCLOInput();
         <% } %>
     });
+
+    function addCustomNepRow(title = '', hours = '') {
+        const container = document.getElementById('customNepContainer');
+        const tr = document.createElement('tr');
+        const safeTitle = title.replace(/"/g, '&quot;');
+        tr.innerHTML = `
+            <td class="header-cell" style="padding-right: 15px;">
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="text" name="nep_custom_title[]" value="${safeTitle}" placeholder="Enter Field Title" required style="flex: 1;">
+                    <button type="button" onclick="this.closest('tr').remove()" style="padding: 4px 8px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;" title="Remove Row">X</button>
+                </div>
+            </td>
+            <td style="display: none;"></td>
+            <td style="vertical-align: middle; text-align: center;"><input type="number" name="nep_custom_hours[]" value="${hours}" min="0" style="width: 80px; text-align: center;"></td>
+        `;
+        container.appendChild(tr);
+    }
 </script>
 </body>
 </html>
