@@ -297,7 +297,17 @@
 
 <% 
     const nep = data.nep_mapping || {};
-    const hasNep = nep.employability || nep.entrepreneurship || nep.skill_enhancement || nep.communication_development || nep.indian_knowledge_system || nep.environmental_awareness || nep.current_issues || nep.women_empowerment || nep.public_policies || nep.any_other || (nep.custom_rows && nep.custom_rows.length > 0);
+    const hasNep = (nep.employability_hours && nep.employability_hours !== '0') || 
+                   (nep.entrepreneurship_hours && nep.entrepreneurship_hours !== '0') || 
+                   (nep.skill_enhancement_hours && nep.skill_enhancement_hours !== '0') || 
+                   (nep.communication_development_hours && nep.communication_development_hours !== '0') || 
+                   (nep.indian_knowledge_system_hours && nep.indian_knowledge_system_hours !== '0') || 
+                   (nep.environmental_awareness_hours && nep.environmental_awareness_hours !== '0') || 
+                   (nep.current_issues_hours && nep.current_issues_hours !== '0') || 
+                   (nep.women_empowerment_hours && nep.women_empowerment_hours !== '0') || 
+                   (nep.public_policies_hours && nep.public_policies_hours !== '0') || 
+                   (nep.any_other_hours && nep.any_other_hours !== '0') || 
+                   (nep.custom_rows && nep.custom_rows.some(r => r.hours && r.hours !== '0'));
 %>
 <% if (hasNep) { %>
 <table>
@@ -305,24 +315,26 @@
         <col style="width: 50%;">
         <col style="width: 50%;">
         </colgroup>
-    <tr style="page-break-after: avoid;"><td colspan="3" class="section-title">Content Mapping with NEP thrust areas</td></tr>
+    <tr style="page-break-after: avoid;"><td colspan="2" class="section-title">Content Mapping with NEP thrust areas</td></tr>
     <tr class="center bold" style="page-break-after: avoid;">
         <td>Field</td>
         <td>Hours Devoted</td>
     </tr>
-    <% if (nep.employability) { %><tr><td class="header-cell">Employability</td><td class="center" style="vertical-align: middle;"><%= nep.employability_hours || '-' %></td></tr><% } %>
-    <% if (nep.entrepreneurship) { %><tr><td class="header-cell">Entrepreneurship</td><td class="center" style="vertical-align: middle;"><%= nep.entrepreneurship_hours || '-' %></td></tr><% } %>
-    <% if (nep.skill_enhancement) { %><tr><td class="header-cell">Skill Enhancement</td><td class="center" style="vertical-align: middle;"><%= nep.skill_enhancement_hours || '-' %></td></tr><% } %>
-    <% if (nep.communication_development) { %><tr><td class="header-cell">Communication Development</td><td class="center" style="vertical-align: middle;"><%= nep.communication_development_hours || '-' %></td></tr><% } %>
-    <% if (nep.indian_knowledge_system) { %><tr><td class="header-cell">Indian Knowledge System</td><td class="center" style="vertical-align: middle;"><%= nep.indian_knowledge_system_hours || '-' %></td></tr><% } %>
-    <% if (nep.environmental_awareness) { %><tr><td class="header-cell">Environmental Awareness</td><td class="center" style="vertical-align: middle;"><%= nep.environmental_awareness_hours || '-' %></td></tr><% } %>
-    <% if (nep.current_issues) { %><tr><td class="header-cell">Current Issues and Social Awareness</td><td class="center" style="vertical-align: middle;"><%= nep.current_issues_hours || '-' %></td></tr><% } %>
-    <% if (nep.women_empowerment) { %><tr><td class="header-cell">Gender Issues</td><td class="center" style="vertical-align: middle;"><%= nep.women_empowerment_hours || '-' %></td></tr><% } %>
-    <% if (nep.public_policies) { %><tr><td class="header-cell">Public policies</td><td class="center" style="vertical-align: middle;"><%= nep.public_policies_hours || '-' %></td></tr><% } %>
-    <% if (nep.any_other) { %><tr><td class="header-cell">Any Other</td><td class="center" style="vertical-align: middle;"><%= nep.any_other_hours || '-' %></td></tr><% } %>
+    <% if (nep.employability_hours && nep.employability_hours !== '0') { %><tr><td class="header-cell">Employability</td><td class="center" style="vertical-align: middle;"><%= nep.employability_hours %></td></tr><% } %>
+    <% if (nep.entrepreneurship_hours && nep.entrepreneurship_hours !== '0') { %><tr><td class="header-cell">Entrepreneurship</td><td class="center" style="vertical-align: middle;"><%= nep.entrepreneurship_hours %></td></tr><% } %>
+    <% if (nep.skill_enhancement_hours && nep.skill_enhancement_hours !== '0') { %><tr><td class="header-cell">Skill Enhancement</td><td class="center" style="vertical-align: middle;"><%= nep.skill_enhancement_hours %></td></tr><% } %>
+    <% if (nep.communication_development_hours && nep.communication_development_hours !== '0') { %><tr><td class="header-cell">Communication Development</td><td class="center" style="vertical-align: middle;"><%= nep.communication_development_hours %></td></tr><% } %>
+    <% if (nep.indian_knowledge_system_hours && nep.indian_knowledge_system_hours !== '0') { %><tr><td class="header-cell">Indian Knowledge System</td><td class="center" style="vertical-align: middle;"><%= nep.indian_knowledge_system_hours %></td></tr><% } %>
+    <% if (nep.environmental_awareness_hours && nep.environmental_awareness_hours !== '0') { %><tr><td class="header-cell">Environmental Awareness</td><td class="center" style="vertical-align: middle;"><%= nep.environmental_awareness_hours %></td></tr><% } %>
+    <% if (nep.current_issues_hours && nep.current_issues_hours !== '0') { %><tr><td class="header-cell">Current Issues and Social Awareness</td><td class="center" style="vertical-align: middle;"><%= nep.current_issues_hours %></td></tr><% } %>
+    <% if (nep.women_empowerment_hours && nep.women_empowerment_hours !== '0') { %><tr><td class="header-cell">Gender Issues</td><td class="center" style="vertical-align: middle;"><%= nep.women_empowerment_hours %></td></tr><% } %>
+    <% if (nep.public_policies_hours && nep.public_policies_hours !== '0') { %><tr><td class="header-cell">Public policies</td><td class="center" style="vertical-align: middle;"><%= nep.public_policies_hours %></td></tr><% } %>
+    <% if (nep.any_other_hours && nep.any_other_hours !== '0') { %><tr><td class="header-cell">Any Other</td><td class="center" style="vertical-align: middle;"><%= nep.any_other_hours %></td></tr><% } %>
     <% if (nep.custom_rows && nep.custom_rows.length > 0) { %>
         <% nep.custom_rows.forEach(function(row) { %>
-            <tr><td class="header-cell"><%= row.title %></td><td class="center" style="vertical-align: middle;"><%= row.hours || '-' %></td></tr>
+            <% if (row.hours && row.hours !== '0') { %>
+                <tr><td class="header-cell"><%= row.title %></td><td class="center" style="vertical-align: middle;"><%= row.hours %></td></tr>
+            <% } %>
         <% }); %>
     <% } %>
 </table>
