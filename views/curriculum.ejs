@@ -73,9 +73,15 @@ const schemesDataEJS = {
     const electiveGroups = {};
     const linkGroups = {};
     const processedElectiveBases = new Map();
+    
+    const globalSpecGroups = new Map();
+    const globalSpecSems = new Map();
+
     semesters.forEach(sem => {
+        const bases = new Set();
         if (sem.courses) {
             sem.courses.forEach((course, index) => {
+                if (course.specializationEligible) bases.add(course.type.split('.')[0]);
                 if (course.isElective) {
                     const baseElectiveType = course.type.split('.')[0];
                     const exactSemester = String(sem.number);
@@ -98,6 +104,16 @@ const schemesDataEJS = {
                     linkGroups[linkKey].push(`${sem.number}_${index}`);
                 }
             })
+        }
+        
+        const arr = Array.from(bases);
+        if (arr.length > 0) {
+            const master = arr[0];
+            if (!globalSpecGroups.has(master)) {
+                globalSpecGroups.set(master, new Set());
+                globalSpecSems.set(master, String(sem.number).replace(/\D/g, ''));
+            }
+            arr.forEach(b => globalSpecGroups.get(master).add(b));
         }
     })
 %>
@@ -188,8 +204,35 @@ const schemesDataEJS = {
                     </tr>
                 <% } else { %>
                     <% 
-                       const renderedCoursesCount = sem.courses.length;
-                       const rowspanCount = renderedCoursesCount + 1; 
+                       const specBasesForSem = new Set();
+                       sem.courses.forEach(c => {
+                           if (c.specializationEligible) specBasesForSem.add(c.type.split('.')[0]);
+                       });
+                       const specBasesArr = Array.from(specBasesForSem);
+                       const masterSpecType = specBasesArr.length > 0 ? specBasesArr[0] : null;
+                       const specCount = specBasesArr.length;
+                       const isSemSpecFormat = masterSpecType && (draftData[masterSpecType] || {}).format === 'specialization';
+
+                       let combinedSpecTitle = '';
+                       if (isSemSpecFormat && masterSpecType) {
+                           combinedSpecTitle = Array.from(globalSpecGroups.get(masterSpecType)).join(', ') + ' (Semester ' + globalSpecSems.get(masterSpecType) + ')';
+                       }
+
+                       let visibleCoursesCount = 0;
+                       sem.courses.forEach(c => {
+                           if (c.specializationEligible) {
+                               if (isSemSpecFormat) {
+                                   if (c.type.split('.')[0] === masterSpecType && c.electiveOpt === 1) visibleCoursesCount++;
+                               } else {
+                                   visibleCoursesCount++;
+                               }
+                           } else if (c.isElective) {
+                               visibleCoursesCount++;
+                           } else {
+                               visibleCoursesCount++;
+                           }
+                       });
+                       const rowspanCount = visibleCoursesCount + 1; 
                        let isFirstRenderedRow = true;
                     %>
                     <% sem.courses.forEach((course, index) => { %>
@@ -197,6 +240,7 @@ const schemesDataEJS = {
                             <% const baseElectiveType = course.type.split('.')[0]; %>
                             <% const cellKey = sem.number + '_' + index; %>
                             <% const slotDraft = draftData[baseElectiveType] || {}; %>
+                            <% const format = slotDraft.format || 'standard'; %>
                             <% const choices = slotDraft.choices || []; %>
                             <% const choiceIndex = course.electiveOpt - 1; %>
                             <% const choiceDraft = choices[choiceIndex] || {}; %>
@@ -204,6 +248,13 @@ const schemesDataEJS = {
                             <% const isSaved = !!savedCourse; %>
                             <% const summaryDraft = slotDraft; %> 
 
+                            <% 
+                                let skipRow = false;
+                                if (isSemSpecFormat && course.specializationEligible) {
+                                    if (baseElectiveType !== masterSpecType || course.electiveOpt !== 1) skipRow = true;
+                                }
+                            %>
+                            <% if (!skipRow) { %>
                             <tr style="background-color: <%= isSaved ? '#d4edda' : sem.color %>;" data-cell-key="<%= cellKey %>" <%= course.electiveOpt === 1 ? 'class="elective-summary-row"' : '' %>>
                                 <% if (isFirstRenderedRow) { %>
                                     <td rowspan="<%= rowspanCount %>" class="center" style="background-color: <%= sem.color %>;"><strong><%= sem.number %></strong></td>
@@ -211,14 +262,42 @@ const schemesDataEJS = {
                                 <% } %>
                                 
                                 <% if (course.electiveOpt === 1) { %>
-                                    <td rowspan="6"><span style="color: #0056b3; font-weight: bold;" id="type_<%= cellKey %>" data-type="<%= baseElectiveType %>" data-credits="<%= course.credits %>"><%= baseElectiveType %></span><br><span style="font-size:11px; font-style:italic;">(pick any one)</span></td>
+                                    <td rowspan="<%= (isSemSpecFormat && course.specializationEligible) ? 1 : 6 %>">
+                                        <span style="color: #0056b3; font-weight: bold;" id="type_<%= cellKey %>" data-type="<%= baseElectiveType %>" data-credits="<%= course.credits %>">
+                                            <%= (isSemSpecFormat && course.specializationEligible) ? combinedSpecTitle : baseElectiveType %>
+                                        </span><br>
+                                        
+                                        <% if (course.specializationEligible) { %>
+                                            <% if (baseElectiveType === masterSpecType) { %>
+                                                <select id="format_<%= baseElectiveType %>" onchange="toggleFormat('<%= baseElectiveType %>', this.value)" style="margin-top: 5px; font-size: 11px; width: 100%;">
+                                                    <option value="standard" <%= !isSemSpecFormat ? 'selected' : '' %>>Standard Format</option>
+                                                    <option value="specialization" <%= isSemSpecFormat ? 'selected' : '' %>>Specialization Format</option>
+                                                </select>
+                                            <% } else { %>
+                                            <span style="font-size:11px; font-style:italic; display:block; margin-top:5px;" class="standard-note">(pick any one)</span>
+                                            <% } %>
+                                        <% } else { %>
+                                            <span style="font-size:11px; font-style:italic;" class="standard-note">(pick any one)</span>
+                                        <% } %>
+                                    </td>
                                 <% } %>
 
-                                <td><input type="text" id="code_<%= cellKey %>" data-type="<%= course.type %>" data-credits="<%= course.credits %>" placeholder="Code" value="<%= choiceDraft.code || '' %>" style="width: 100%; border: none; background: transparent; text-align: center; outline: 1px solid #ccc;" onchange="checkCourseCode(this, '<%= cellKey %>', '<%= course.credits %>', '<%= sem.number %>', '<%= sem.color %>')"></td>
-                                <td><textarea id="nom_<%= cellKey %>" placeholder="Enter Nomenclature" rows="2" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: transparent; resize: vertical;" oninput="debounceSaveDraft()"><%= savedCourse ? savedCourse.course_name : (choiceDraft.nom || '') %></textarea></td>
+                                <% if (isSemSpecFormat && course.specializationEligible) { %>
+                                    <td colspan="2" style="text-align: center; background-color: #f8f9fa; font-style: italic; color: #555;">
+                                        Student has to choose <%= specCount %> courses from one specialization.<br>
+                                        <a href="#spec_container_<%= masterSpecType %>" style="color: #0056b3; font-weight: bold; text-decoration: underline;">See specialization tables below ↓</a>
+                                        <input type="hidden" id="code_<%= cellKey %>" data-type="<%= course.type %>" data-credits="<%= course.credits %>" value="">
+                                    </td>
+                                <% } else { %>
+                                    <td><input type="text" id="code_<%= cellKey %>" data-type="<%= course.type %>" data-credits="<%= course.credits %>" placeholder="Code" value="<%= choiceDraft.code || '' %>" style="width: 100%; border: none; background: transparent; text-align: center; outline: 1px solid #ccc;" onchange="checkCourseCode(this, '<%= cellKey %>', '<%= course.credits %>', '<%= sem.number %>', '<%= sem.color %>')"></td>
+                                    <td><textarea id="nom_<%= cellKey %>" placeholder="Enter Nomenclature" rows="2" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: transparent; resize: vertical;" oninput="debounceSaveDraft()"><%= savedCourse ? savedCourse.course_name : (choiceDraft.nom || '') %></textarea></td>
+                                <% } %>
                                 
                                 <% if (course.electiveOpt === 1) { %>
-                                    <td class="center" id="td_tp_<%= cellKey %>" style="vertical-align: middle;" rowspan="6">
+                                    <% const rSpan = (isSemSpecFormat && course.specializationEligible) ? 1 : 6; %>
+                                    <% const rowMultiplier = (isSemSpecFormat && course.specializationEligible) ? specCount : 1; %>
+                                    <% const mText = rowMultiplier > 1 ? `<br><span style="font-size:10px;">(x${rowMultiplier})</span>` : ''; %>
+                                    <td class="center" id="td_tp_<%= cellKey %>" style="vertical-align: middle;" rowspan="<%= rSpan %>">
                                         <% const currentScheme = summaryDraft.credit_scheme || (savedCourse && savedCourse.credit_scheme) || ''; %>
                                         <% const displayCredits = course.credits; %>
                                         <select id="scheme_<%= cellKey %>" onchange="handleSchemeChange(this, '<%= cellKey %>')" style="width: 100%; border: 1px solid #ccc; padding: 4px; box-sizing: border-box; background-color: <%= isCoreProgram ? '#e9ecef' : 'transparent' %>;" <%= isCoreProgram ? 'disabled' : '' %>>
@@ -247,22 +326,25 @@ const schemesDataEJS = {
                                             displayDur = schemesDataEJS[currentScheme].dur;
                                         }
                                     %>
-                                    <td class="center" id="td_cred_<%= cellKey %>" style="vertical-align: middle;" rowspan="6"><%= displayCred %></td>
-                                    <td class="center" id="td_hrs_<%= cellKey %>" style="vertical-align: middle;" rowspan="6">
-                                        <% if (currentScheme && schemesDataEJS[currentScheme]) { %>
-                                            <script>
-                                                document.addEventListener('DOMContentLoaded', () => {
-                                                    renderHrsCell('<%= cellKey %>', <%= schemesDataEJS[currentScheme].th %>, <%= schemesDataEJS[currentScheme].pr %>, false, '<%= summaryDraft.lt_split || (savedCourse && savedCourse.nep_mapping ? savedCourse.nep_mapping.lt_split : "0") %>');
-                                                });
-                                            </script>
-                                        <% } %>
+                                    <td class="center" id="td_cred_<%= cellKey %>" style="vertical-align: middle;" rowspan="<%= rSpan %>"><%- displayCred + mText %></td>
+                                    <td class="center" id="td_hrs_<%= cellKey %>" style="vertical-align: middle;" rowspan="<%= rSpan %>">
+                                        <div style="display:inline-block;">
+                                            <% if (currentScheme && schemesDataEJS[currentScheme]) { %>
+                                                <script>
+                                                    document.addEventListener('DOMContentLoaded', () => {
+                                                        renderHrsCell('<%= cellKey %>', <%= schemesDataEJS[currentScheme].th %>, <%= schemesDataEJS[currentScheme].pr %>, false, '<%= summaryDraft.lt_split || (savedCourse && savedCourse.nep_mapping ? savedCourse.nep_mapping.lt_split : "0") %>');
+                                                    });
+                                                </script>
+                                            <% } %>
+                                        </div><%- mText %>
                                     </td>
-                                    <td class="center" id="td_int_<%= cellKey %>" style="vertical-align: middle;" rowspan="6"><%= displayInt %></td>
-                                    <td class="center" id="td_end_<%= cellKey %>" style="vertical-align: middle;" rowspan="6"><%= displayEnd %></td>
-                                    <td class="center" id="td_max_<%= cellKey %>" style="vertical-align: middle;" rowspan="6"><%= displayMax %></td>
-                                    <td class="center" id="td_dur_<%= cellKey %>" style="vertical-align: middle;" rowspan="6"><%= displayDur %></td>
+                                    <td class="center" id="td_int_<%= cellKey %>" style="vertical-align: middle;" rowspan="<%= rSpan %>"><%- displayInt + mText %></td>
+                                    <td class="center" id="td_end_<%= cellKey %>" style="vertical-align: middle;" rowspan="<%= rSpan %>"><%- displayEnd + mText %></td>
+                                    <td class="center" id="td_max_<%= cellKey %>" style="vertical-align: middle;" rowspan="<%= rSpan %>"><%- displayMax + mText %></td>
+                                    <td class="center" id="td_dur_<%= cellKey %>" style="vertical-align: middle;" rowspan="<%= rSpan %>"><%= displayDur %></td>
                                 <% } %>
                             </tr>
+                            <% } %>
                         <% } else { %>
 
                             <% const cellKey = sem.number + '_' + index; %>
@@ -272,7 +354,9 @@ const schemesDataEJS = {
                             <% let isLockedCommonPgCourse = false; %>
                             <% if (locals.programLevel === 'PG' && locals.commonCoursesMap && locals.commonCoursesMap[course.type]) {
                                 const commonData = locals.commonCoursesMap[course.type];
-                                if (course.type === 'EEC' && cellDraft.code && cellDraft.code !== commonData.course_code) {
+                                if (course.type === 'EEC' && String(sem.number) === '4') {
+                                    // Skip defaulting EEC in standard Semester 4 (as it has no Dissertation)
+                                } else if (course.type === 'EEC' && cellDraft.code && cellDraft.code !== commonData.course_code) {
                                     // User has overridden the EEC slot with a custom course, so do not force common data
                                 } else {
                                     isCommonPgCourse = true;
@@ -288,7 +372,7 @@ const schemesDataEJS = {
                                 }
                             } %>
                             <% const isSaved = !!savedCourse; %>
-                            <% const isPoolType1 = /^(MDC|AEC|SEC|VAC)/.test(course.type); %>
+                            <% const isPoolType1 = /^(MDC|AEC|SEC|VAC|OEC)/.test(course.type); %>
                             <% const isExceptionMinor = schemeName && schemeName.includes('Scheme D') && /^(CC-M1|CC-M2|CC-M3)$/.test(course.type); %>
                             <% const isPoolType2 = /^(CC-M|CC-HM)/.test(course.type) && !isExceptionMinor; %>
                             <% const isCustomRow = /^(Internship|Intership)$/i.test(course.type); %>
@@ -306,7 +390,7 @@ const schemesDataEJS = {
                                     <td>
                                         <span style="color: #0056b3; font-weight: bold;" id="type_<%= cellKey %>" data-type="<%= course.type %>"><%= course.type %></span>
                                     </td>
-                                <td colspan="2" class="center" style="font-style: italic; color: #555;">from available pool of <%= (course.type).slice(0, -2)%></td>
+                                <td colspan="2" class="center" style="font-style: italic; color: #555;">from available pool of <%= course.type==="OEC" ? "OEC" : course.type.slice(0, -2) %></td>
                                 <td></td>
                                 <td class="center"><%= course.credits %></td>
                                 <td></td>
@@ -464,9 +548,62 @@ const schemesDataEJS = {
         </tbody>
     </table>
 
+    <div id="specializationsSection" style="margin-top: 40px;">
+        <% 
+        const renderedMasters = new Set();
+        semesters.forEach(sem => {
+            const specBasesForSem = new Set();
+            if(sem.courses) {
+                sem.courses.forEach(c => {
+                    if(c.specializationEligible) specBasesForSem.add(c.type.split('.')[0]);
+                });
+            }
+            const specBasesArr = Array.from(specBasesForSem);
+            if (specBasesArr.length > 0) {
+                const masterSpecType = specBasesArr[0];
+                const slotDraft = draftData[masterSpecType] || {};
+                if (slotDraft.format === 'specialization' && !renderedMasters.has(masterSpecType)) {
+                    renderedMasters.add(masterSpecType);
+                    const baseType = masterSpecType;
+                    const combinedName = Array.from(globalSpecGroups.get(masterSpecType)).join(', ') + ' (Semester ' + globalSpecSems.get(masterSpecType) + ')';
+                const specs = slotDraft.specializations || [];
+        %>
+                <div id="spec_container_<%= baseType %>" class="guide-box" style="border: 2px solid #0056b3; background: #f4f7f6; page-break-inside: avoid;">
+                    <h3 style="color: #0056b3; border-bottom: 2px solid #0056b3;"><%= combinedName %> - Specialization Format Options</h3>
+                    <div id="spec_list_<%= baseType %>" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: flex-start;">
+                        <% for(let s = 0; s < 4; s++) { %>
+                            <% const spec = specs[s] || { spec_name: '', choices: [] }; %>
+                            <% const isVisible = s < specs.length || (specs.length === 0 && s === 0); %>
+                            <div class="spec-block" id="spec_block_<%= baseType %>_<%= s %>" style="display: <%= isVisible ? 'block' : 'none' %>; flex: 1 1 calc(50% - 20px); min-width: 400px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                    <input type="text" class="spec-name" data-base="<%= baseType %>" data-idx="<%= s %>" placeholder="Enter Specialization Name (e.g. Specialization-I)" value="<%= spec.spec_name %>" style="width: 75%; padding: 8px; font-weight: bold; border: 1px solid #ccc; border-radius: 4px;" oninput="debounceSaveDraft()">
+                                    <button type="button" onclick="removeSpec('<%= baseType %>', <%= s %>)" style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer;">Remove</button>
+                                </div>
+                                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                                    <thead><tr style="background: #e9ecef;"><th>Course Code</th><th>Nomenclature</th></tr></thead>
+                                    <tbody>
+                                        <% for(let c = 0; c < 6; c++) { %>
+                                            <% const choice = spec.choices[c] || { code: '', nom: '' }; %>
+                                            <tr>
+                                                <td style="width: 30%; padding: 4px;"><input type="text" class="spec-code" data-base="<%= baseType %>" data-sidx="<%= s %>" data-cidx="<%= c %>" value="<%= choice.code %>" placeholder="Code" style="width:100%; border: 1px solid #ccc; padding: 4px;" onchange="checkSpecCourseCode(this, '<%= baseType %>', <%= s %>, <%= c %>)"></td>
+                                                <td style="padding: 4px;"><input type="text" class="spec-nom" data-base="<%= baseType %>" data-sidx="<%= s %>" data-cidx="<%= c %>" value="<%= choice.nom %>" placeholder="Course Title" style="width:100%; border: 1px solid #ccc; padding: 4px;" oninput="debounceSaveDraft()"></td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } %>
+                    </div>
+                    <button type="button" id="add_spec_btn_<%= baseType %>" onclick="addSpec('<%= baseType %>')" style="margin-top: 15px; padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; display: <%= specs.length >= 4 ? 'none' : 'inline-block' %>;">+ Add Another Specialization (Max 4)</button>
+                </div>
+        <%  }
+            }
+        }); %>
+    </div>
+
     <script>
         const linkGroups = <%- JSON.stringify(linkGroups) %>;
-        const draftData = <%- JSON.stringify(draftData) %>;
+        let draftData = <%- JSON.stringify(draftData) %>;
         const schemesData = {
             "4+0": { cred: 4, th: 4, pr: 0, int: "30+0=30", end: "70+0=70", max: 100, dur: "3 Hours" },
             "0+4": { cred: 4, th: 0, pr: 4, int: "0+30=30", end: "0+70=70", max: 100, dur: "4 Hours" },
@@ -571,6 +708,68 @@ const schemesDataEJS = {
             }
         }
 
+        async function toggleFormat(baseType, newFormat) {
+            // Revert select to old value to prevent accidental partial saves from DOM
+            const select = document.getElementById('format_' + baseType);
+            const oldFormat = newFormat === 'standard' ? 'specialization' : 'standard';
+            select.value = oldFormat;
+
+            // Perform a clean save of the CURRENT visible state
+            await saveDraft();
+
+            // Now safely modify the format in the global draftData object
+            if (!draftData[baseType]) {
+                draftData[baseType] = { slot_type: baseType, choices: [], specializations: [] };
+            }
+            draftData[baseType].format = newFormat;
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const program_code = urlParams.get('program_code');
+            
+            // Send the updated draftData to the server
+            try {
+                await fetch('/save-curriculum-draft', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ program_code, draft_data: draftData })
+                });
+                // Reload to re-render the view with the new format
+                window.location.reload();
+            } catch (err) {
+                console.error("Failed to toggle format", err);
+            }
+        }
+
+        function addSpec(baseType) {
+            const list = document.getElementById('spec_list_' + baseType);
+            const blocks = list.querySelectorAll('.spec-block');
+            let visibleCount = 0;
+            let added = false;
+            blocks.forEach(block => {
+                if (block.style.display !== 'none') {
+                    visibleCount++;
+                } else if (!added) {
+                    block.style.display = 'block';
+                    added = true;
+                    visibleCount++;
+                }
+            });
+            if (visibleCount >= 4) {
+                document.getElementById('add_spec_btn_' + baseType).style.display = 'none';
+            }
+            debounceSaveDraft();
+        }
+
+        function removeSpec(baseType, idx) {
+            if (!confirm('Are you sure you want to remove this specialization? Data inside it will be cleared.')) return;
+            const block = document.getElementById(`spec_block_${baseType}_${idx}`);
+            block.style.display = 'none';
+            block.querySelector('.spec-name').value = '';
+            block.querySelectorAll('.spec-code, .spec-nom').forEach(inp => inp.value = '');
+            document.getElementById('add_spec_btn_' + baseType).style.display = 'inline-block';
+            debounceSaveDraft();
+        }
+
         async function handleSchemeChange(selectEl, cellKey) {
             const newScheme = selectEl.value;
             const dbScheme = selectEl.getAttribute('data-dbscheme');
@@ -583,19 +782,38 @@ const schemesDataEJS = {
                 const typeSpan = document.getElementById('type_' + cellKey);
                 const baseType = typeSpan ? typeSpan.getAttribute('data-type') : '';
                 if (baseType) {
-                    const allCodeInputs = document.querySelectorAll(`input[data-type^="${baseType}."]`);
-                    allCodeInputs.forEach(input => {
-                        if (input.value.trim()) {
-                            const key = input.id.replace('code_', '');
-                            const nomInput = document.getElementById('nom_' + key);
-                            coursesToReset.push({
-                                code: input.value.trim(),
-                                nom: nomInput ? nomInput.value.trim() : '',
-                                type: baseType,
-                                credits: input.getAttribute('data-credits') || "0"
+                    const slotDraft = draftData[baseType] || {};
+                    if (slotDraft.format === 'specialization') {
+                        const specContainer = document.getElementById('spec_container_' + baseType);
+                        if (specContainer) {
+                            const specCodeInputs = specContainer.querySelectorAll('.spec-code');
+                            const specNomInputs = specContainer.querySelectorAll('.spec-nom');
+                            specCodeInputs.forEach((input, idx) => {
+                                if (input.value.trim()) {
+                                    coursesToReset.push({
+                                        code: input.value.trim(),
+                                        nom: specNomInputs[idx] ? specNomInputs[idx].value.trim() : '',
+                                        type: baseType,
+                                        credits: typeSpan.getAttribute('data-credits') || "0"
+                                    });
+                                }
                             });
                         }
-                    });
+                    } else {
+                        const allCodeInputs = document.querySelectorAll(`input[data-type^="${baseType}."]`);
+                        allCodeInputs.forEach(input => {
+                            if (input.value.trim()) {
+                                const key = input.id.replace('code_', '');
+                                const nomInput = document.getElementById('nom_' + key);
+                                coursesToReset.push({
+                                    code: input.value.trim(),
+                                    nom: nomInput ? nomInput.value.trim() : '',
+                                    type: baseType,
+                                    credits: input.getAttribute('data-credits') || "0"
+                                });
+                            }
+                        });
+                    }
                 }
             } else {
                 const cellCodeInput = document.getElementById('code_' + cellKey);
@@ -649,10 +867,29 @@ const schemesDataEJS = {
             debounceSaveDraft();
         }
 
+        async function checkSpecCourseCode(input, baseType, sIdx, cIdx) {
+            const code = input.value.trim();
+            const nomInput = document.querySelector(`.spec-nom[data-base="${baseType}"][data-sidx="${sIdx}"][data-cidx="${cIdx}"]`);
+            if (!code) {
+                nomInput.value = '';
+                debounceSaveDraft();
+                return;
+            }
+            try {
+                const response = await fetch('/api/course/' + encodeURIComponent(code));
+                const data = await response.json();
+                if (data.exists) nomInput.value = data.course.course_name;
+                debounceSaveDraft();
+            } catch(e) {
+                debounceSaveDraft();
+            }
+        }
+
         async function checkCourseCode(input, cellKey, originalCredits, semester, originalColor) {
             const code = input.value.trim();
             const nomInput = document.getElementById('nom_' + cellKey);
             const typeSpan = document.getElementById('type_' + cellKey);
+            const schemeSelect = document.getElementById('scheme_' + cellKey);
             const row = input.closest('tr');
             const courseType = input.getAttribute('data-type') || "";
 
@@ -665,6 +902,12 @@ const schemesDataEJS = {
                     typeSpan.innerHTML = courseType.split('.')[0];
                 }
                 row.style.backgroundColor = originalColor; 
+
+                if (schemeSelect) {
+                    schemeSelect.value = "";
+                    schemeSelect.setAttribute('data-dbscheme', "");
+                    updateSchemeValues(cellKey, "");
+                }
 
                 debounceSaveDraft();
                 syncSlaveRows(cellKey, true); // Clear slave rows
@@ -687,6 +930,12 @@ const schemesDataEJS = {
                         typeSpan.innerHTML = courseType.split('.')[0] + ' ✅';
                     }
                     row.style.backgroundColor = '#d4edda';
+
+                    if (schemeSelect && c.credit_scheme) {
+                        schemeSelect.value = c.credit_scheme;
+                        schemeSelect.setAttribute('data-dbscheme', c.credit_scheme);
+                        updateSchemeValues(cellKey, c.credit_scheme);
+                    }
 
                     debounceSaveDraft();
                     syncSlaveRows(cellKey);
@@ -742,13 +991,18 @@ const schemesDataEJS = {
                     if (isElective) {
                         const baseType = type.split('.')[0];
                         if (!electiveSlots[baseType]) {
+                            const formatSelect = document.getElementById('format_' + baseType);
+                            const currentFormat = formatSelect ? formatSelect.value : "standard";
+                            const existingSlot = draftData[baseType] || {};
                             electiveSlots[baseType] = {
                                 slot_type: baseType,
+                                format: currentFormat,
                                 credit_scheme: "",
                                 lt_split: "0",
                                 credits: "0",
                                 semester: key.split('_')[0],
-                                choices: []
+                                choices: currentFormat === 'specialization' ? (existingSlot.choices || []) : [],
+                                specializations: currentFormat === 'standard' ? (existingSlot.specializations || []) : []
                             };
                         }
 
@@ -775,11 +1029,13 @@ const schemesDataEJS = {
                         const nomInput = row.querySelector('#nom_' + key);
                         const nom = nomInput ? nomInput.value.trim() : "";
 
-                        if (code || nom) {
-                            // Prevent duplicate choices if this elective slot is linked across multiple semesters (e.g. 4, 4A, 4B)
-                            const exists = electiveSlots[baseType].choices.some(c => c.code === code && c.nom === nom);
-                            if (!exists) {
-                                electiveSlots[baseType].choices.push({ code, nom, type: baseType });
+                        if (electiveSlots[baseType].format === 'standard') {
+                            if (code || nom) {
+                                // Prevent duplicate choices if this elective slot is linked across multiple semesters (e.g. 4, 4A, 4B)
+                                const exists = electiveSlots[baseType].choices.some(c => c.code === code && c.nom === nom);
+                                if (!exists) {
+                                    electiveSlots[baseType].choices.push({ code, nom, type: baseType });
+                                }
                             }
                         }
                     } else if (isCustomRow || isSeminarRow || isDissertationRow) {
@@ -818,7 +1074,34 @@ const schemesDataEJS = {
 
             for (const baseType in electiveSlots) {
                 const slot = electiveSlots[baseType];
-                if (slot.credit_scheme || slot.choices.length > 0) {
+                if (slot.format === 'specialization') {
+                    const specContainer = document.getElementById('spec_container_' + baseType);
+                    if (specContainer) {
+                        const blocks = specContainer.querySelectorAll('.spec-block');
+                        blocks.forEach(block => {
+                            if (block.style.display !== 'none') {
+                                const nameInput = block.querySelector('.spec-name').value.trim();
+                                const specObj = { spec_name: nameInput, choices: [] };
+                                
+                                const codeInputs = block.querySelectorAll('.spec-code');
+                                const nomInputs = block.querySelectorAll('.spec-nom');
+                                
+                                codeInputs.forEach((cInput, idx) => {
+                                    const code = cInput.value.trim();
+                                    const nom = nomInputs[idx].value.trim();
+                                    if (code || nom) {
+                                        specObj.choices.push({ code, nom, type: baseType });
+                                    }
+                                });
+                                
+                                if (specObj.spec_name || specObj.choices.length > 0) {
+                                    slot.specializations.push(specObj);
+                                }
+                            }
+                        });
+                    }
+                }
+                if (slot.credit_scheme || slot.choices.length > 0 || slot.specializations.length > 0 || slot.format === 'specialization') {
                     draft_data[baseType] = slot;
                 }
             }
@@ -839,6 +1122,7 @@ const schemesDataEJS = {
                 
                 const result = await response.json();
                 if (result.success) {
+                    draftData = draft_data; // Sync global object with newly saved state
                     const statusLabel = document.getElementById('save-status');
                     statusLabel.style.opacity = '1';
                     setTimeout(() => statusLabel.style.opacity = '0', 2000);

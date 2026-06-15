@@ -367,10 +367,21 @@ router.get("/courses-list", verifyLogin, async (req, res) => {
       const usedCodes = new Set();
       draftsResult.rows.forEach((row) => {
         Object.values(row.draft_data || {}).forEach((item) => {
-          if (item.slot_type && item.choices) {
-            item.choices.forEach((c) => {
-              if (c.code) usedCodes.add(c.code);
-            });
+          if (item.slot_type) {
+            if (item.choices) {
+              item.choices.forEach((c) => {
+                if (c.code) usedCodes.add(c.code);
+              });
+            }
+            if (item.format === "specialization" && item.specializations) {
+              item.specializations.forEach((spec) => {
+                if (spec.choices) {
+                  spec.choices.forEach((c) => {
+                    if (c.code) usedCodes.add(c.code);
+                  });
+                }
+              });
+            }
           } else if (item && item.code) {
             usedCodes.add(item.code);
           }
@@ -408,37 +419,6 @@ router.get("/courses-list", verifyLogin, async (req, res) => {
         ],
       }));
     } else if (program_filter && program_filter !== "all") {
-      const draftResult = await pool.query(
-        "SELECT p.subject_name, p.specialization, c.draft_data FROM curriculum_drafts c JOIN programs p ON c.program_code = p.program_code WHERE c.program_code = $1",
-        [program_filter],
-      );
-      if (draftResult.rows.length > 0) {
-        const row = draftResult.rows[0];
-        const draft = row.draft_data || {};
-        const programLabel = row.subject_name;
-        const codes = new Set();
-        Object.values(draft).forEach((item) => {
-          if (item.slot_type && item.choices) {
-            item.choices.forEach((c) => {
-              if (c.code) codes.add(c.code);
-            });
-          } else if (item && item.code) {
-            codes.add(item.code);
-          }
-        });
-        const codesArray = Array.from(codes);
-        if (codesArray.length > 0) {
-          const coursesResult = await pool.query(
-            "SELECT course_code, course_name AS course_title, course_type AS category, owning_program_code FROM course_syllabus WHERE course_code = ANY($1::text[]) ORDER BY created_at DESC",
-            [codesArray],
-          );
-          courses = coursesResult.rows.map((c) => ({
-            ...c,
-            linked_programs: [programLabel],
-          }));
-        }
-      }
-    } else if (program_filter && program_filter !== "all") {
       const programRes = await pool.query(
         "SELECT * FROM programs WHERE program_code = $1",
         [program_filter],
@@ -469,10 +449,21 @@ router.get("/courses-list", verifyLogin, async (req, res) => {
           });
 
           Object.entries(draft).forEach(([key, value]) => {
-            if (value.slot_type && value.choices) {
-              value.choices.forEach((c) => {
-                if (c.code) codes.add(c.code);
-              });
+            if (value.slot_type) {
+              if (value.choices) {
+                value.choices.forEach((c) => {
+                  if (c.code) codes.add(c.code);
+                });
+              }
+              if (value.format === "specialization" && value.specializations) {
+                value.specializations.forEach((spec) => {
+                  if (spec.choices) {
+                    spec.choices.forEach((c) => {
+                      if (c.code) codes.add(c.code);
+                    });
+                  }
+                });
+              }
             } else if (value && value.code) {
               codes.add(value.code);
               const [semNum, courseIndex] = key.split("_").map(Number);
@@ -484,10 +475,21 @@ router.get("/courses-list", verifyLogin, async (req, res) => {
           });
         } else {
           Object.values(draft).forEach((item) => {
-            if (item.slot_type && item.choices) {
-              item.choices.forEach((c) => {
-                if (c.code) codes.add(c.code);
-              });
+            if (item.slot_type) {
+              if (item.choices) {
+                item.choices.forEach((c) => {
+                  if (c.code) codes.add(c.code);
+                });
+              }
+              if (item.format === "specialization" && item.specializations) {
+                item.specializations.forEach((spec) => {
+                  if (spec.choices) {
+                    spec.choices.forEach((c) => {
+                      if (c.code) codes.add(c.code);
+                    });
+                  }
+                });
+              }
             } else if (item && item.code) {
               codes.add(item.code);
             }
@@ -556,14 +558,28 @@ router.post(
           for (const key in draft) {
             const item = draft[key];
             if (item) {
-              if (
-                item.slot_type &&
-                item.choices &&
-                item.choices.some((c) => c.code === courseCode)
-              ) {
-                linkedPrograms.push(row.subject_name);
-                break;
+              let found = false;
+              if (item.slot_type) {
+                if (
+                  item.choices &&
+                  item.choices.some((c) => c.code === courseCode)
+                )
+                  found = true;
+                if (
+                  !found &&
+                  item.format === "specialization" &&
+                  item.specializations
+                ) {
+                  found = item.specializations.some(
+                    (spec) =>
+                      spec.choices &&
+                      spec.choices.some((c) => c.code === courseCode),
+                  );
+                }
               } else if (item.code === courseCode) {
+                found = true;
+              }
+              if (found) {
                 linkedPrograms.push(row.subject_name);
                 break;
               }

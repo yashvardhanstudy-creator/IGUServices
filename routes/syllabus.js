@@ -414,11 +414,23 @@ async function getFullSyllabusData(program_code) {
   // 4. Collect all required course codes
   const courseCodesToFetch = new Set();
   Object.values(draftData).forEach((cell) => {
-    if (cell.slot_type && cell.choices) {
-      cell.choices.forEach((choice) => {
-        if (choice.code && !/\bmoocs?\b/i.test(choice.nom || ""))
-          courseCodesToFetch.add(choice.code);
-      });
+    if (cell.slot_type) {
+      if (cell.choices) {
+        cell.choices.forEach((choice) => {
+          if (choice.code && !/\bmoocs?\b/i.test(choice.nom || ""))
+            courseCodesToFetch.add(choice.code);
+        });
+      }
+      if (cell.format === "specialization" && cell.specializations) {
+        cell.specializations.forEach((spec) => {
+          if (spec.choices) {
+            spec.choices.forEach((choice) => {
+              if (choice.code && !/\bmoocs?\b/i.test(choice.nom || ""))
+                courseCodesToFetch.add(choice.code);
+            });
+          }
+        });
+      }
     } else if (
       cell &&
       cell.code &&
@@ -449,6 +461,28 @@ async function getFullSyllabusData(program_code) {
   const addedToAllCourses = new Set();
   const electiveCourseGroups = {};
   const processedElectiveBases = new Map(); // Tracks which semester first defined an elective group
+  const specializationTables = [];
+  const processedSpecTables = new Set();
+
+  const globalSpecGroups = new Map();
+  const globalSpecSems = new Map();
+  semesters.forEach((sem) => {
+    const bases = new Set();
+    if (sem.courses) {
+      sem.courses.forEach((c) => {
+        if (c.specializationEligible) bases.add(c.type.split(".")[0]);
+      });
+    }
+    const arr = Array.from(bases);
+    if (arr.length > 0) {
+      const master = arr[0];
+      if (!globalSpecGroups.has(master)) {
+        globalSpecGroups.set(master, new Set());
+        globalSpecSems.set(master, String(sem.number).replace(/\D/g, ""));
+      }
+      arr.forEach((b) => globalSpecGroups.get(master).add(b));
+    }
+  });
 
   semesters.forEach((sem) => {
     if (sem.isYearlyDivider) {
@@ -473,6 +507,19 @@ async function getFullSyllabusData(program_code) {
     totalSemesters++;
 
     sem.detailed_courses = [];
+
+    // Pre-calculate specialization master for this semester
+    const specBasesForSem = new Set();
+    sem.courses.forEach((c) => {
+      if (c.specializationEligible) specBasesForSem.add(c.type.split(".")[0]);
+    });
+    const specBasesArr = Array.from(specBasesForSem);
+    const masterSpecType = specBasesArr.length > 0 ? specBasesArr[0] : null;
+    const isSemSpecFormat =
+      masterSpecType &&
+      draftData[masterSpecType] &&
+      draftData[masterSpecType].format === "specialization";
+
     sem.courses.forEach((courseTemplate, index) => {
       const cellKey = `${sem.number}_${index}`;
       const isSeminar = /^SEMINAR$/i.test(courseTemplate.type);
@@ -483,7 +530,17 @@ async function getFullSyllabusData(program_code) {
         const baseElectiveType = courseTemplate.type.split(".")[0];
         const slotDraft = draftData[baseElectiveType] || {};
         const choiceIndex = courseTemplate.electiveOpt - 1;
-        if (slotDraft.choices && slotDraft.choices[choiceIndex]) {
+        if (
+          courseTemplate.specializationEligible &&
+          slotDraft.format === "specialization"
+        ) {
+          draftCell = {
+            type: baseElectiveType,
+            credit_scheme: slotDraft.credit_scheme,
+            credits: slotDraft.credits,
+            lt_split: slotDraft.lt_split,
+          };
+        } else if (slotDraft.choices && slotDraft.choices[choiceIndex]) {
           draftCell = {
             ...slotDraft.choices[choiceIndex],
             type: baseElectiveType,
@@ -718,6 +775,19 @@ async function getFullSyllabusData(program_code) {
         const baseElectiveType = courseTemplate.type.split(".")[0]; // e.g., 'DEC-1', 'DSE-A'
         const exactSemester = String(sem.number); // Track the exact string to isolate variant slaves
 
+        const isSpecEligible = courseTemplate.specializationEligible;
+        const isMasterRow =
+          baseElectiveType === masterSpecType &&
+          courseTemplate.electiveOpt === 1;
+
+        // Skip slave specialization slots if the format is active so they don't duplicate rows
+        if (isSemSpecFormat && isSpecEligible && !isMasterRow) {
+          return;
+        }
+
+        const slotDraft =
+          draftData[isMasterRow ? masterSpecType : baseElectiveType] || {};
+
         if (!electiveCourseGroups[baseElectiveType]) {
           electiveCourseGroups[baseElectiveType] = [];
         }
@@ -733,13 +803,12 @@ async function getFullSyllabusData(program_code) {
           // This is a linked elective from a variant semester (e.g. 4A), so we don't add its choices.
           courseObj.isLinkedElective = true;
           courseObj.masterSemester = masterSemester;
-        } else {
+        } else if (!(isSemSpecFormat && isSpecEligible)) {
           // ALWAYS add the choice so the PDF table correctly calculates rowspan=6
           electiveCourseGroups[baseElectiveType].push(courseObj);
         }
 
         if (courseTemplate.electiveOpt === 1) {
-          const slotDraft = draftData[baseElectiveType] || {};
           let repMarks = {};
           let finalRepScheme =
             slotDraft.credit_scheme || courseObj.credit_scheme;
@@ -759,16 +828,194 @@ async function getFullSyllabusData(program_code) {
               lt_split: slotDraft.lt_split || "0",
             };
           }
+
+          let repCourseName = courseObj.isLinkedElective
+            ? `Same as Semester ${courseObj.masterSemester}`
+            : "Any One from the Choices Given Below";
+
+          if (isSemSpecFormat && isSpecEligible) {
+            const allBasesArr = Array.from(
+              globalSpecGroups.get(masterSpecType),
+            );
+            const semStr = globalSpecSems.get(masterSpecType);
+            const combinedTitle = `${allBasesArr.join(", ")} (Semester ${semStr})`;
+            courseObj.baseElectiveType = combinedTitle;
+
+            const multiplier = specBasesArr.length;
+            repMarks.credits_total = (
+              parseInt(repMarks.credits_total || courseObj.credits_total || 0) *
+              multiplier
+            ).toString();
+            repMarks.marks_internal_total = (
+              parseInt(
+                repMarks.marks_internal_total ||
+                  courseObj.marks_internal_total ||
+                  0,
+              ) * multiplier
+            ).toString();
+            repMarks.marks_endterm_total = (
+              parseInt(
+                repMarks.marks_endterm_total ||
+                  courseObj.marks_endterm_total ||
+                  0,
+              ) * multiplier
+            ).toString();
+            repMarks.marks_max = (
+              parseInt(repMarks.marks_max || courseObj.marks_max || 0) *
+              multiplier
+            ).toString();
+
+            repMarks.credits_theory = (
+              parseInt(
+                repMarks.credits_theory || courseObj.credits_theory || 0,
+              ) * multiplier
+            ).toString();
+            repMarks.credits_practical = (
+              parseInt(
+                repMarks.credits_practical || courseObj.credits_practical || 0,
+              ) * multiplier
+            ).toString();
+
+            if (!courseObj.isLinkedElective) {
+              repCourseName = `Student has to choose ${multiplier} courses from one specialization (See tables below)`;
+            }
+          }
+
           const representativeRow = {
             ...courseObj,
             ...repMarks,
-            course_name: courseObj.isLinkedElective
-              ? `Same as Semester ${courseObj.masterSemester}`
-              : "Any One from the Choices Given Below",
+            course_name: repCourseName,
             isElectiveGroup: true,
-            baseElectiveType: baseElectiveType,
+            isSpecFormatGroup: isSemSpecFormat && isSpecEligible,
+            baseElectiveType: courseObj.baseElectiveType || baseElectiveType,
           };
+          if (representativeRow.isSpecFormatGroup) {
+            representativeRow.course_type = representativeRow.baseElectiveType;
+          }
           sem.detailed_courses.push(representativeRow);
+
+          if (
+            isSemSpecFormat &&
+            isSpecEligible &&
+            !courseObj.isLinkedElective &&
+            !processedSpecTables.has(masterSpecType)
+          ) {
+            processedSpecTables.add(masterSpecType);
+            const specs = slotDraft.specializations || [];
+            const processedSpecs = [];
+
+            specs.forEach((spec) => {
+              const pChoices = [];
+              (spec.choices || []).forEach((choice) => {
+                if (!choice.code && !choice.nom) return;
+                const isMooc = /\bmoocs?\b/i.test(choice.nom || "");
+                const fullCourse = choice.code
+                  ? courseDataMap[choice.code]
+                  : null;
+                let procCourse;
+
+                if (isMooc) {
+                  procCourse = {
+                    course_code: choice.code || "-",
+                    course_name: choice.nom,
+                    course_type: choice.type || masterSpecType,
+                    credits_total: slotDraft.credits || courseTemplate.credits,
+                    credit_scheme: slotDraft.credit_scheme || "",
+                    lt_split: slotDraft.lt_split || "0",
+                    is_db_course: false,
+                    is_missing: false,
+                    is_mooc: true,
+                  };
+                } else if (fullCourse) {
+                  procCourse = {
+                    ...fullCourse,
+                    course_type: choice.type || masterSpecType,
+                    credit_scheme:
+                      slotDraft.credit_scheme || fullCourse.credit_scheme,
+                    lt_split: slotDraft.lt_split || "0",
+                    is_db_course: true,
+                    is_missing: false,
+                  };
+                } else {
+                  procCourse = {
+                    course_code: choice.code || "-",
+                    course_name: choice.nom || "Unassigned Slot",
+                    course_type: choice.type || masterSpecType,
+                    credits_total: slotDraft.credits || courseTemplate.credits,
+                    credit_scheme: slotDraft.credit_scheme || "",
+                    lt_split: slotDraft.lt_split || "0",
+                    is_db_course: false,
+                    is_missing: true,
+                  };
+                }
+
+                if (
+                  (procCourse.is_mooc || procCourse.is_db_course) &&
+                  (!procCourse.marks_max || procCourse.marks_max == 0) &&
+                  procCourse.credit_scheme &&
+                  sharedSchemeMap[procCourse.credit_scheme]
+                ) {
+                  procCourse.marks_internal_theory =
+                    sharedSchemeMap[procCourse.credit_scheme].int_th;
+                  procCourse.marks_internal_practical =
+                    sharedSchemeMap[procCourse.credit_scheme].int_pr;
+                  procCourse.marks_internal_total =
+                    sharedSchemeMap[procCourse.credit_scheme].int;
+                  procCourse.marks_endterm_theory =
+                    sharedSchemeMap[procCourse.credit_scheme].end_th;
+                  procCourse.marks_endterm_practical =
+                    sharedSchemeMap[procCourse.credit_scheme].end_pr;
+                  procCourse.marks_endterm_total =
+                    sharedSchemeMap[procCourse.credit_scheme].end;
+                  procCourse.marks_max =
+                    sharedSchemeMap[procCourse.credit_scheme].max;
+                  procCourse.exam_duration =
+                    sharedSchemeMap[procCourse.credit_scheme].dur;
+                }
+                if (
+                  procCourse.is_missing &&
+                  (!procCourse.marks_max || procCourse.marks_max == 0)
+                ) {
+                  let cCred = parseInt(procCourse.credits_total) || 0;
+                  if (cCred === 4) {
+                    procCourse.marks_internal_total = 30;
+                    procCourse.marks_endterm_total = 70;
+                    procCourse.marks_max = 100;
+                  } else if (cCred === 3) {
+                    procCourse.marks_internal_total = 25;
+                    procCourse.marks_endterm_total = 50;
+                    procCourse.marks_max = 75;
+                  } else if (cCred === 2) {
+                    procCourse.marks_internal_total = 15;
+                    procCourse.marks_endterm_total = 35;
+                    procCourse.marks_max = 50;
+                  }
+                }
+
+                pChoices.push(procCourse);
+
+                if (
+                  procCourse.is_db_course &&
+                  !addedToAllCourses.has(procCourse.course_code)
+                ) {
+                  allCourses.push(procCourse);
+                  addedToAllCourses.add(procCourse.course_code);
+                }
+              });
+
+              if (spec.spec_name || pChoices.length > 0) {
+                processedSpecs.push({
+                  spec_name: spec.spec_name,
+                  choices: pChoices,
+                });
+              }
+            });
+
+            specializationTables.push({
+              baseType: courseObj.baseElectiveType,
+              specializations: processedSpecs,
+            });
+          }
         }
       } else {
         sem.detailed_courses.push(courseObj);
@@ -781,7 +1028,11 @@ async function getFullSyllabusData(program_code) {
       const newDetailedCourses = [];
       sem.detailed_courses.forEach((course) => {
         newDetailedCourses.push(course);
-        if (course.isElectiveGroup && !course.isLinkedElective) {
+        if (
+          course.isElectiveGroup &&
+          !course.isLinkedElective &&
+          !course.isSpecFormatGroup
+        ) {
           const choices = electiveCourseGroups[course.baseElectiveType] || [];
           const validChoices = choices.filter(
             (c) => !c.is_missing && c.course_code !== "-",
@@ -821,22 +1072,20 @@ async function getFullSyllabusData(program_code) {
     SEC: [],
     VAC: [],
     MDC: [],
+    OEC: [],
     Minor: [],
     "Minor (Vocational)": [],
   };
   let hasDeptPoolCourses = false;
 
-  if (
-    program.level === "UG" &&
-    !isCoreSyllabus &&
-    program_code !== "UNIVERSITY_POOL"
-  ) {
+  if (!isCoreSyllabus && program_code !== "UNIVERSITY_POOL") {
     const poolCode = `POOL|${programDetails.faculty || program.faculty}|${programDetails.department || program.department}`;
     const targetTypes = [
       "AEC",
       "SEC",
       "VAC",
       "MDC",
+      "OEC",
       "Minor",
       "Minor (Vocational)",
     ];
@@ -903,6 +1152,7 @@ async function getFullSyllabusData(program_code) {
     specialization: program.specialization,
     is_core_pdf: isCoreSyllabus,
     electiveCourseGroups,
+    specializationTables,
     deptPoolCourses,
     hasDeptPoolCourses,
     coreData,
@@ -1108,7 +1358,7 @@ router.get("/download-pool-pdf", verifyLogin, async (req, res) => {
     const targetTypes =
       pool_type === "minor"
         ? ["Minor", "Minor (Vocational)"]
-        : ["AEC", "SEC", "VAC", "MDC"];
+        : ["AEC", "SEC", "VAC", "MDC", "OEC"];
 
     const coursesRes = await pool.query(
       "SELECT * FROM course_syllabus WHERE owning_program_code = $1 AND course_type = ANY($2::text[])",
@@ -1137,6 +1387,7 @@ router.get("/download-pool-pdf", verifyLogin, async (req, res) => {
       groupedCourses["SEC"] = [];
       groupedCourses["VAC"] = [];
       groupedCourses["MDC"] = [];
+      groupedCourses["OEC"] = [];
     }
 
     courses.forEach((c) => {
@@ -1147,7 +1398,7 @@ router.get("/download-pool-pdf", verifyLogin, async (req, res) => {
     const poolTitle =
       pool_type === "minor"
         ? "Pool of Minor and Minor (Vocational)"
-        : "Pool of AEC, SEC, VAC, MDC";
+        : "Pool of AEC, SEC, VAC, MDC, OEC";
 
     req.app.render(
       "poolSyllabusView.ejs",
@@ -1299,13 +1550,14 @@ router.get("/download-dept-pool-pdf", verifyLogin, async (req, res) => {
       SEC: "Skill Enhancement Courses(SEC)",
       VAC: "Value Added Courses(VAC)",
       MDC: "Multi-Disciplinary Courses(MDC)",
+      OEC: "Open Elective Courses(OEC)",
     };
 
     let poolTitle = "";
     if (category === "Minor") {
-      poolTitle = `Courses offered by the department as Minor/ Minor ( Vocational ) in the University pool for UG Programme`;
+      poolTitle = `Courses offered by the department as Minor/ Minor ( Vocational ) in the University pool for UG/PG Programme`;
     } else {
-      poolTitle = `Courses offered by the department as ${categoryNames[category]} in the University pool for UG Programme`;
+      poolTitle = `Courses offered by the department as ${categoryNames[category]} in the University pool for UG/PG Programme`;
     }
 
     req.app.render(

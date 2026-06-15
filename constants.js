@@ -3,6 +3,7 @@ const createUserTable = `
   username TEXT NOT NULL,
   password TEXT NOT NULL,
   role TEXT DEFAULT 'normal',
+  department TEXT,
   PRIMARY KEY(username)
 )
 `;
@@ -94,13 +95,18 @@ const createProgramTableQuery = `
       num_pos INTEGER DEFAULT 11,
       num_peos INTEGER DEFAULT 4,
       num_psos INTEGER DEFAULT 2,
-      program_details JSONB
+      program_details JSONB,
+      faculty TEXT,
+      department TEXT,
+      ug_pg TEXT,
+      discipline_type TEXT,
+      discipline_category TEXT
   );
 `;
 
 const insertProgramQuery = `
-  INSERT INTO programs (program_code, subject_name, specialization, level, scheme, num_pos, num_peos, num_psos, program_details)
-  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+  INSERT INTO programs (program_code, subject_name, specialization, level, scheme, num_pos, num_peos, num_psos, program_details, faculty, department, ug_pg, discipline_type, discipline_category)
+  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
   ON CONFLICT (program_code) DO UPDATE SET
     subject_name = EXCLUDED.subject_name,
     specialization = EXCLUDED.specialization,
@@ -108,7 +114,12 @@ const insertProgramQuery = `
     scheme = EXCLUDED.scheme,
     num_pos = EXCLUDED.num_pos,
     num_peos = EXCLUDED.num_peos,
-    num_psos = EXCLUDED.num_psos;
+    num_psos = EXCLUDED.num_psos,
+    faculty = EXCLUDED.faculty,
+    department = EXCLUDED.department,
+    ug_pg = EXCLUDED.ug_pg,
+    discipline_type = EXCLUDED.discipline_type,
+    discipline_category = EXCLUDED.discipline_category;
 `;
 
 const createCurriculumDraftsTableQuery = `

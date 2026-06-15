@@ -151,5 +151,58 @@
             </tbody>
         </table>
     </div>
+
+    <% if (locals.specializationTables && locals.specializationTables.length > 0) { %>
+        <div class="container" style="page-break-before: always; margin-top: 30px;">
+            <h2 style="text-align: center; text-transform: uppercase;">Specialization Formats</h2>
+            <% locals.specializationTables.forEach(specGroup => { %>
+                <h3 style="background-color: #f2f2f2; padding: 10px; border: 1px solid black;"><%= specGroup.baseType %> Options</h3>
+                <% specGroup.specializations.forEach((spec, specIdx) => { %>
+                    <h4 style="margin-left: 10px;"><%= spec.spec_name || ('Specialization ' + (specIdx + 1)) %></h4>
+                    <table>
+                        <thead>
+                            <tr class="header-row">
+                                <th style="width: 12%;">Course Code</th>
+                                <th style="width: 25%;">Nomenclature of the Course</th>
+                                <th style="width: 6%;">Theory (Th)/<br>Practical (P)</th>
+                                <th style="width: 5%;">Credit</th>
+                                <th style="width: 9%;">Contact hours per week<br>(L+T+P=T)</th>
+                                <th style="width: 8%;">Internal Assessment</th>
+                                <th style="width: 8%;">End Term Marks</th>
+                                <th style="width: 6%;">Total Marks</th>
+                                <th style="width: 10%;">Exam Hours</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% spec.choices.forEach(course => { 
+                                let th = parseInt(course.credits_theory) || 0;
+                                let pr = parseInt(course.credits_practical) || 0;
+                                if (course.credit_scheme) {
+                                    let parts = course.credit_scheme.split('+');
+                                    if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
+                                }
+                                let p = pr * 2;
+                                let lt = course.lt_split == "1" && th > 1 ? 1 : 0;
+                                let l = th - lt;
+                                let tot = l + lt + p;
+                            %>
+                                <tr>
+                                    <td><%= course.course_code %></td>
+                                    <td style="text-align: left;"><%= course.course_name %></td>
+                                    <td><%= th %>T / <%= pr %>P</td>
+                                    <td><%= course.credits_total || '' %></td>
+                                    <td><%= th > 0 && lt === 1 ? (th-1)+'+1+'+p+'='+tot : th+'+0+'+p+'='+tot %></td>
+                                    <td><%= course.is_missing && !course.credit_scheme ? '' : `${course.marks_internal_theory || 0}+${course.marks_internal_practical || 0}=${course.marks_internal_total || 0}` %></td>
+                                    <td><%= course.is_missing && !course.credit_scheme ? '' : `${course.marks_endterm_theory || 0}+${course.marks_endterm_practical || 0}=${course.marks_endterm_total || 0}` %></td>
+                                    <td><%= course.is_missing && !course.credit_scheme ? '' : (course.marks_max || '') %></td>
+                                    <td><%- course.exam_duration ? course.exam_duration.replace(', ', '<br>') : '' %></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                <% }) %>
+            <% }) %>
+        </div>
+    <% } %>
 </body>
 </html>

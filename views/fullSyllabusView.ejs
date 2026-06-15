@@ -308,7 +308,7 @@
                                     if (course.is_elective_choice_row) return;
                                     
                                     const courseType = course.curriculum_display_type || course.course_type || '';
-                                    const isPoolGroup1 = ['VAC', 'SEC', 'AEC', 'MDC'].some(p => courseType.startsWith(p));
+                                    const isPoolGroup1 = ['VAC', 'SEC', 'AEC', 'MDC', 'OEC'].some(p => courseType.startsWith(p));
                                     const isExceptionMinor = program.scheme && program.scheme.trim().toUpperCase() === 'D' && /^(CC-M1|CC-M2|CC-M3)$/.test(courseType);
                                     const isPoolGroup2 = ['CC-M', 'CC-HM'].some(p => courseType.startsWith(p)) && !(isExceptionMinor && !course.is_missing && course.course_code !== '-');
                                     
@@ -366,7 +366,7 @@
                                     <% } else if (course.isElectiveGroup) { %>
                                         <td rowspan="<%= rowSpanCount %>" class="center" style="vertical-align: middle;">
                                             <%= course.baseElectiveType %>
-                                            <% if (!course.isLinkedElective) { %><br><span style="font-size:11px; font-style:italic;">(pick any one)</span><% } %>
+                                            <% if (!course.isLinkedElective && !course.isSpecFormatGroup) { %><br><span style="font-size:11px; font-style:italic;">(Choose one)</span><% } %>
                                         </td>
                                         <% if (!course.isLinkedElective && choices.length > 0) { %>
                                             <td class="center" style="vertical-align: middle;">
@@ -545,6 +545,73 @@
             </table>
         </div>
         
+        <% if (locals.specializationTables && locals.specializationTables.length > 0) { %>
+            <% locals.specializationTables.forEach(specGroup => { %>
+                <div class="landscape-section page-break-before">
+                    <h2 class="center"><%= specGroup.baseType %> - Specialization Formats</h2>
+                    <% specGroup.specializations.forEach((spec, specIdx) => { %>
+                        <h4 style="margin-bottom: 5px;"><%= spec.spec_name || ('Specialization ' + (specIdx + 1)) %></h4>
+                        <table class="dense-table" style="font-size: 11px; margin-bottom: 20px;">
+                            <thead>
+                                <tr class="section-title">
+                                    <th style="width: 14%;">Course Code</th>
+                                    <th style="width: 27%;">Nomenclature of the Course</th>
+                                    <th style="width: 8%;">Theory (Th)/ Practical (P)</th>
+                                    <th style="width: 4%;">Credit</th>
+                                    <th style="width: 11%;">Contact hours per week<br>(L+T+P=Total)</th>
+                                    <th style="width: 8%;">Internal Assessment Marks (Th+P=Total)</th>
+                                    <th style="width: 8%;">End Term Examination Marks (Th+P=Total)</th>
+                                    <th style="width: 6%;">Total Marks</th>
+                                    <th style="width: 14%;">Exam Hours Theory, Practical</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% spec.choices.forEach(course => { 
+                                    let th = parseInt(course.credits_theory) || 0;
+                                    let pr = parseInt(course.credits_practical) || 0;
+                                    if (course.credit_scheme) {
+                                        let parts = course.credit_scheme.split('+');
+                                        if (parts.length === 2) { th = parseInt(parts[0]) || 0; pr = parseInt(parts[1]) || 0; }
+                                    }
+                                    let p = pr * 2;
+                                    let lt = course.lt_split == "1" && th > 1 ? 1 : 0;
+                                    let l = th - lt;
+                                    let tot = l + lt + p;
+                                %>
+                                    <tr>
+                                        <td class="center">
+                                            <% if (course.is_mooc) { %>
+                                                <b><%= course.course_code %></b>
+                                            <% } else { %>
+                                                <a href="#course-<%= course.course_code %>"><b><%= course.course_code %></b></a>
+                                            <% } %>
+                                        </td>
+                                        <td <%- course.is_missing ? 'style="color: red;"' : '' %>>
+                                            <% if (course.is_mooc) { %>
+                                                <a href="https://swayam.gov.in/" target="_blank" style="color: #0056b3; text-decoration: underline;"><%= course.course_name %></a>
+                                            <% } else { %>
+                                                <%= course.course_name=='Unassigned Slot' ? ' ' : course.course_name %>
+                                                <% if (course.is_db_course && (!course.owning_program_code || course.owning_program_code === 'From University Pool')) { %>
+                                                    <div style="font-size: 0.85em; font-style: italic; margin-top: 3px; color: #555;">(University Pool)</div>
+                                                <% } %>
+                                            <% } %>
+                                        </td>
+                                        <td class="center" style="vertical-align: middle;"><%= th %>T / <%= pr %>P</td>
+                                        <td class="center" style="vertical-align: middle;"><%= course.credits_total || 0 %></td>
+                                        <td class="center" style="vertical-align: middle;"><%= l %>+<%= lt %>+<%= p %>=<%= tot %></td>
+                                        <td class="center" style="vertical-align: middle;"><%= course.is_missing && !course.credit_scheme ? ' ' : `${course.marks_internal_theory || 0}+${course.marks_internal_practical || 0}=${course.marks_internal_total || 0}` %></td>
+                                        <td class="center" style="vertical-align: middle;"><%= course.is_missing && !course.credit_scheme ? ' ' : `${course.marks_endterm_theory || 0}+${course.marks_endterm_practical || 0}=${course.marks_endterm_total || 0}` %></td>
+                                        <td class="center" style="vertical-align: middle;"><%= course.is_missing && !course.credit_scheme ? ' ' : (course.marks_max || 0) %></td>
+                                        <td class="center" style="vertical-align: middle;"><%= course.is_missing && !course.credit_scheme ? ' ' : (course.exam_duration || '-') %></td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    <% }) %>
+                </div>
+            <% }) %>
+        <% } %>
+
         <% if (locals.coreData && locals.coreData.semesters) { %>
             <div class="landscape-section page-break-before">
                 <div style="text-align: center; margin-bottom: 20px;">
@@ -636,9 +703,10 @@
                 'SEC': 'Skill Enhancement Courses(SEC)',
                 'VAC': 'Value Added Courses(VAC)',
                 'MDC': 'Multi-Disciplinary Courses(MDC)',
+            'OEC': 'Open Elective Courses(OEC)',
                 'Minor': 'Minor/ Minor ( Vocational )'
             }; %>
-            <% ['AEC', 'SEC', 'VAC', 'MDC', 'Minor'].forEach(cat => { %>
+        <% ['AEC', 'SEC', 'VAC', 'MDC', 'OEC', 'Minor'].forEach(cat => { %>
                 <% 
                     let catCourses = [];
                     if (cat === 'Minor') {
@@ -652,8 +720,8 @@
                         <div style="text-align: center; margin-bottom: 30px;">
                             <h2 class="bold" style="text-transform: uppercase; margin: 0;">INDIRA GANDHI UNIVERSITY, MEERPUR</h2>
                             <h3 style="margin: 5px 0;">Department of <%= programDetails.department || program.department || 'N/A' %></h3>
-                            <h4 style="font-weight: normal; margin: 5px 0;">Courses offered by the department as <%= categoryNames[cat] %> in the University pool for UG Programme</h4>
-                            <% if (cat === 'MDC') { %>
+                        <h4 style="font-weight: normal; margin: 5px 0;">Courses offered by the department as <%= categoryNames[cat] %> in the University pool for <%= program.level || program.ug_pg || 'UG/PG' %> Programme</h4>
+                        <% if (cat === 'MDC' || cat === 'OEC') { %>
                                 <p style="font-style: italic; margin-top: 10px; margin-bottom: 0;">*Offered for the Other Departments</p>
                             <% } %>
                         </div>

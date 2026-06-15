@@ -113,29 +113,36 @@
             </ul>
         </div>
 
-        <form method="GET" action="/courses-list" style="margin-bottom: 20px; width: 100%; display: flex; gap: 10px;">
-            <select name="program_filter" onchange="this.form.submit()" style="flex: 1; padding: 10px; border-radius: 5px; border: 1px solid #ccc; font-size: 16px; background-color: #fff;">
-                <option value="">-- Select a Program to View Courses --</option>
-                <option value="all" <%= selectedFilter === 'all' ? 'selected' : '' %>>All Courses</option>
-                <option value="unassigned" <%= selectedFilter === 'unassigned' ? 'selected' : '' %>>Unassigned Courses</option>
-                <option value="pool_all" <%= selectedFilter === 'pool_all' ? 'selected' : '' %>>All University Pool Courses</option>
-                <optgroup label="University Pool Categories">
-                    <option value="pool_AEC" <%= selectedFilter === 'pool_AEC' ? 'selected' : '' %>>Pool: AEC</option>
-                    <option value="pool_SEC" <%= selectedFilter === 'pool_SEC' ? 'selected' : '' %>>Pool: SEC</option>
-                    <option value="pool_VAC" <%= selectedFilter === 'pool_VAC' ? 'selected' : '' %>>Pool: VAC</option>
-                    <option value="pool_MDC" <%= selectedFilter === 'pool_MDC' ? 'selected' : '' %>>Pool: MDC</option>
-                    <option value="pool_Minor" <%= selectedFilter === 'pool_Minor' ? 'selected' : '' %>>Pool: Minor</option>
-                    <option value="pool_Minor (Vocational)" <%= selectedFilter === 'pool_Minor (Vocational)' ? 'selected' : '' %>>Pool: Minor (Vocational)</option>
-                </optgroup>
-                <optgroup label="Programs">
-                    <% programsList.forEach(p => { %>
-                        <option value="<%= p.program_code %>" <%= selectedFilter === p.program_code ? 'selected' : '' %>>
-                            <%= p.subject_name %> <%= p.specialization ? '(' + p.specialization + ')' : '' %>
-                        </option>
-                    <% }) %>
-                </optgroup>
-            </select>
-        </form>
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #dee2e6; margin-bottom: 25px; width: 100%; box-sizing: border-box;">
+            <h3 style="margin-top: 0; color: #495057; font-size: 16px; margin-bottom: 15px;">🔍 Filter Courses By Category or Program:</h3>
+            <form method="GET" action="/courses-list" style="display: flex; flex-wrap: wrap; gap: 15px; align-items: center;">
+                <select name="program_filter" style="flex: 1; min-width: 250px; padding: 12px; border-radius: 6px; border: 1px solid #ced4da; font-size: 15px; background-color: #fff; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                    <option value="" disabled <%= !selectedFilter ? 'selected' : '' %>>-- Select a Category or Program --</option>
+                    <optgroup label="General Filters">
+                        <option value="all" <%= selectedFilter === 'all' ? 'selected' : '' %>>🌐 All Saved Courses (Entire Database)</option>
+                        <option value="unassigned" <%= selectedFilter === 'unassigned' ? 'selected' : '' %>>⚠️ Unassigned Courses (Not in any Curriculum)</option>
+                    </optgroup>
+                    <optgroup label="University Pool Electives">
+                        <option value="pool_all" <%= selectedFilter === 'pool_all' ? 'selected' : '' %>>📚 All University Pool Courses</option>
+                        <option value="pool_AEC" <%= selectedFilter === 'pool_AEC' ? 'selected' : '' %>>   ↳ AEC Pool</option>
+                        <option value="pool_SEC" <%= selectedFilter === 'pool_SEC' ? 'selected' : '' %>>   ↳ SEC Pool</option>
+                        <option value="pool_VAC" <%= selectedFilter === 'pool_VAC' ? 'selected' : '' %>>   ↳ VAC Pool</option>
+                        <option value="pool_MDC" <%= selectedFilter === 'pool_MDC' ? 'selected' : '' %>>   ↳ MDC Pool</option>
+                        <option value="pool_OEC" <%= selectedFilter === 'pool_OEC' ? 'selected' : '' %>>   ↳ OEC Pool</option>
+                        <option value="pool_Minor" <%= selectedFilter === 'pool_Minor' ? 'selected' : '' %>>   ↳ Minor Pool</option>
+                        <option value="pool_Minor (Vocational)" <%= selectedFilter === 'pool_Minor (Vocational)' ? 'selected' : '' %>>   ↳ Minor (Vocational) Pool</option>
+                    </optgroup>
+                    <optgroup label="Specific Programs (Draft Curriculums)">
+                        <% programsList.forEach(p => { %>
+                            <option value="<%= p.program_code %>" <%= selectedFilter === p.program_code ? 'selected' : '' %>>
+                                🎓 <%= p.subject_name %> <%= p.specialization ? '(' + p.specialization + ')' : '' %>
+                            </option>
+                        <% }) %>
+                    </optgroup>
+                </select>
+                <button type="submit" style="padding: 12px 25px; background-color: #007bff; color: white; border: none; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,123,255,0.2); white-space: nowrap;">Apply Filter</button>
+            </form>
+        </div>
 
         <% if (locals.commonCourses && locals.commonCourses.length > 0) { %>
             <div style="margin-bottom: 40px; width: 100%;">

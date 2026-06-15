@@ -402,10 +402,21 @@ router.get("/curriculum", verifyPrivilageLogin, async (req, res) => {
 
     const usedCodes = new Set();
     Object.values(draftData).forEach((item) => {
-      if (item.slot_type && item.choices) {
-        item.choices.forEach((choice) => {
-          if (choice.code) usedCodes.add(choice.code);
-        });
+      if (item.slot_type) {
+        if (item.choices) {
+          item.choices.forEach((choice) => {
+            if (choice.code) usedCodes.add(choice.code);
+          });
+        }
+        if (item.format === "specialization" && item.specializations) {
+          item.specializations.forEach((spec) => {
+            if (spec.choices) {
+              spec.choices.forEach((choice) => {
+                if (choice.code) usedCodes.add(choice.code);
+              });
+            }
+          });
+        }
       } else if (item && item.code) {
         usedCodes.add(item.code);
       }
@@ -465,8 +476,17 @@ router.post(
       // Phase 1: Deduplicate and aggregate all courses that need processing
       const coursesToUpsert = new Map();
       for (const [key, item] of Object.entries(draft_data)) {
-        if (item && item.slot_type && item.choices) {
-          for (const choice of item.choices) {
+        if (item && item.slot_type) {
+          const allChoices = [];
+          if (item.choices) allChoices.push(...item.choices);
+
+          if (item.format === "specialization" && item.specializations) {
+            item.specializations.forEach((spec) => {
+              if (spec.choices) allChoices.push(...spec.choices);
+            });
+          }
+
+          for (const choice of allChoices) {
             const isMooc = /\bmoocs?\b/i.test(choice.nom || "");
             if (!isMooc && choice.code && choice.nom) {
               coursesToUpsert.set(choice.code, {

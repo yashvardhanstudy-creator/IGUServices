@@ -117,7 +117,7 @@
     <div class="form-section">
         <h3>Select Scheme</h3>
         <label for="creditScheme">Credit Scheme (Theory+Practical):</label>
-        <% if (typeof course !== 'undefined' && course.credit_scheme) { %>
+        <% if (typeof course !== 'undefined' && course.credit_scheme && !isPool) { %>
             <input type="text" value="<%= course.credit_scheme %>" readonly style="background-color: #e9ecef; font-weight: bold; width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
             <input type="hidden" id="creditScheme" name="creditScheme" value="<%= course.credit_scheme %>">
             <div style="font-size: 0.8em; color: #666; margin-top: 4px;">Credit Scheme is assigned by the Admin in the Curriculum Framework.</div>
@@ -207,6 +207,7 @@
                             <option value="SEC" <%= (query.courseType || (typeof course !== 'undefined' ? course.course_type : '')) === 'SEC' ? 'selected' : '' %>>Skill Enhancement Course (SEC)</option>
                             <option value="VAC" <%= (query.courseType || (typeof course !== 'undefined' ? course.course_type : '')) === 'VAC' ? 'selected' : '' %>>Value Added Course (VAC)</option>
                             <option value="MDC" <%= (query.courseType || (typeof course !== 'undefined' ? course.course_type : '')) === 'MDC' ? 'selected' : '' %>>Multi-Disciplinary Course (MDC)</option>
+                            <option value="OEC" <%= (query.courseType || (typeof course !== 'undefined' ? course.course_type : '')) === 'OEC' ? 'selected' : '' %>>Open Elective Course (OEC)</option>
                             <option value="Minor" <%= (query.courseType || (typeof course !== 'undefined' ? course.course_type : '')) === 'Minor' ? 'selected' : '' %>>Minor</option>
                             <option value="Minor (Vocational)" <%= (query.courseType || (typeof course !== 'undefined' ? course.course_type : '')) === 'Minor (Vocational)' ? 'selected' : '' %>>Minor (Vocational)</option>
                         </select>
@@ -603,6 +604,7 @@ document.addEventListener("DOMContentLoaded", () => {
             'SEC': ['1+1', '2+1', '3+0', '2+0'],
             'VAC': ['2+0', '1+1'],
             'MDC': ['2+1', '3+0'],
+            'OEC': ['1+1', '2+0'],
             'Minor': ['3+1', '2+2', '1+1', '2+0'],
             'Minor (Vocational)': ['3+1', '2+2', '4+0']
         };
